@@ -3,6 +3,7 @@ const cors = require("cors");
 const config = require("./utils/config");
 const logger = require("./utils/logger");
 const middleware = require("./utils/middleware");
+const prisma = require("./prisma");
 
 const app = express();
 
