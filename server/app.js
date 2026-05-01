@@ -1,14 +1,10 @@
 const express = require("express");
 const cors = require("cors");
-const config = require("./utils/config");
-const logger = require("./utils/logger");
-const middleware = require("./utils/middleware");
-const prisma = require("./prisma");
+const { routes } = require("./src/routes/index");
 
 const app = express();
 
 app.use(express.json());
-app.use(middleware.requestLogger);
 app.use(
   cors({
     origin: [
@@ -21,6 +17,6 @@ app.use(
   }),
 );
 
-app.use(middleware.unknownEndpoint);
-app.use(middleware.errorHandler);
+app.use("/api/v1", routes);
+
 module.exports = app;
