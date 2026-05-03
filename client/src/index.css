@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* ── Theme Customization ──────────────────────── */
+@theme {
+  /* Brand */
+  --color-brand: #c8a96e;
+  --color-brand-hover: #b8943e;
+
+  /* Background */
+  --color-page: #0e0e0e;
+  --color-panel: #1a1208;
+  --color-panel-border: #2a2010;
+  --color-input: #161616;
+
+  /* Text */
+  --color-heading: #f5ede0;
+  --color-dimmed: #7a7a7a;
+  --color-faint: #3a3a3a;
+
+  /*Misc*/
+  --color-dot-active: #ffffff;
+  --color-dot-inactive: #3a2a10;
+  --color-footer: #5a4a30;
+}
