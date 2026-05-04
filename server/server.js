@@ -2,6 +2,7 @@ require("dotenv").config();
 const app = require("./app");
 const { env } = require("./src/config/env");
 const sequelize = require("./lib/database");
+require("./src/models/index");
 
 const start = async () => {
   await sequelize.sync();
