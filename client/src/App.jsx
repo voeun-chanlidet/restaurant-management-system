@@ -1,3 +1,6 @@
+import Layout from "./components/Layout";
+import MenuPage from "./pages/MenuPage/MenuPage";
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,7 +13,9 @@ import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PublicRoute from "./components/PublicRoute";
-
+import Table from "./pages/Table";
+import Order from "./pages/Order";
+import Reservation from "./pages/reservation";
 function App() {
   return (
     <>
@@ -37,7 +42,49 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/menu"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <MenuPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/table"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Table />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/order"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Order />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reservation"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Reservation />
+                </Layout>
               </ProtectedRoute>
             }
           />
