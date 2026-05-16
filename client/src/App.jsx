@@ -1,5 +1,5 @@
 import Layout from "./components/Layout";
-import MenuPage from "./pages/MenuPage/MenuPage";
+import MenuPage from "./pages/MenuPage/index";
 
 import {
   BrowserRouter as Router,
@@ -13,7 +13,7 @@ import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PublicRoute from "./components/PublicRoute";
-import Table from "./pages/Table";
+import TablePage from "./pages/TablePage/index";
 import Order from "./pages/Order";
 import Reservation from "./pages/reservation";
 function App() {
@@ -49,7 +49,7 @@ function App() {
             }
           />
           <Route
-            path="/menu"
+            path="/menus"
             element={
               <ProtectedRoute>
                 <Layout>
@@ -59,17 +59,17 @@ function App() {
             }
           />
           <Route
-            path="/table"
+            path="/tables"
             element={
               <ProtectedRoute>
                 <Layout>
-                  <Table />
+                  <TablePage />
                 </Layout>
               </ProtectedRoute>
             }
           />
           <Route
-            path="/order"
+            path="/orders"
             element={
               <ProtectedRoute>
                 <Layout>
@@ -79,7 +79,7 @@ function App() {
             }
           />
           <Route
-            path="/reservation"
+            path="/reservations"
             element={
               <ProtectedRoute>
                 <Layout>

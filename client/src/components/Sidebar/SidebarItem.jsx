@@ -7,9 +7,7 @@ const SidebarItem = ({ item, collapsed, variant = "sidebar" }) => {
         {({ isActive }) => (
           <div
             className={`flex flex-col items-center gap-1 py-3 px-2 transition-colors ${
-              isActive
-                ? "text-(--color-heading)"
-                : "text-(--color-dimmed) hover:text-(--color-heading)"
+              isActive ? "text-heading" : "text-dimmed hover:text-heading"
             }`}
           >
             <span className="text-[11px] font-medium">{item.label}</span>
@@ -31,8 +29,8 @@ const SidebarItem = ({ item, collapsed, variant = "sidebar" }) => {
         <div
           className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
             isActive
-              ? "text-(--color-heading)"
-              : "text-(--color-dimmed) hover:text-(--color-heading) hover:bg-(--color-panel-border)"
+              ? "text-heading"
+              : "text-dimmed hover:text-heading hover:bg-panel-border"
           }`}
           style={isActive ? { background: "var(--color-panel-border)" } : {}}
         >
