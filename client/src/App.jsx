@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PublicRoute from "./components/PublicRoute";
 import TablePage from "./pages/TablePage/index";
+import OrderPage from "./pages/OrderPage/index";
 import Order from "./pages/Order";
 import Reservation from "./pages/reservation";
 function App() {
@@ -73,7 +74,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <Layout>
-                  <Order />
+                  <OrderPage />
                 </Layout>
               </ProtectedRoute>
             }
