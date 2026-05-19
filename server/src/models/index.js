@@ -4,6 +4,7 @@ const Menu = require("./menu.model");
 const Table = require("./table.model");
 const Order = require("./order.model");
 const OrderItem = require("./order_item.model");
+const Payment = require("./payment.model");
 
 Category.hasMany(Menu, { foreignKey: "categoryId" });
 Menu.belongsTo(Category, { foreignKey: "categoryId" });
@@ -20,4 +21,10 @@ OrderItem.belongsTo(Order, { foreignKey: "orderId" });
 Menu.hasMany(OrderItem, { foreignKey: "menuId" });
 OrderItem.belongsTo(Menu, { foreignKey: "menuId" });
 
-module.exports = { User, Category, Menu, Table, Order, OrderItem };
+Order.hasOne(Payment, { foreignKey: "orderId" });
+Payment.belongsTo(Order, { foreignKey: "orderId" });
+
+User.hasMany(Payment, { foreignKey: "processedBy" });
+Payment.belongsTo(User, { foreignKey: "processedBy", as: "processor" });
+
+module.exports = { User, Category, Menu, Table, Order, OrderItem, Payment };
