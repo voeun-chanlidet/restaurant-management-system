@@ -17,6 +17,7 @@ import TablePage from "./pages/TablePage/index";
 import OrderPage from "./pages/OrderPage/index";
 import Order from "./pages/Order";
 import Reservation from "./pages/reservation";
+import PaymentPage from "./pages/PaymentPage";
 function App() {
   return (
     <>
@@ -85,6 +86,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Reservation />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="payments"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <PaymentPage />
                 </Layout>
               </ProtectedRoute>
             }

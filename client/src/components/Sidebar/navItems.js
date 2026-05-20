@@ -5,4 +5,5 @@ export const NAV_ITEMS = [
   { label: "Tables", path: "/tables" },
   { label: "Reservations", path: "/reservations" },
   { label: "Users", path: "/users", role: "ADMIN" },
+  { label: "Payments", path: "/payments" },
 ];

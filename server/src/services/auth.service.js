@@ -10,7 +10,16 @@ const login = async (email, password) => {
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) throw new Error("Invalide password!");
 
-  return signToken({ id: user.id, role: user.role });
+  const token = signToken({ id: user.id, role: user.role });
+  return {
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  };
 };
 
 const register = async (email, name, password) => {

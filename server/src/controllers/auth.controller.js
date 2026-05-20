@@ -3,10 +3,11 @@ const loginUser = async (request, response) => {
   try {
     const { email, password } = request.body;
 
-    const token = await login(email, password);
+    const { token, user } = await login(email, password);
 
     return response.status(200).send({
       token,
+      user,
     });
   } catch (error) {
     return response.status(401).json({ error: error.message });

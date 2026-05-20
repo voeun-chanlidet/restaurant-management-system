@@ -22,8 +22,8 @@ const AuthProvider = ({ children }) => {
 
   const login = (data) => {
     window.localStorage.setItem("token", data.token);
-    window.localStorage.setItem("user", JSON.stringify(data));
-    setUser(data);
+    window.localStorage.setItem("user", JSON.stringify(data.user));
+    setUser(data.user);
     setToken(data.token);
   };
 

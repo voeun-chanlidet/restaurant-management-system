@@ -24,6 +24,10 @@ const cancelOrder = async (id) => {
   const response = await api.patch(`/orders/${id}/cancel`);
   return response.data;
 };
+const getUnpaidServedOrders = async () => {
+  const response = await api.get("/orders/unpaid");
+  return response.data;
+};
 
 export default {
   getAllOrders,
@@ -31,4 +35,5 @@ export default {
   createOrder,
   updateOrderStatus,
   cancelOrder,
+  getUnpaidServedOrders,
 };
