@@ -1,4 +1,5 @@
-const { Order, OrderItem, Table, User, Menu } = require("../models");
+const { Order, OrderItem, Table, User, Menu, Payment } = require("../models");
+const { Op, Sequelize } = require("sequelize");
 
 const getAllOrders = async () => {
   return await Order.findAll({
@@ -201,10 +202,37 @@ const cancelOrder = async (id, userRole) => {
   return canceledOrder;
 };
 
+const getUnpaidServedOrders = async () => {
+  // Get all paid order IDs first
+  const paidOrderIds = await Payment.findAll({
+    attributes: ["orderId"],
+  });
+  const paidIds = paidOrderIds.map((p) => p.orderId);
+
+  // Find SERVED orders not in that list
+  return await Order.findAll({
+    where: {
+      status: "SERVED",
+      id: { [Op.notIn]: paidIds.length > 0 ? paidIds : [0] },
+    },
+    include: [
+      {
+        model: OrderItem,
+        as: "items",
+        attributes: ["menuName", "price", "quantity", "subtotal"],
+      },
+      { model: User, as: "creator", attributes: ["id", "name"] },
+    ],
+    attributes: ["id", "tableNumber", "total", "createdAt"],
+    order: [["createdAt", "ASC"]],
+  });
+};
+
 module.exports = {
   getAllOrders,
   getOrderById,
   createOrder,
   updateOrderStatus,
   cancelOrder,
+  getUnpaidServedOrders,
 };

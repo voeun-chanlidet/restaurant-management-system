@@ -63,6 +63,14 @@ const cancelOrder = async (request, response) => {
     return response.status(status).json({ error: error.message });
   }
 };
+const getUnpaidServedOrders = async (request, response) => {
+  try {
+    const orders = await OrderServices.getUnpaidServedOrders();
+    return response.status(200).json({ orders });
+  } catch (error) {
+    return response.status(500).json({ error: error.message });
+  }
+};
 
 module.exports = {
   getAllOrders,
@@ -70,4 +78,5 @@ module.exports = {
   createOrder,
   updateOrderStatus,
   cancelOrder,
+  getUnpaidServedOrders,
 };
