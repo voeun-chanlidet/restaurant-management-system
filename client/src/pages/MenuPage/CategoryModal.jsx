@@ -7,19 +7,11 @@ const CategoryModal = ({
   setCategoryName,
 }) => {
   if (!show) return null;
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.6)" }}
-    >
-      <div
-        className="rounded-xl p-6 w-80"
-        style={{
-          background: "var(--color-panel)",
-          border: "1px solid var(--color-panel-border)",
-        }}
-      >
-        <h2 className="text-base font-semibold mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="rounded-xl p-6 w-80 bg-panel border border-panel-border shadow-lg">
+        <h2 className="text-base font-semibold text-heading mb-4">
           {editingCategory ? "Edit category" : "New category"}
         </h2>
         <input
@@ -27,28 +19,18 @@ const CategoryModal = ({
           placeholder="Category name"
           value={categoryName}
           onChange={(e) => setCategoryName(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg text-sm outline-none mb-4"
-          style={{
-            background: "var(--color-input)",
-            color: "var(--color-heading)",
-            border: "1px solid var(--color-panel-border)",
-          }}
+          className="w-full px-3 py-2 rounded-lg text-sm outline-none mb-4 bg-input text-heading border border-panel-border"
         />
         <div className="flex gap-2 justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm"
-            style={{ color: "var(--color-dimmed)" }}
+            className="px-4 py-2 rounded-lg text-sm text-dimmed hover:text-heading transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-2 rounded-lg text-sm font-medium"
-            style={{
-              background: "var(--color-brand)",
-              color: "var(--color-page)",
-            }}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors"
           >
             Save
           </button>

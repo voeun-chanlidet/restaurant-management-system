@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import FloorMap from "./FloorMap";
 import TableModal from "./TableModal";
 import tableService from "../../services/table";
@@ -12,6 +13,7 @@ const TablePage = () => {
   const [editingTable, setEditingTable] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
 
   const fetchTables = async () => {
     try {
@@ -88,13 +90,15 @@ const TablePage = () => {
             {counts.occupied} occupied · {counts.reserved} reserved
           </p>
         </div>
-        <button
-          onClick={openAddModal}
-          className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          style={{ background: "var(--color-brand)", color: "#0e0e0e" }}
-        >
-          + Add table
-        </button>
+        {user.role === "ADMIN" && (
+          <button
+            onClick={openAddModal}
+            className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+            style={{ background: "var(--color-brand)", color: "#0e0e0e" }}
+          >
+            + Add table
+          </button>
+        )}
       </div>
 
       <div className="flex gap-2 mb-6 flex-wrap">

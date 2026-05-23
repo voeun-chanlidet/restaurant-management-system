@@ -3,6 +3,7 @@ import categoryService from "../../services/category";
 import menuService from "../../services/menu";
 import CategoryModal from "./CategoryModal";
 import MenuModal from "./MenuModal";
+import ConfirmModal from "./ConfirmModal";
 import CategorySidebar from "./CategorySidebar";
 import MenuGrid from "./MenuGrid";
 
@@ -27,7 +28,12 @@ export default function MenuPage() {
     imageUrl: "",
     isAvailable: true,
   });
-
+  // Confirm Modal State
+  const [confirmModal, setConfirmModal] = useState({
+    show: false,
+    message: "",
+    onConfirm: null,
+  });
   useEffect(() => {
     fetchData();
   }, []);
@@ -72,13 +78,15 @@ export default function MenuPage() {
   };
 
   const handleDeleteCategory = async (id) => {
-    if (!confirm("Delete this category?")) return;
-    try {
-      await categoryService.deleteCategory(id);
-      fetchData();
-    } catch (err) {
-      console.error(err);
-    }
+    setConfirmModal({
+      show: true,
+      message: "This will permanently delete the category.",
+      onConfirm: async () => {
+        await categoryService.deleteCategory(id);
+        setConfirmModal({ show: false, message: "", onConfirm: null });
+        fetchData();
+      },
+    });
   };
 
   const openEditCategory = (cat) => {
@@ -117,13 +125,15 @@ export default function MenuPage() {
   };
 
   const handleDeleteMenu = async (id) => {
-    if (!confirm("Delete this menu item?")) return;
-    try {
-      await menuService.deleteMenu(id);
-      fetchData();
-    } catch (err) {
-      console.error(err);
-    }
+    setConfirmModal({
+      show: true,
+      message: "This will permanently delete the menu item.",
+      onConfirm: async () => {
+        await menuService.deleteMenu(id);
+        setConfirmModal({ show: false, message: "", onConfirm: null });
+        fetchData();
+      },
+    });
   };
 
   const openEditMenu = (menu) => {
@@ -168,6 +178,7 @@ export default function MenuPage() {
     >
       {/* Category sidebar */}
       <CategorySidebar
+        menus={menus}
         onAdd={() => {
           setEditingCategory(null);
           setCategoryName("");
@@ -212,6 +223,15 @@ export default function MenuPage() {
         onSave={handleSaveMenu}
         onClose={() => setShowMenuModal(false)}
         categories={categories}
+      />
+
+      <ConfirmModal
+        show={confirmModal.show}
+        onClose={() =>
+          setConfirmModal({ show: false, message: "", onConfirm: null })
+        }
+        onConfirm={confirmModal.onConfirm}
+        message={confirmModal.message}
       />
     </div>
   );

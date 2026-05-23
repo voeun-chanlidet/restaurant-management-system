@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 const STATUSES = ["AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"];
 
 const TableModal = ({ isOpen, onClose, onSave, onDelete, editingTable }) => {
+  const { user } = useAuth();
   const [tableNumber, setTableNumber] = useState("");
   const [capacity, setCapacity] = useState("");
   const [status, setStatus] = useState("AVAILABLE");
@@ -48,32 +50,41 @@ const TableModal = ({ isOpen, onClose, onSave, onDelete, editingTable }) => {
         </h2>
 
         <div className="flex flex-col gap-4">
-          <div>
-            <label className="block text-xs text-dimmed mb-1.5">
-              Table number
-            </label>
-            <input
-              type="text"
-              className={inputClass}
-              placeholder="e.g. T1, A2"
-              value={tableNumber}
-              onChange={(e) => setTableNumber(e.target.value)}
-            />
-          </div>
+          {/* Table number — admin only */}
+          {user.role === "ADMIN" && (
+            <div>
+              <label className="block text-xs text-dimmed mb-1.5">
+                Table number
+              </label>
+              <input
+                type="text"
+                className={inputClass}
+                placeholder="e.g. T1, A2"
+                value={tableNumber}
+                onChange={(e) => setTableNumber(e.target.value)}
+              />
+            </div>
+          )}
 
-          <div>
-            <label className="block text-xs text-dimmed mb-1.5">Capacity</label>
-            <input
-              type="number"
-              className={inputClass}
-              placeholder="4"
-              min={1}
-              max={20}
-              value={capacity}
-              onChange={(e) => setCapacity(e.target.value)}
-            />
-          </div>
+          {/* Capacity — admin only */}
+          {user.role === "ADMIN" && (
+            <div>
+              <label className="block text-xs text-dimmed mb-1.5">
+                Capacity
+              </label>
+              <input
+                type="number"
+                className={inputClass}
+                placeholder="4"
+                min={1}
+                max={20}
+                value={capacity}
+                onChange={(e) => setCapacity(e.target.value)}
+              />
+            </div>
+          )}
 
+          {/* Status — everyone can change */}
           <div>
             <label className="block text-xs text-dimmed mb-1.5">Status</label>
             <select
@@ -89,28 +100,32 @@ const TableModal = ({ isOpen, onClose, onSave, onDelete, editingTable }) => {
             </select>
           </div>
 
-          <div>
-            <label className="block text-xs text-dimmed mb-1.5">Shape</label>
-            <div className="flex gap-2">
-              {["round", "rect"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setShape(s)}
-                  className={`flex-1 py-1.5 text-xs rounded-lg border transition-colors ${
-                    shape === s
-                      ? "border-brand text-brand bg-brand/10"
-                      : "border-panel-border text-dimmed"
-                  }`}
-                >
-                  {s === "round" ? "Round" : "Rectangle"}
-                </button>
-              ))}
+          {/* Shape — admin only */}
+          {user.role === "ADMIN" && (
+            <div>
+              <label className="block text-xs text-dimmed mb-1.5">Shape</label>
+              <div className="flex gap-2">
+                {["round", "rect"].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setShape(s)}
+                    className={`flex-1 py-1.5 text-xs rounded-lg border transition-colors ${
+                      shape === s
+                        ? "border-brand text-brand bg-brand/10"
+                        : "border-panel-border text-dimmed"
+                    }`}
+                  >
+                    {s === "round" ? "Round" : "Rectangle"}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="flex items-center gap-2 mt-6">
-          {editingTable && (
+          {/* Delete — admin only */}
+          {editingTable && user.role === "ADMIN" && (
             <button
               onClick={() => onDelete(editingTable.id)}
               className="text-xs text-red-500 border border-red-500/30 rounded-lg px-3 py-1.5 hover:bg-red-500/10 transition-colors mr-auto"
@@ -124,13 +139,16 @@ const TableModal = ({ isOpen, onClose, onSave, onDelete, editingTable }) => {
           >
             Cancel
           </button>
-          <button
-            onClick={handleSave}
-            className="text-xs font-medium rounded-lg px-4 py-1.5 transition-colors"
-            style={{ background: "var(--color-brand)", color: "#0e0e0e" }}
-          >
-            Save
-          </button>
+          {/* Save — admin only */}
+          {user.role === "ADMIN" && (
+            <button
+              onClick={handleSave}
+              className="text-xs font-medium rounded-lg px-4 py-1.5 transition-colors"
+              style={{ background: "var(--color-brand)", color: "#0e0e0e" }}
+            >
+              Save
+            </button>
+          )}
         </div>
       </div>
     </div>

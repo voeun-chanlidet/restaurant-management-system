@@ -1,38 +1,16 @@
 import { NavLink } from "react-router-dom";
 
-const SidebarItem = ({ item, collapsed, variant = "sidebar" }) => {
-  if (variant === "bottom") {
-    return (
-      <NavLink to={item.path} end={item.path === "/"} className="flex-1">
-        {({ isActive }) => (
-          <div
-            className={`flex flex-col items-center gap-1 py-3 px-2 transition-colors ${
-              isActive ? "text-heading" : "text-dimmed hover:text-heading"
-            }`}
-          >
-            <span className="text-[11px] font-medium">{item.label}</span>
-            {isActive && (
-              <span
-                className="w-4 h-0.5 rounded-full"
-                style={{ background: "var(--color-brand)" }}
-              />
-            )}
-          </div>
-        )}
-      </NavLink>
-    );
-  }
-
+const SidebarItem = ({ item, collapsed, onNavigate }) => {
   return (
-    <NavLink to={item.path} end={item.path === "/"}>
+    <NavLink to={item.path} end={item.path === "/"} onClick={onNavigate}>
       {({ isActive }) => (
         <div
           className={`group relative flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
             isActive
-              ? "text-heading"
+              ? "text-headingn bg-panel-border"
               : "text-dimmed hover:text-heading hover:bg-panel-border"
           }`}
-          style={isActive ? { background: "var(--color-panel-border)" } : {}}
+          // style={isActive ? { background: "var(--color-panel-border)" } : {}}
         >
           {isActive && (
             <span

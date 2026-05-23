@@ -1,9 +1,10 @@
-export const NAV_ITEMS = [
-  { label: "Dashboard", path: "/dashboard" },
-  { label: "Menu", path: "/menus" },
-  { label: "Orders", path: "/orders" },
-  { label: "Tables", path: "/tables" },
-  { label: "Payments", path: "/payments" },
-  { label: "Reservations", path: "/reservations" },
-  { label: "Users", path: "/users", role: "ADMIN" },
+export const navItems = [
+  { label: "Dashboard", path: "/dashboard", roles: ["ADMIN"] },
+  { label: "Menu", path: "/menus", roles: ["ADMIN", "STAFF"] },
+  { label: "Orders", path: "/orders", roles: ["ADMIN", "STAFF"] },
+  { label: "Tables", path: "/tables", roles: ["ADMIN", "STAFF"] },
+  { label: "Payments", path: "/payments", roles: ["ADMIN", "STAFF"] },
+  { label: "Reservations", path: "/reservations", roles: ["ADMIN", "STAFF"] },
+  { label: "Users", path: "/users", roles: ["ADMIN"] },
+  { label: "Kitchen", path: "/kitchen", roles: ["KITCHEN", "ADMIN"] },
 ];

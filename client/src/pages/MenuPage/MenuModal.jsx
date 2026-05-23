@@ -8,19 +8,14 @@ const MenuModal = ({
   categories,
 }) => {
   if (!show) return null;
+
+  const inputClass =
+    "w-full px-3 py-2 rounded-lg text-sm outline-none bg-input text-heading border border-panel-border";
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.6)" }}
-    >
-      <div
-        className="rounded-xl p-6 w-96"
-        style={{
-          background: "var(--color-panel)",
-          border: "1px solid var(--color-panel-border)",
-        }}
-      >
-        <h2 className="text-base font-semibold mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="rounded-xl p-6 w-96 bg-panel border border-panel-border shadow-lg">
+        <h2 className="text-base font-semibold text-heading mb-4">
           {editingMenu ? "Edit item" : "New menu item"}
         </h2>
         <div className="flex flex-col gap-3">
@@ -29,12 +24,7 @@ const MenuModal = ({
             placeholder="Name"
             value={menuForm.name}
             onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
-            className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-            style={{
-              background: "var(--color-input)",
-              color: "var(--color-heading)",
-              border: "1px solid var(--color-panel-border)",
-            }}
+            className={inputClass}
           />
           <input
             type="number"
@@ -43,24 +33,14 @@ const MenuModal = ({
             onChange={(e) =>
               setMenuForm({ ...menuForm, price: e.target.value })
             }
-            className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-            style={{
-              background: "var(--color-input)",
-              color: "var(--color-heading)",
-              border: "1px solid var(--color-panel-border)",
-            }}
+            className={inputClass}
           />
           <select
             value={menuForm.categoryId}
             onChange={(e) =>
               setMenuForm({ ...menuForm, categoryId: e.target.value })
             }
-            className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-            style={{
-              background: "var(--color-input)",
-              color: "var(--color-heading)",
-              border: "1px solid var(--color-panel-border)",
-            }}
+            className={inputClass}
           >
             <option value="">Select category</option>
             {categories.map((cat) => (
@@ -76,17 +56,9 @@ const MenuModal = ({
             onChange={(e) =>
               setMenuForm({ ...menuForm, imageUrl: e.target.value })
             }
-            className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-            style={{
-              background: "var(--color-input)",
-              color: "var(--color-heading)",
-              border: "1px solid var(--color-panel-border)",
-            }}
+            className={inputClass}
           />
-          <label
-            className="flex items-center gap-2 text-sm"
-            style={{ color: "var(--color-dimmed)" }}
-          >
+          <label className="flex items-center gap-2 text-sm text-dimmed">
             <input
               type="checkbox"
               checked={menuForm.isAvailable}
@@ -100,18 +72,13 @@ const MenuModal = ({
         <div className="flex gap-2 justify-end mt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-sm"
-            style={{ color: "var(--color-dimmed)" }}
+            className="px-4 py-2 rounded-lg text-sm text-dimmed hover:text-heading transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-2 rounded-lg text-sm font-medium"
-            style={{
-              background: "var(--color-brand)",
-              color: "var(--color-page)",
-            }}
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors"
           >
             Save
           </button>

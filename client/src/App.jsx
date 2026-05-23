@@ -15,9 +15,9 @@ import Dashboard from "./pages/Dashboard";
 import PublicRoute from "./components/PublicRoute";
 import TablePage from "./pages/TablePage/index";
 import OrderPage from "./pages/OrderPage/index";
-import Order from "./pages/Order";
 import Reservation from "./pages/reservation";
 import PaymentPage from "./pages/PaymentPage";
+import KDSPage from "./pages/KDSPage/Kdspage";
 function App() {
   return (
     <>
@@ -43,7 +43,7 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <Layout>
                   <Dashboard />
                 </Layout>
@@ -73,7 +73,7 @@ function App() {
           <Route
             path="/orders"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["ADMIN", "STAFF"]}>
                 <Layout>
                   <OrderPage />
                 </Layout>
@@ -96,6 +96,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <PaymentPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="kitchen"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN", "KITCHEN"]}>
+                <Layout>
+                  <KDSPage />
                 </Layout>
               </ProtectedRoute>
             }

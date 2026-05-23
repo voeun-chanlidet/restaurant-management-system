@@ -1,5 +1,5 @@
 const OrderServices = require("../services/order.service");
-
+const { getIO } = require("../../lib/socket");
 const getAllOrders = async (request, response) => {
   try {
     const orders = await OrderServices.getAllOrders();
@@ -25,6 +25,8 @@ const createOrder = async (request, response) => {
       request.body,
       request.user.id,
     );
+    const io = getIO();
+    io.to("staff").to("admin").emit("order:new", order);
     return response.status(201).json({ order });
   } catch (error) {
     const status = error.message.includes("not found") ? 404 : 500;
@@ -40,6 +42,25 @@ const updateOrderStatus = async (request, response) => {
       status,
       request.user.role,
     );
+
+    const io = getIO();
+    switch (order.status) {
+      case "IN_PROGRESS":
+        io.to("kitchen")
+          .to("staff")
+          .to("admin")
+          .emit("order:inProgress", order);
+        break;
+      case "READY":
+        io.to("staff").to("admin").to("kitchen").emit("order:ready", order);
+        break;
+      case "SERVED":
+        io.to("staff").to("admin").emit("order:served", order);
+        break;
+      case "CANCELLED":
+        io.to("kitchen").to("staff").to("admin").emit("order:cancelled", order);
+        break;
+    }
     return response.status(200).json({ order });
   } catch (error) {
     const notFound = error.message === "Order not found!";

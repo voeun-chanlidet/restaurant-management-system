@@ -1,79 +1,82 @@
+import { useAuth } from "../../contexts/AuthContext";
+
 const CategorySidebar = ({
   categories,
+  menus,
   onEdit,
   onDelete,
   onAdd,
   onSelect,
   selectedCategory,
 }) => {
+  const { user } = useAuth();
+
+  const getCount = (categoryId) =>
+    menus.filter((m) => m.categoryId === categoryId).length;
+
   return (
-    <div
-      className="w-full md:w-48 shrink-0 border-r md:flex flex-col"
-      style={{
-        borderColor: "var(--color-panel-border)",
-        background: "var(--color-panel)",
-      }}
-    >
-      <div
-        className="p-3 border-b flex items-center justify-between"
-        style={{ borderColor: "var(--color-panel-border)" }}
-      >
-        <span
-          className="text-xs uppercase tracking-wider"
-          style={{ color: "var(--color-dimmed)" }}
-        >
-          Categories
+    <div className="w-full md:w-56 shrink-0 md:border-r border-panel-border bg-panel flex flex-col">
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-panel-border flex items-center justify-between shrink-0">
+        <span className="text-xs font-semibold uppercase tracking-widest text-dimmed">
+          Dishes Category
         </span>
-        <button
-          onClick={onAdd}
-          className="text-lg leading-none"
-          style={{ color: "var(--color-brand)" }}
-        >
-          +
-        </button>
-      </div>
-      <div className="flex md:flex-col overflow-x-auto md:overflow-y-auto p-2 gap-2 scrollbar-hide">
-        {categories.map((cat) => (
-          <div
-            key={cat.id}
-            className="group flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors whitespace-nowrap min-w-fit"
-            style={{
-              background:
-                selectedCategory === cat.id
-                  ? "var(--color-panel-border)"
-                  : "transparent",
-              color:
-                selectedCategory === cat.id
-                  ? "var(--color-heading)"
-                  : "var(--color-dimmed)",
-            }}
-            onClick={() => onSelect(cat.id)}
+        {user.role === "ADMIN" && (
+          <button
+            onClick={onAdd}
+            className="text-xs font-medium px-2 py-1 rounded-md bg-brand text-white transition-colors"
           >
-            <span className="text-sm truncate">{cat.name}</span>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(cat);
-                }}
-                className="text-xs px-1"
-                style={{ color: "var(--color-dimmed)" }}
-              >
-                ✎
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(cat.id);
-                }}
-                className="text-xs px-1"
-                style={{ color: "var(--color-dimmed)" }}
-              >
-                ✕
-              </button>
+            + Add
+          </button>
+        )}
+      </div>
+
+      {/* Category list */}
+      <div className="flex md:flex-col overflow-x-auto md:overflow-y-auto p-2 gap-1 scrollbar-hide">
+        {categories.map((cat) => {
+          const isActive = selectedCategory === cat.id;
+          const count = getCount(cat.id);
+          return (
+            <div
+              key={cat.id}
+              onClick={() => onSelect(cat.id)}
+              className={`group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all whitespace-nowrap min-w-fit ${
+                isActive ? "bg-brand text-white" : "text-heading hover:bg-input"
+              }`}
+            >
+              <span className="text-sm font-medium">{cat.name}</span>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs font-semibold min-w-[20px] text-right ${isActive ? "text-white/80" : "text-dimmed"}`}
+                >
+                  {count}
+                </span>
+                {user.role === "ADMIN" && (
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(cat);
+                      }}
+                      className={`text-xs px-1 rounded hover:bg-black/10 ${isActive ? "text-white" : "text-dimmed"}`}
+                    >
+                      ✎
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(cat.id);
+                      }}
+                      className={`text-xs px-1 rounded hover:bg-black/10 ${isActive ? "text-white" : "text-dimmed"}`}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

@@ -136,9 +136,9 @@ const updateOrderStatus = async (id, status, userRole) => {
   }
 
   // STAFF can only edit PENDING orders
-  if (userRole === "STAFF" && order.status !== "PENDING") {
-    throw new Error("Staff can only update orders that are still pending!");
-  }
+  // if (userRole === "STAFF" && order.status !== "PENDING") {
+  //   throw new Error("Staff can only update orders that are still pending!");
+  // }
 
   order.status = status;
   await order.save();

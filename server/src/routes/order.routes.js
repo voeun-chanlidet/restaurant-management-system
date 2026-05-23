@@ -12,14 +12,24 @@ const restrictTo = require("../middlewares/role.middleware");
 
 const orderRouter = require("express").Router();
 
-orderRouter.get("/", protect, restrictTo("ADMIN", "STAFF"), getAllOrders);
+orderRouter.get(
+  "/",
+  protect,
+  restrictTo("ADMIN", "STAFF", "KITCHEN"),
+  getAllOrders,
+);
 orderRouter.get(
   "/unpaid",
   protect,
   restrictTo("ADMIN", "STAFF"),
   getUnpaidServedOrders,
 );
-orderRouter.get("/:id", protect, restrictTo("ADMIN", "STAFF"), getOrderById);
+orderRouter.get(
+  "/:id",
+  protect,
+  restrictTo("ADMIN", "STAFF", "KITCHEN"),
+  getOrderById,
+);
 
 orderRouter.post("/", protect, restrictTo("ADMIN", "STAFF"), createOrder);
 orderRouter.patch(

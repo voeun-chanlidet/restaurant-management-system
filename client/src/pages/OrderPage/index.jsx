@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import OrderService from "../../services/order";
 import OrderList from "./OrderList";
 import OrderDetailModal from "./OrderDetailModal";
 import TableSelector from "./TableSelector";
 import MenuSelector from "./MenuSelector";
 import OrderSummary from "./OrderSummary";
+import useOrderSocket from "./useOrderSocket";
 
 const OrderPage = () => {
   const [orders, setOrders] = useState([]);
@@ -92,16 +93,27 @@ const OrderPage = () => {
     }
   };
 
+  // for socket real time update
+  const handleNewOrder = useCallback((order) => {
+    setOrders((prev) => [order, ...prev]);
+  }, []);
+
+  const handleOrderUpdate = useCallback((order) => {
+    setOrders((prev) => prev.map((o) => (o.id === order.id ? order : o)));
+  }, []);
+
+  useOrderSocket({
+    onNewOrder: handleNewOrder,
+    onOrderUpdate: handleOrderUpdate,
+  });
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[var(--color-heading)]">
-          Orders
-        </h1>
+        <h1 className="text-2xl font-bold text-heading">Orders</h1>
         {!step && (
           <button
             onClick={startNewOrder}
-            className="bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-black font-semibold px-4 py-2 rounded-lg"
+            className="bg-brand hover:bg-brand-hover text-black font-semibold px-4 py-2 rounded-lg"
           >
             + New Order
           </button>
