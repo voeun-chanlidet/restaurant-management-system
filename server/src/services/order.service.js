@@ -1,5 +1,5 @@
 const { Order, OrderItem, Table, User, Menu, Payment } = require("../models");
-const { Op, Sequelize } = require("sequelize");
+const { Op, Sequelize, where } = require("sequelize");
 
 const getAllOrders = async () => {
   return await Order.findAll({
@@ -93,6 +93,7 @@ const createOrder = async (data, userId) => {
     },
     { include: [{ model: OrderItem, as: "items" }] },
   );
+  await Table.update({ status: "OCCUPIED" }, { where: { id: tableId } });
   //refetch for better response
   const freshOrder = await Order.findByPk(order.id, {
     attributes: [
@@ -142,6 +143,21 @@ const updateOrderStatus = async (id, status, userRole) => {
 
   order.status = status;
   await order.save();
+  console.log("order.tableId:", order.tableId);
+  if (status === "SERVED" && order.tableId) {
+    const activeOrders = await Order.count({
+      where: {
+        tableId: order.tableID,
+        status: ["PENDING", "IN_PROGRESS", "READy"],
+      },
+    });
+    if (activeOrders === 0) {
+      await Table.update(
+        { status: "AVAILABLE" },
+        { where: { id: order.tableId } },
+      );
+    }
+  }
   //refetch for better response
   const updatedOrder = await Order.findByPk(order.id, {
     attributes: [

@@ -3,7 +3,7 @@ import OrderCard from "./OrderCard";
 const OrderList = ({ orders, onCardClick }) => {
   if (orders.length === 0) {
     return (
-      <p className="text-[var(--color-dimmed)] text-center mt-12">
+      <p className="text-dimmed text-center mt-12">
         No orders yet. Create one to get started.
       </p>
     );

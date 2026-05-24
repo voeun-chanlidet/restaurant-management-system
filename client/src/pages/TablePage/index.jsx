@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import FloorMap from "./FloorMap";
 import TableModal from "./TableModal";
 import tableService from "../../services/table";
+import useTableSocket from "./useTableSocket";
 
 const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"];
 
@@ -60,6 +61,9 @@ const TablePage = () => {
     }
   };
 
+  const handleUpdate = useCallback((table) => {
+    setTables((prev) => prev.map((t) => (t.id === table.id ? table : t)));
+  }, []);
   const handleDelete = async (id) => {
     try {
       await tableService.deleteTable(id);
@@ -69,6 +73,8 @@ const TablePage = () => {
       console.error(err.message);
     }
   };
+
+  useTableSocket({ onTableUpdate: handleUpdate });
 
   const filteredTables =
     filter === "ALL" ? tables : tables.filter((t) => t.status === filter);

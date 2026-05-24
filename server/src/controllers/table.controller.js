@@ -1,3 +1,4 @@
+const { getIO } = require("../../lib/socket");
 const TableServices = require("../services/table.service");
 
 const getAllTables = async (request, response) => {
@@ -28,6 +29,8 @@ const updateTable = async (request, response) => {
     const id = request.params.id;
     const data = request.body;
     const updatedTable = await TableServices.updateTable(id, data);
+    const io = getIO();
+    io.to("admin").to("staff").emit("table:update", updatedTable);
     return response.status(200).json({ table: updatedTable });
   } catch (error) {
     const status = error.message === "Table not found!" ? 404 : 500;

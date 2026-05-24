@@ -3,9 +3,9 @@ import TableService from "../../services/table";
 
 const STATUS_STYLES = {
   AVAILABLE: "border-green-500/40 hover:border-green-500",
-  OCCUPIED: "border-red-500/40 opacity-50 cursor-not-allowed",
+  OCCUPIED: "border-red-500/40 hover:border-red-500",
   RESERVED: "border-yellow-500/40 opacity-50 cursor-not-allowed",
-  MAINTENANCE: "border-[var(--color-faint)] opacity-50 cursor-not-allowed",
+  MAINTENANCE: "border-faint opacity-50 cursor-not-allowed",
 };
 
 const STATUS_BADGE = {
@@ -35,16 +35,14 @@ const TableSelector = ({ onSelect, onCancel }) => {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-bold text-[var(--color-heading)]">
-            Select a Table
-          </h2>
-          <p className="text-sm text-[var(--color-dimmed)]">
+          <h2 className="text-lg font-bold text-heading">Select a Table</h2>
+          <p className="text-sm text-dimmed">
             Step 1 of 3 — Only available tables can be selected
           </p>
         </div>
         <button
           onClick={onCancel}
-          className="text-sm text-[var(--color-dimmed)] hover:text-[var(--color-heading)]"
+          className="text-sm text-dimmed hover:text-heading"
         >
           ✕ Cancel
         </button>
@@ -53,21 +51,22 @@ const TableSelector = ({ onSelect, onCancel }) => {
       {/* Table grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {tables.map((table) => {
-          const isAvailable = table.status === "AVAILABLE";
+          const isSelectable =
+            table.status === "AVAILABLE" || table.status === "OCCUPIED";
           return (
             <button
               key={table.id}
-              disabled={!isAvailable}
-              onClick={() => isAvailable && onSelect(table)}
+              disabled={!isSelectable}
+              onClick={() => isSelectable && onSelect(table)}
               className={`
-                bg-[var(--color-panel)] border rounded-xl p-4 text-left transition-all
+                bg-panel border rounded-xl p-4 text-left transition-all
                 ${STATUS_STYLES[table.status]}
               `}
             >
-              <p className="text-[var(--color-heading)] font-semibold mb-1">
+              <p className="text-heading font-semibold mb-1">
                 {table.table_number}
               </p>
-              <p className="text-xs text-[var(--color-dimmed)] mb-2">
+              <p className="text-xs text-dimmed mb-2">
                 Capacity: {table.capacity}
               </p>
               <span

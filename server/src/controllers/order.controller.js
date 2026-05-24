@@ -1,4 +1,5 @@
 const OrderServices = require("../services/order.service");
+const TableServices = require("../services/table.service");
 const { getIO } = require("../../lib/socket");
 const getAllOrders = async (request, response) => {
   try {
@@ -27,6 +28,9 @@ const createOrder = async (request, response) => {
     );
     const io = getIO();
     io.to("staff").to("admin").emit("order:new", order);
+
+    const updatedTable = await TableServices.getTableById(order.tableId);
+    io.to("staff").to("admin").emit("table:update", updatedTable);
     return response.status(201).json({ order });
   } catch (error) {
     const status = error.message.includes("not found") ? 404 : 500;
@@ -54,9 +58,12 @@ const updateOrderStatus = async (request, response) => {
       case "READY":
         io.to("staff").to("admin").to("kitchen").emit("order:ready", order);
         break;
-      case "SERVED":
+      case "SERVED": {
         io.to("staff").to("admin").emit("order:served", order);
+        const updatedTable = await TableServices.getTableById(order.tableId);
+        io.to("staff").to("admin").emit("table:update", updatedTable);
         break;
+      }
       case "CANCELLED":
         io.to("kitchen").to("staff").to("admin").emit("order:cancelled", order);
         break;
