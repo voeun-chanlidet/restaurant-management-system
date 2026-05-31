@@ -6,6 +6,7 @@ const { tableRouter } = require("./table.routes");
 const { orderRouter } = require("./order.routes");
 const { paymentRouter } = require("./payment.routes");
 const { dashboardRouter } = require("./dashboard.routes");
+const { sessionRouter } = require("./session.routes");
 const routes = require("express").Router();
 
 routes.use("/auth", authRouter);
@@ -16,5 +17,6 @@ routes.use("/tables", tableRouter);
 routes.use("/orders", orderRouter);
 routes.use("/payments", paymentRouter);
 routes.use("/dashboard", dashboardRouter);
+routes.use("/sessions", sessionRouter);
 
 module.exports = { routes };

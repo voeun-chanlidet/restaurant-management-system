@@ -1,20 +1,33 @@
-const { Payment, Order, User, OrderItem } = require("../models/index");
+const {
+  Payment,
+  Order,
+  User,
+  OrderItem,
+  Table_Session,
+  Table,
+} = require("../models/index");
+const { closeSession } = require("./session.service");
 
 const createPayment = async (data, userId) => {
-  let { orderId, method, amountTendered } = data;
-  const order = await Order.findByPk(orderId);
-  if (!order) throw new Error("Order not found!");
+  let { sessionId, method, amountTendered } = data;
+  const session = await Table_Session.findByPk(sessionId);
+  if (!session) throw new Error("Session not found!");
 
-  if (order.status !== "SERVED") throw new Error("Order must be served!");
+  if (session.status !== "OPEN") throw new Error("Session must be open!");
 
-  const existingPayment = await Payment.findOne({ where: { orderId } });
-  if (existingPayment) throw new Error("Order is already paid!");
+  const orders = await Order.findAll({ where: { sessionId } });
+
+  const grandTotal = orders.reduce(
+    (sum, order) => sum + parseFloat(order.total),
+    0,
+  );
+
   let change = null;
   if (method === "CASH") {
     if (!amountTendered) throw new Error("Payment amount is required!");
-    if (amountTendered < order.total) throw new Error("Insufficient amount!");
+    if (amountTendered < grandTotal) throw new Error("Insufficient amount!");
 
-    change = parseFloat(amountTendered) - parseFloat(order.total);
+    change = parseFloat(amountTendered) - parseFloat(grandTotal);
   }
   if (method === "KHQR") {
     amountTendered = null;
@@ -22,24 +35,46 @@ const createPayment = async (data, userId) => {
   }
 
   const payment = await Payment.create({
-    orderId,
+    sessionId,
     method,
+    totalAmount: grandTotal,
     amountTendered,
     change,
     processedBy: userId,
   });
+
+  await closeSession({ sessionId });
   const freshPayment = await Payment.findByPk(payment.id, {
-    attributes: ["id", "method", "amountTendered", "change", "createdAt"],
+    attributes: [
+      "id",
+      "sessionId",
+      "method",
+      "totalAmount",
+      "amountTendered",
+      "change",
+      "createdAt",
+    ],
     include: [
       {
-        model: Order,
-        as: "order",
-        attributes: ["id", "tableNumber", "total"],
+        model: Table_Session,
+        as: "session",
+        attributes: ["id", "openedAt", "closedAt"],
         include: [
           {
-            model: OrderItem,
-            as: "items",
-            attributes: ["menuName", "price", "quantity", "subtotal"],
+            model: Table,
+            attributes: ["id", "table_number"],
+          },
+          {
+            model: Order,
+
+            attributes: ["id", "total"],
+            include: [
+              {
+                model: OrderItem,
+                as: "items",
+                attributes: ["menuName", "price", "quantity", "subtotal"],
+              },
+            ],
           },
         ],
       },
@@ -50,22 +85,40 @@ const createPayment = async (data, userId) => {
   return freshPayment;
 };
 
-const getPaymentByOrder = async (data) => {
-  const { orderId } = data;
+const getPaymentBySession = async (data) => {
+  const { sessionId } = data;
 
   const payment = await Payment.findOne({
-    where: { orderId },
-    attributes: ["id", "method", "amountTendered", "change", "createdAt"],
+    where: { sessionId },
+    attributes: [
+      "id",
+      "sessionId",
+      "method",
+      "amountTendered",
+      "change",
+      "createdAt",
+    ],
     include: [
       {
-        model: Order,
-        as: "order",
-        attributes: ["id", "tableNumber", "total"],
+        model: Table_Session,
+        as: "session",
+        attributes: ["id", "openedAt", "closedAt"],
         include: [
           {
-            model: OrderItem,
-            as: "items",
-            attributes: ["menuName", "price", "quantity", "subtotal"],
+            model: Table,
+            attributes: ["id", "table_number"],
+          },
+          {
+            model: Order,
+
+            attributes: ["id", "total"],
+            include: [
+              {
+                model: OrderItem,
+                as: "items",
+                attributes: ["menuName", "price", "quantity", "subtotal"],
+              },
+            ],
           },
         ],
       },
@@ -79,17 +132,35 @@ const getPaymentByOrder = async (data) => {
 
 const getAllPayments = async () => {
   return await Payment.findAll({
-    attributes: ["id", "method", "amountTendered", "change", "createdAt"],
+    attributes: [
+      "id",
+      "sessionId",
+      "method",
+      "amountTendered",
+      "change",
+      "createdAt",
+    ],
     include: [
       {
-        model: Order,
-        as: "order",
-        attributes: ["id", "tableNumber", "total"],
+        model: Table_Session,
+        as: "session",
+        attributes: ["id", "openedAt", "closedAt"],
         include: [
           {
-            model: OrderItem,
-            as: "items",
-            attributes: ["menuName", "price", "quantity", "subtotal"],
+            model: Table,
+            attributes: ["id", "table_number"],
+          },
+          {
+            model: Order,
+
+            attributes: ["id", "total"],
+            include: [
+              {
+                model: OrderItem,
+                as: "items",
+                attributes: ["menuName", "price", "quantity", "subtotal"],
+              },
+            ],
           },
         ],
       },
@@ -101,7 +172,7 @@ const getAllPayments = async () => {
 };
 
 module.exports = {
-  getPaymentByOrder,
+  getPaymentBySession,
   getAllPayments,
   createPayment,
 };

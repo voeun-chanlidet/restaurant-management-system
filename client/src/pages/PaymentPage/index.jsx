@@ -62,13 +62,11 @@ const PaymentPage = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-[var(--color-heading)] mb-6">
-        Payments
-      </h1>
+      <h1 className="text-2xl font-bold text-heading mb-6">Payments</h1>
 
       {/* Unpaid orders — both staff and admin see this */}
       <div className="mb-8">
-        <h2 className="text-[var(--color-dimmed)] text-xs uppercase tracking-wider mb-3">
+        <h2 className="text-dimmed text-xs uppercase tracking-wider mb-3">
           Awaiting Payment
         </h2>
         <PaymentList orders={unpaidOrders} onCardClick={openModal} />
@@ -77,7 +75,7 @@ const PaymentPage = () => {
       {/* Payment history — admin only */}
       {user.role === "ADMIN" && (
         <div>
-          <h2 className="text-[var(--color-dimmed)] text-xs uppercase tracking-wider mb-3">
+          <h2 className="text-dimmed text-xs uppercase tracking-wider mb-3">
             Payment History
           </h2>
           <PaymentHistory payments={allPayments} />

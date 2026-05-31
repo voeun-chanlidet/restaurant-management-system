@@ -23,20 +23,18 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-2xl w-full max-w-md">
+      <div className="bg-panel[var(--cborder-(--color-panel-border)full max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[var(--color-panel-border)]">
+        <div className="flex items-center justify-between p-5 border-b border-(--color-panel-border)">
           <div>
-            <h2 className="text-[var(--color-heading)] font-bold text-lg">
-              Process Payment
-            </h2>
-            <p className="text-[var(--color-dimmed)] text-xs mt-0.5">
+            <h2 className="text-heading-lg">Process Payment</h2>
+            <p className="text-dimmed text-xs mt-0.5">
               Table {order.tableNumber} · Order #{order.id}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-[var(--color-dimmed)] hover:text-[var(--color-heading)] text-xl"
+            className="text-dimmed hover:text-heading text-xl"
           >
             ✕
           </button>
@@ -45,18 +43,16 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
         <div className="p-5 space-y-5">
           {/* Items summary */}
           <div className="space-y-2">
-            <p className="text-[var(--color-dimmed)] text-xs uppercase tracking-wider">
+            <p className="text-dimmed text-xs uppercase tracking-wider">
               Items
             </p>
             {order.items.map((item, index) => (
               <div key={index} className="flex justify-between text-sm">
-                <span className="text-[var(--color-heading)]">
+                <span className="text-heading">
                   {item.menuName}
-                  <span className="text-[var(--color-dimmed)] ml-1">
-                    x{item.quantity}
-                  </span>
+                  <span className="text-dimmed ml-1">x{item.quantity}</span>
                 </span>
-                <span className="text-[var(--color-dimmed)]">
+                <span className="text-dimmed">
                   ${parseFloat(item.subtotal).toFixed(2)}
                 </span>
               </div>
@@ -64,16 +60,16 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
           </div>
 
           {/* Total */}
-          <div className="flex justify-between items-center border-t border-[var(--color-panel-border)] pt-4">
-            <span className="text-[var(--color-dimmed)] text-sm">Total</span>
-            <span className="text-[var(--color-brand)] font-bold text-xl">
+          <div className="flex justify-between items-center border-t border-panel-border pt-4">
+            <span className="text-dimmed text-sm">Total</span>
+            <span className="text-brand font-bold text-xl">
               ${total.toFixed(2)}
             </span>
           </div>
 
           {/* Payment method */}
           <div>
-            <p className="text-[var(--color-dimmed)] text-xs uppercase tracking-wider mb-2">
+            <p className="text-dimmed text-xs uppercase tracking-wider mb-2">
               Payment Method
             </p>
             <div className="flex gap-3">
@@ -86,8 +82,8 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
                   }}
                   className={`flex-1 py-2 rounded-lg text-sm font-medium border transition ${
                     method === m
-                      ? "bg-[var(--color-brand)] text-black border-[var(--color-brand)]"
-                      : "bg-[var(--color-input)] text-[var(--color-dimmed)] border-[var(--color-panel-border)] hover:text-[var(--color-heading)]"
+                      ? "bg-brand text-black border-brand"
+                      : "bg-input text-dimmed border-panel-border hover:text-heading"
                   }`}
                 >
                   {m}
@@ -99,7 +95,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
           {/* Cash input */}
           {method === "CASH" && (
             <div>
-              <p className="text-[var(--color-dimmed)] text-xs uppercase tracking-wider mb-2">
+              <p className="text-dimmed text-xs uppercase tracking-wider mb-2">
                 Amount Tendered
               </p>
               <input
@@ -107,10 +103,10 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
                 value={amountTendered}
                 onChange={(e) => setAmountTendered(e.target.value)}
                 placeholder={`Min $${total.toFixed(2)}`}
-                className={`w-full bg-[var(--color-input)] border rounded-lg px-4 py-2.5 text-[var(--color-heading)] text-sm outline-none transition ${
+                className={`w-full bg-input border rounded-lg px-4 py-2.5 text-heading text-sm outline-none transition ${
                   isInsufficient
                     ? "border-red-500/50 focus:border-red-500"
-                    : "border-[var(--color-panel-border)] focus:border-[var(--color-brand)]"
+                    : "border-panel-border focus:border-brand"
                 }`}
               />
               {isInsufficient && (
@@ -119,10 +115,8 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
 
               {/* Change display */}
               {tendered >= total && amountTendered !== "" && (
-                <div className="flex justify-between items-center mt-3 bg-[var(--color-input)] border border-[var(--color-panel-border)] rounded-lg px-4 py-3">
-                  <span className="text-[var(--color-dimmed)] text-sm">
-                    Change
-                  </span>
+                <div className="flex justify-between items-center mt-3 bg-input border border-panel-border rounded-lg px-4 py-3">
+                  <span className="text-dimmed text-sm">Change</span>
                   <span className="text-green-400 font-bold text-lg">
                     ${change.toFixed(2)}
                   </span>
@@ -133,8 +127,8 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
 
           {/* KHQR message */}
           {method === "KHQR" && (
-            <div className="bg-[var(--color-input)] border border-[var(--color-panel-border)] rounded-lg px-4 py-3 text-center">
-              <p className="text-[var(--color-dimmed)] text-sm">
+            <div className="bg-input border border-panel-border rounded-lg px-4 py-3 text-center">
+              <p className="text-dimmed text-sm">
                 Customer scans and pays exact amount via KHQR
               </p>
             </div>
@@ -144,7 +138,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="w-full bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold py-2.5 rounded-lg text-sm"
+            className="w-full bg-brand hover:bg--brand-hover disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold py-2.5 rounded-lg text-sm"
           >
             Confirm Payment
           </button>

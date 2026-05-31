@@ -1,6 +1,6 @@
 const {
   getAllPayments,
-  getPaymentByOrder,
+  getPaymentBySession,
   createPayment,
 } = require("../controllers/payment.controller");
 
@@ -13,7 +13,7 @@ paymentRouter.get(
   "/order/:orderId",
   protect,
   restrictTo("ADMIN", "STAFF"),
-  getPaymentByOrder,
+  getPaymentBySession,
 );
 paymentRouter.post("/", protect, restrictTo("ADMIN", "STAFF"), createPayment);
 

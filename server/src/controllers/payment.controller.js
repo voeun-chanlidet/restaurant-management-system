@@ -1,9 +1,9 @@
 const paymentServices = require("../services/payment.service");
 
-const getPaymentByOrder = async (request, response) => {
+const getPaymentBySession = async (request, response) => {
   try {
     const data = { orderId: request.params.orderId };
-    const payment = await paymentServices.getPaymentByOrder(data);
+    const payment = await paymentServices.getPaymentBySession(data);
     return response.status(200).json({ payment });
   } catch (error) {
     const status = error.message === "Payment not found!" ? 404 : 500;
@@ -38,7 +38,7 @@ const createPayment = async (request, response) => {
 };
 
 module.exports = {
-  getPaymentByOrder,
+  getPaymentBySession,
   getAllPayments,
   createPayment,
 };

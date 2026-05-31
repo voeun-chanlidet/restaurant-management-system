@@ -1,4 +1,12 @@
-const { Order, OrderItem, Table, User, Menu, Payment } = require("../models");
+const {
+  Order,
+  OrderItem,
+  Table,
+  User,
+  Menu,
+  Payment,
+  Table_Session,
+} = require("../models");
 const { Op, Sequelize, where } = require("sequelize");
 
 const getAllOrders = async () => {
@@ -49,11 +57,16 @@ const getOrderById = async (id) => {
 };
 
 const createOrder = async (data, userId) => {
-  const { tableId, items } = data;
+  const { tableId, items, sessionId } = data;
 
   // Validate table exists
   const table = await Table.findByPk(tableId);
   if (!table) throw new Error("Table not found!");
+
+  const session = await Table_Session.findOne({
+    where: { id: sessionId, status: "OPEN" },
+  });
+  if (!session) throw new Error("Session not found!");
 
   // Validate items
   if (!items || items.length === 0)
@@ -85,6 +98,7 @@ const createOrder = async (data, userId) => {
   const order = await Order.create(
     {
       tableId,
+      sessionId,
       tableNumber: table.table_number, // snapshot
       status: "PENDING",
       total,
@@ -93,12 +107,13 @@ const createOrder = async (data, userId) => {
     },
     { include: [{ model: OrderItem, as: "items" }] },
   );
-  await Table.update({ status: "OCCUPIED" }, { where: { id: tableId } });
+
   //refetch for better response
   const freshOrder = await Order.findByPk(order.id, {
     attributes: [
       "id",
       "tableId",
+      "sessionId",
       "tableNumber",
       "status",
       "total",

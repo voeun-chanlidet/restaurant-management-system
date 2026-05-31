@@ -9,11 +9,10 @@ Payment.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    orderId: {
+    sessionId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: true,
-      references: { model: "orders", key: "id" },
+      allowNull: true,
+      references: { model: "table_sessions", key: "id" },
     },
     method: {
       type: DataTypes.ENUM("CASH", "KHQR"),
@@ -27,6 +26,10 @@ Payment.init(
     change: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
+    },
+    totalAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
     },
     processedBy: {
       type: DataTypes.INTEGER,

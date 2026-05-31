@@ -16,6 +16,11 @@ Order.init(
       references: { model: "tables", key: "id" },
       onDelete: "SET NULL",
     },
+    sessionId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: { model: "table_sessions", key: "id" },
+    },
     tableNumber: {
       type: DataTypes.STRING,
       allowNull: false,
