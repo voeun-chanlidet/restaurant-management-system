@@ -1,3 +1,5 @@
+import { useAuth } from "../../contexts/AuthContext";
+
 const STATUS_STYLES = {
   AVAILABLE: {
     border: "border-green-500",
@@ -25,13 +27,14 @@ const STATUS_STYLES = {
   },
 };
 
-const TableCard = ({ table, onEdit }) => {
+const TableCard = ({ table, onEdit, onTableClick }) => {
   const style = STATUS_STYLES[table.status] || STATUS_STYLES.AVAILABLE;
   const isRound = table.shape === "round";
+  const { user } = useAuth();
 
   return (
     <div
-      onClick={() => onEdit(table)}
+      onClick={() => onTableClick(table)}
       className="flex flex-col items-center gap-2 p-4 rounded-xl border cursor-pointer hover:border-brand transition-colors bg-panel"
       style={{ borderColor: "var(--color-panel-border)" }}
     >
@@ -50,6 +53,17 @@ const TableCard = ({ table, onEdit }) => {
       >
         {style.label}
       </span>
+      {user.role === "ADMIN" && onEdit && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(table);
+          }}
+          className="text-xs text-dimmed hover:text-brand"
+        >
+          ✏️
+        </button>
+      )}
     </div>
   );
 };

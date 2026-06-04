@@ -162,8 +162,8 @@ const updateOrderStatus = async (id, status, userRole) => {
   if (status === "SERVED" && order.tableId) {
     const activeOrders = await Order.count({
       where: {
-        tableId: order.tableID,
-        status: ["PENDING", "IN_PROGRESS", "READy"],
+        tableId: order.tableId,
+        status: ["PENDING", "IN_PROGRESS", "READY"],
       },
     });
     if (activeOrders === 0) {

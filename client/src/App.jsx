@@ -13,11 +13,13 @@ import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PublicRoute from "./components/PublicRoute";
-import TablePage from "./pages/TablePage/index";
+import DiningPage from "./pages/DiningPage/index";
+import TablePage from "./pages/TablePage";
 import OrderPage from "./pages/OrderPage/index";
 import Reservation from "./pages/reservation";
 import PaymentPage from "./pages/PaymentPage";
 import KDSPage from "./pages/KDSPage/Kdspage";
+import SessionDetailPage from "./pages/SessionDetailPage";
 function App() {
   return (
     <>
@@ -61,6 +63,26 @@ function App() {
             }
           />
           <Route
+            path="/dining"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <DiningPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dining/:tableId"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <SessionDetailPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/tables"
             element={
               <ProtectedRoute>
@@ -70,6 +92,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/orders"
             element={

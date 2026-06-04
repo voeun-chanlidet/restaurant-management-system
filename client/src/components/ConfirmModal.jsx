@@ -1,4 +1,4 @@
-const ConfirmModal = ({ show, onClose, onConfirm, message }) => {
+const ConfirmModal = ({ show, onClose, onConfirm, message, confirmLabel }) => {
   if (!show) return null;
 
   return (
@@ -19,7 +19,7 @@ const ConfirmModal = ({ show, onClose, onConfirm, message }) => {
             onClick={onConfirm}
             className="px-4 py-2 rounded-lg text-sm font-medium bg-brand text-white hover:bg-brand-hover transition-colors"
           >
-            Delete
+            {confirmLabel || "Confirm"}
           </button>
         </div>
       </div>

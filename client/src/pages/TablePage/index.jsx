@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../contexts/AuthContext";
-import FloorMap from "./FloorMap";
-import TableModal from "./TableModal";
 import tableService from "../../services/table";
-import useTableSocket from "./useTableSocket";
+import FloorMap from "../../components/FloorMap/index";
+import TableModal from "./TableModal";
+import ConfirmModal from "../../components/ConfirmModal";
 
 const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"];
-
 const TablePage = () => {
   const [tables, setTables] = useState([]);
   const [filter, setFilter] = useState("ALL");
@@ -15,7 +14,6 @@ const TablePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-
   const fetchTables = async () => {
     try {
       setLoading(true);
@@ -27,7 +25,6 @@ const TablePage = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchTables();
   }, []);
@@ -36,7 +33,6 @@ const TablePage = () => {
     setEditingTable(null);
     setIsModalOpen(true);
   };
-
   const openEditModal = (table) => {
     setEditingTable(table);
     setIsModalOpen(true);
@@ -64,6 +60,7 @@ const TablePage = () => {
   const handleUpdate = useCallback((table) => {
     setTables((prev) => prev.map((t) => (t.id === table.id ? table : t)));
   }, []);
+
   const handleDelete = async (id) => {
     try {
       await tableService.deleteTable(id);
@@ -74,8 +71,6 @@ const TablePage = () => {
     }
   };
 
-  useTableSocket({ onTableUpdate: handleUpdate });
-
   const filteredTables =
     filter === "ALL" ? tables : tables.filter((t) => t.status === filter);
 
@@ -85,7 +80,6 @@ const TablePage = () => {
     occupied: tables.filter((t) => t.status === "OCCUPIED").length,
     reserved: tables.filter((t) => t.status === "RESERVED").length,
   };
-
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -106,7 +100,6 @@ const TablePage = () => {
           </button>
         )}
       </div>
-
       <div className="flex gap-2 mb-6 flex-wrap">
         {FILTERS.map((f) => (
           <button
@@ -136,7 +129,6 @@ const TablePage = () => {
       {!loading && !error && (
         <FloorMap tables={filteredTables} onEdit={openEditModal} />
       )}
-
       <TableModal
         isOpen={isModalOpen}
         onClose={closeModal}

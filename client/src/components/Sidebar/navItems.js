@@ -1,6 +1,7 @@
 export const navItems = [
   { label: "Dashboard", path: "/dashboard", roles: ["ADMIN"] },
   { label: "Menu", path: "/menus", roles: ["ADMIN", "STAFF"] },
+  { label: "Dining", path: "/dining", roles: ["ADMIN", "STAFF"] },
   { label: "Orders", path: "/orders", roles: ["ADMIN", "STAFF"] },
   { label: "Tables", path: "/tables", roles: ["ADMIN", "STAFF"] },
   { label: "Payments", path: "/payments", roles: ["ADMIN", "STAFF"] },

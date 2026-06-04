@@ -15,11 +15,16 @@ const openSession = async (data) => {
   });
 
   if (existingSession) throw new Error("Table is already occupied");
-  const session = await Table_Session.create({
-    tableId: tableId,
-  });
 
+  await Table_Session.create({ tableId });
   await Table.update({ status: "OCCUPIED" }, { where: { id: tableId } });
+
+  const session = await Table_Session.findOne({
+    where: { tableId, status: "OPEN" },
+    include: [
+      { model: Table, as: "table", attributes: ["id", "table_number"] },
+    ],
+  });
 
   return session;
 };
@@ -28,6 +33,13 @@ const getActiveSessionByTable = async (data) => {
   const { tableId } = data;
   const activeSession = await Table_Session.findOne({
     where: { tableId, status: "OPEN" },
+    include: [
+      {
+        model: Table,
+        as: "table",
+        attributes: ["id", "table_number"],
+      },
+    ],
   });
 
   return activeSession;
@@ -38,7 +50,7 @@ const getSessionOrders = async (data) => {
 
   const sessionOrder = await Order.findAll({
     where: { sessionId },
-    attributes: ["id", "tableNumber", "total"],
+    attributes: ["id", "tableNumber", "status", "total"],
     include: [
       {
         model: OrderItem,

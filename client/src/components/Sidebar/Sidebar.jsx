@@ -93,29 +93,76 @@ const Sidebar = () => {
         </div>
       </aside>
 
-      {/* ── Mobile: hamburger button ── */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        className="lg:hidden fixed top-3 left-3 z-50 flex flex-col justify-center items-center w-9 h-9 rounded-lg gap-1.5"
+      {/* ── Mobile: top bar ── */}
+      <header
+        className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-3 h-12 border-b"
         style={{
           background: "var(--color-panel)",
-          border: "1px solid var(--color-panel-border)",
+          borderColor: "var(--color-panel-border)",
         }}
-        aria-label="Open menu"
       >
-        <span
-          className="block w-4 h-0.5 rounded-full"
-          style={{ background: "var(--color-dimmed)" }}
-        />
-        <span
-          className="block w-4 h-0.5 rounded-full"
-          style={{ background: "var(--color-dimmed)" }}
-        />
-        <span
-          className="block w-4 h-0.5 rounded-full"
-          style={{ background: "var(--color-dimmed)" }}
-        />
-      </button>
+        {/* Hamburger */}
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="flex flex-col justify-center items-center w-9 h-9 rounded-lg gap-1.5 shrink-0"
+          style={{ border: "1px solid var(--color-panel-border)" }}
+          aria-label="Open menu"
+        >
+          <span
+            className="block w-4 h-0.5 rounded-full"
+            style={{ background: "var(--color-dimmed)" }}
+          />
+          <span
+            className="block w-4 h-0.5 rounded-full"
+            style={{ background: "var(--color-dimmed)" }}
+          />
+          <span
+            className="block w-4 h-0.5 rounded-full"
+            style={{ background: "var(--color-dimmed)" }}
+          />
+        </button>
+
+        {/* Logo — center */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+          {/* Swap the div below for an <img> once admin settings is ready */}
+          <div
+            className="w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold"
+            style={{ background: "var(--color-brand)", color: "#fff" }}
+          >
+            R
+          </div>
+          {/* <span
+            className="text-sm font-semibold tracking-widest uppercase"
+            style={{ color: "var(--color-brand)" }}
+          >
+            restaurant
+          </span> */}
+        </div>
+
+        {/* User info */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="text-right">
+            <p
+              className="text-xs font-medium leading-none"
+              style={{ color: "var(--color-heading)" }}
+            >
+              {user?.name}
+            </p>
+            <p
+              className="text-[10px] mt-0.5 uppercase tracking-wide"
+              style={{ color: "var(--color-dimmed)" }}
+            >
+              {user?.role}
+            </p>
+          </div>
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+            style={{ background: "var(--color-brand)", color: "#fff" }}
+          >
+            {user?.name?.charAt(0).toUpperCase()}
+          </div>
+        </div>
+      </header>
 
       {/* ── Mobile: backdrop ── */}
       {mobileOpen && (

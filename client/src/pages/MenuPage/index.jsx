@@ -3,7 +3,7 @@ import categoryService from "../../services/category";
 import menuService from "../../services/menu";
 import CategoryModal from "./CategoryModal";
 import MenuModal from "./MenuModal";
-import ConfirmModal from "./ConfirmModal";
+import ConfirmModal from "../../components/ConfirmModal";
 import CategorySidebar from "./CategorySidebar";
 import MenuGrid from "./MenuGrid";
 
