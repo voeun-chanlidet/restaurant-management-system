@@ -1,4 +1,5 @@
 const paymentServices = require("../services/payment.service");
+const { generateReceiptBuffer } = require("../services/receipt.service");
 
 const getPaymentBySession = async (request, response) => {
   try {
@@ -36,9 +37,26 @@ const createPayment = async (request, response) => {
     return response.status(status).json({ error: error.message });
   }
 };
+const downloadReceipt = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const pdfBuffer = await generateReceiptBuffer(id);
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `inline; filename="receipt-${id}.pdf"`,
+      "Content-Length": pdfBuffer.length,
+    });
+
+    res.send(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+};
 
 module.exports = {
   getPaymentBySession,
   getAllPayments,
   createPayment,
+  downloadReceipt,
 };

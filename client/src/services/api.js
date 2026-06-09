@@ -1,9 +1,19 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-});
+// const api = axios.create({
+//   baseURL: import.meta.env.VITE_API_URL,
+// });
 
+const host = window.location.hostname;
+
+const API_URL =
+  host === "localhost"
+    ? "http://localhost:5000/api/v1"
+    : `http://${host}:5000/api/v1`;
+
+const api = axios.create({
+  baseURL: API_URL,
+});
 api.interceptors.request.use((config) => {
   const token = window.localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;

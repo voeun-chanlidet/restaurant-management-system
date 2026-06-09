@@ -8,4 +8,5 @@ export const navItems = [
   { label: "Reservations", path: "/reservations", roles: ["ADMIN", "STAFF"] },
   { label: "Users", path: "/users", roles: ["ADMIN"] },
   { label: "Kitchen", path: "/kitchen", roles: ["KITCHEN", "ADMIN"] },
+  { label: "Setting", path: "/settings", roles: ["ADMIN"] },
 ];

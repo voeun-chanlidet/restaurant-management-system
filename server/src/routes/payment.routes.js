@@ -2,6 +2,7 @@ const {
   getAllPayments,
   getPaymentBySession,
   createPayment,
+  downloadReceipt,
 } = require("../controllers/payment.controller");
 
 const protect = require("../middlewares/auth.middleware");
@@ -16,5 +17,11 @@ paymentRouter.get(
   getPaymentBySession,
 );
 paymentRouter.post("/", protect, restrictTo("ADMIN", "STAFF"), createPayment);
+paymentRouter.get(
+  "/:id/receipt",
+  protect,
+  restrictTo("ADMIN", "STAFF"),
+  downloadReceipt,
+);
 
 module.exports = { paymentRouter };

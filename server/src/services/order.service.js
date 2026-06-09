@@ -234,19 +234,15 @@ const cancelOrder = async (id, userRole) => {
 };
 
 const getUnpaidServedOrders = async () => {
-  // Get all paid order IDs first
-  const paidOrderIds = await Payment.findAll({
-    attributes: ["orderId"],
-  });
-  const paidIds = paidOrderIds.map((p) => p.orderId);
-
-  // Find SERVED orders not in that list
   return await Order.findAll({
-    where: {
-      status: "SERVED",
-      id: { [Op.notIn]: paidIds.length > 0 ? paidIds : [0] },
-    },
+    where: { status: "SERVED" },
     include: [
+      {
+        model: Table_Session,
+        where: { status: "OPEN" },
+        required: true,
+        attributes: [],
+      },
       {
         model: OrderItem,
         as: "items",

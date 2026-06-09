@@ -98,7 +98,7 @@ const SessionDetailPage = () => {
             </button>
             <button
               onClick={() =>
-                navigate("/payment", {
+                navigate("/dining/payment", {
                   state: { session, orders, runningTotal },
                 })
               }

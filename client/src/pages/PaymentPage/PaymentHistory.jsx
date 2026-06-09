@@ -20,17 +20,16 @@ const PaymentHistory = ({ payments }) => {
           className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-xl p-4"
         >
           <div className="flex items-center justify-between mb-3">
-            {/* Left — table and order info */}
             <div>
               <p className="text-[var(--color-heading)] font-semibold text-sm">
-                Table {payment.order.tableNumber}
+                Table {payment.session?.table?.table_number}
               </p>
               <p className="text-[var(--color-dimmed)] text-xs mt-0.5">
-                Order #{payment.order.id} · by {payment.processor.name}
+                {payment.session?.Orders?.length} order(s) · by{" "}
+                {payment.processor?.name}
               </p>
             </div>
 
-            {/* Right — method badge + total */}
             <div className="flex flex-col items-end gap-1">
               <span
                 className={`text-xs px-2 py-1 rounded-full font-medium ${METHOD_STYLES[payment.method]}`}
@@ -38,27 +37,27 @@ const PaymentHistory = ({ payments }) => {
                 {payment.method}
               </span>
               <span className="text-[var(--color-brand)] font-bold text-sm">
-                ${parseFloat(payment.order.total).toFixed(2)}
+                ${parseFloat(payment.totalAmount).toFixed(2)}
               </span>
             </div>
           </div>
 
-          {/* Items */}
           <div className="space-y-1 mb-3">
-            {payment.order.items.map((item, index) => (
-              <div
-                key={index}
-                className="flex justify-between text-xs text-[var(--color-dimmed)]"
-              >
-                <span>
-                  {item.menuName} x{item.quantity}
-                </span>
-                <span>${parseFloat(item.subtotal).toFixed(2)}</span>
-              </div>
-            ))}
+            {payment.session?.Orders?.flatMap((order) => order.items).map(
+              (item, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between text-xs text-[var(--color-dimmed)]"
+                >
+                  <span>
+                    {item.menuName} x{item.quantity}
+                  </span>
+                  <span>${parseFloat(item.subtotal).toFixed(2)}</span>
+                </div>
+              ),
+            )}
           </div>
 
-          {/* Cash details */}
           {payment.method === "CASH" && (
             <div className="flex gap-4 border-t border-[var(--color-panel-border)] pt-3">
               <div>
@@ -76,7 +75,6 @@ const PaymentHistory = ({ payments }) => {
             </div>
           )}
 
-          {/* Date */}
           <p className="text-[var(--color-dimmed)] text-xs mt-3">
             {new Date(payment.createdAt).toLocaleString()}
           </p>

@@ -27,3 +27,30 @@
   --color-danger-bg: #fdecea;
   --color-danger-text: #c62828;
 }
+
+@media print {
+  /* remove browser header and footer */
+  @page {
+    margin: 0;
+  }
+
+  body {
+    margin: 1.5cm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .print-receipt,
+  .print-receipt * {
+    visibility: visible;
+  }
+
+  .print-receipt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}

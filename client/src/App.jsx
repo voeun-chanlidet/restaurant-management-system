@@ -20,6 +20,8 @@ import Reservation from "./pages/reservation";
 import PaymentPage from "./pages/PaymentPage";
 import KDSPage from "./pages/KDSPage/Kdspage";
 import SessionDetailPage from "./pages/SessionDetailPage";
+import SessionPaymentPage from "./pages/SessionPaymentPage";
+import SettingsPage from "./pages/SettingPage";
 function App() {
   return (
     <>
@@ -82,6 +84,17 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/dining/payment"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <SessionPaymentPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/tables"
             element={
@@ -129,6 +142,16 @@ function App() {
               <ProtectedRoute allowedRoles={["ADMIN", "KITCHEN"]}>
                 <Layout>
                   <KDSPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
+                <Layout>
+                  <SettingsPage />
                 </Layout>
               </ProtectedRoute>
             }

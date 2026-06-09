@@ -23,7 +23,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-panel[var(--cborder-(--color-panel-border)full max-w-md">
+      <div className="bg-panel border border-(--color-panel-border) rounded-2xl w-full max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-(--color-panel-border)">
           <div>
@@ -60,7 +60,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
           </div>
 
           {/* Total */}
-          <div className="flex justify-between items-center border-t border-panel-border pt-4">
+          <div className="flex justify-between items-center border-t border-(--color-panel-border) pt-4">
             <span className="text-dimmed text-sm">Total</span>
             <span className="text-brand font-bold text-xl">
               ${total.toFixed(2)}
@@ -83,7 +83,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
                   className={`flex-1 py-2 rounded-lg text-sm font-medium border transition ${
                     method === m
                       ? "bg-brand text-black border-brand"
-                      : "bg-input text-dimmed border-panel-border hover:text-heading"
+                      : "bg-input text-dimmed border-(--color-panel-border) hover:text-heading"
                   }`}
                 >
                   {m}
@@ -106,7 +106,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
                 className={`w-full bg-input border rounded-lg px-4 py-2.5 text-heading text-sm outline-none transition ${
                   isInsufficient
                     ? "border-red-500/50 focus:border-red-500"
-                    : "border-panel-border focus:border-brand"
+                    : "border-(--color-panel-border) focus:border-brand"
                 }`}
               />
               {isInsufficient && (
@@ -115,7 +115,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
 
               {/* Change display */}
               {tendered >= total && amountTendered !== "" && (
-                <div className="flex justify-between items-center mt-3 bg-input border border-panel-border rounded-lg px-4 py-3">
+                <div className="flex justify-between items-center mt-3 bg-input border border-(--color-panel-border) rounded-lg px-4 py-3">
                   <span className="text-dimmed text-sm">Change</span>
                   <span className="text-green-400 font-bold text-lg">
                     ${change.toFixed(2)}
@@ -127,7 +127,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
 
           {/* KHQR message */}
           {method === "KHQR" && (
-            <div className="bg-input border border-panel-border rounded-lg px-4 py-3 text-center">
+            <div className="bg-input border border-(--color-panel-border) rounded-lg px-4 py-3 text-center">
               <p className="text-dimmed text-sm">
                 Customer scans and pays exact amount via KHQR
               </p>
@@ -138,7 +138,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
           <button
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="w-full bg-brand hover:bg--brand-hover disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold py-2.5 rounded-lg text-sm"
+            className="w-full bg-brand hover:bg-(--color-brand-hover) disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold py-2.5 rounded-lg text-sm"
           >
             Confirm Payment
           </button>
