@@ -12,11 +12,12 @@ const getAllTables = async (request, response) => {
 
 const createTable = async (request, response) => {
   try {
-    const { table_number, capacity, status } = request.body;
+    const { table_number, capacity, status, shape } = request.body;
     const newTable = await TableServices.createTable(
       table_number,
       capacity,
       status,
+      shape,
     );
     return response.status(201).json({ table: newTable });
   } catch (error) {

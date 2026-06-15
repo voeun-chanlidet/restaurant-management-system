@@ -54,7 +54,7 @@ const OrderCard = ({ order, onClick }) => {
       {/* Footer */}
       <div className="flex items-center justify-between pt-3 border-t border-[var(--color-panel-border)]">
         <span className="text-xs text-[var(--color-dimmed)]">
-          by {order.creator.name}
+          by {order.creator?.name || "QR"}
         </span>
         <span className="text-[var(--color-brand)] font-semibold">
           ${parseFloat(order.total).toLocaleString()}

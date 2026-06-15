@@ -110,14 +110,14 @@ const OrderPage = () => {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-heading">Orders</h1>
-        {!step && (
+        {/* {!step && (
           <button
             onClick={startNewOrder}
             className="bg-brand hover:bg-brand-hover text-black font-semibold px-4 py-2 rounded-lg"
           >
             + New Order
           </button>
-        )}
+        )} */}
       </div>
 
       {/* New order flow */}

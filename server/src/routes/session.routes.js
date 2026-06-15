@@ -11,13 +11,16 @@ const sessionRouter = require("express").Router();
 
 sessionRouter.post("/", protect, restrictTo("STAFF", "ADMIN"), openSession);
 
-sessionRouter.get(
-  "/table/:tableId",
-  protect,
-  restrictTo("STAFF", "ADMIN"),
-  getActiveSessionByTable,
-);
+// Public
+sessionRouter.get("/table/:tableId", getActiveSessionByTable);
 
+// Admin
+// sessionRouter.get(
+//   "/table/:tableId",
+//   protect,
+//   restrictTo("STAFF", "ADMIN"),
+//   getActiveSessionByTable,
+// );
 sessionRouter.get(
   "/:sessionId/orders",
   protect,

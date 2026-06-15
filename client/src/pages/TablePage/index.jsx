@@ -4,6 +4,7 @@ import tableService from "../../services/table";
 import FloorMap from "../../components/FloorMap/index";
 import TableModal from "./TableModal";
 import ConfirmModal from "../../components/ConfirmModal";
+import toast from "react-hot-toast";
 
 const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"];
 const TablePage = () => {
@@ -47,8 +48,10 @@ const TablePage = () => {
     try {
       if (editingTable) {
         await tableService.updateTable(editingTable.id, formData);
+        toast.success("Table edited successfully.");
       } else {
         await tableService.createTable(formData);
+        toast.success("Table created successfully.");
       }
       closeModal();
       fetchTables();
@@ -64,10 +67,11 @@ const TablePage = () => {
   const handleDelete = async (id) => {
     try {
       await tableService.deleteTable(id);
+      toast.success("Table deleted successfully.");
       closeModal();
       fetchTables();
     } catch (err) {
-      console.error(err.message);
+      toast.error(err.response?.data?.error || "Failed to delete table.");
     }
   };
 

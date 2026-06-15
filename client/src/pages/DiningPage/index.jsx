@@ -38,7 +38,9 @@ const DiningPage = () => {
   }, []);
 
   const handleUpdate = useCallback((table) => {
-    setTables((prev) => prev.map((t) => (t.id === table.id ? table : t)));
+    setTables((prev) =>
+      prev.map((t) => (t.id === table.id ? { ...t, ...table } : t)),
+    );
   }, []);
 
   const handleTableClick = async (table) => {

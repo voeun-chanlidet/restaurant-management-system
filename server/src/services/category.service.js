@@ -1,4 +1,4 @@
-const { Category } = require("../models");
+const { Category, Menu } = require("../models");
 
 const getAllCategories = async () => {
   const categories = await Category.findAll();
@@ -22,6 +22,9 @@ const deleteCategory = async (id) => {
   const category = await Category.findByPk(id);
   if (!category) throw new Error("Category not found!");
 
+  const menu = await Menu.findOne({ where: { categoryId: id } });
+  if (menu)
+    throw new Error("Cannot Delete Category that still has menu in it!");
   await category.destroy();
   return;
 };

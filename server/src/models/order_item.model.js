@@ -37,6 +37,10 @@ OrderItem.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
+    note: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     sequelize,

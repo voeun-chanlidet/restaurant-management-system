@@ -90,6 +90,7 @@ const createOrder = async (data, userId) => {
       menuName: menu.name, // snapshot
       price: menu.price, // snapshot
       quantity: item.quantity,
+      note: item.note || null,
       subtotal,
     });
   }
@@ -124,7 +125,7 @@ const createOrder = async (data, userId) => {
       {
         model: OrderItem,
         as: "items",
-        attributes: ["id", "menuName", "price", "quantity", "subtotal"],
+        attributes: ["id", "menuName", "price", "quantity", "subtotal", "note"],
       },
       { model: User, as: "creator", attributes: ["id", "name"] },
     ],
@@ -178,6 +179,7 @@ const updateOrderStatus = async (id, status, userRole) => {
     attributes: [
       "id",
       "tableId",
+      "sessionId",
       "tableNumber",
       "status",
       "total",
@@ -188,7 +190,7 @@ const updateOrderStatus = async (id, status, userRole) => {
       {
         model: OrderItem,
         as: "items",
-        attributes: ["id", "menuName", "price", "quantity", "subtotal"],
+        attributes: ["id", "menuName", "price", "quantity", "subtotal", "note"],
       },
       { model: User, as: "creator", attributes: ["id", "name"] },
     ],

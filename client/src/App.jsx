@@ -22,6 +22,8 @@ import KDSPage from "./pages/KDSPage/Kdspage";
 import SessionDetailPage from "./pages/SessionDetailPage";
 import SessionPaymentPage from "./pages/SessionPaymentPage";
 import SettingsPage from "./pages/SettingPage";
+import UserPage from "./pages/UserPage";
+import QROrderPage from "./pages/QROrderPage";
 function App() {
   return (
     <>
@@ -127,6 +129,16 @@ function App() {
             }
           />
           <Route
+            path="/users"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <UserPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="payments"
             element={
               <ProtectedRoute>
@@ -156,6 +168,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/order/:tableId" element={<QROrderPage />} />
         </Routes>
       </Router>
       <Toaster position="top-right" />

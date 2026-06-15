@@ -19,6 +19,11 @@ const initSocket = (server) => {
       } catch (error) {
         console.log("Invalid socket token, disconnecting : ", socket.id);
       }
+    } else {
+      socket.on("join:customer", ({ sessionId }) => {
+        socket.join(`customer:${sessionId}`);
+        console.log(`Customer joined room: customer:${sessionId}`);
+      });
     }
 
     socket.on("disconnect", () => {

@@ -12,7 +12,7 @@ Setting.init(
     },
     singleton_guard: {
       type: DataTypes.INTEGER,
-      unique: true,
+      // unique: true,
       defaultValue: 1,
     },
     restaurant_name: {
@@ -40,7 +40,13 @@ Setting.init(
       allowNull: true,
     },
   },
-  { sequelize, underscored: true, timestamps: true, modelName: "setting" },
+  {
+    sequelize,
+    underscored: true,
+    timestamps: true,
+    modelName: "setting",
+    indexes: [{ unique: true, fields: ["singleton_guard"] }],
+  },
 );
 
 module.exports = Setting;

@@ -1,4 +1,3 @@
-const { where } = require("sequelize");
 const {
   Table_Session,
   Table,
@@ -6,6 +5,7 @@ const {
   OrderItem,
   User,
 } = require("../models/index");
+const { getIO } = require("../../lib/socket");
 
 const openSession = async (data) => {
   const { tableId } = data;
@@ -18,6 +18,10 @@ const openSession = async (data) => {
 
   await Table_Session.create({ tableId });
   await Table.update({ status: "OCCUPIED" }, { where: { id: tableId } });
+  const io = getIO();
+  io.to("staff")
+    .to("admin")
+    .emit("table:update", { id: tableId, status: "OCCUPIED" });
 
   const session = await Table_Session.findOne({
     where: { tableId, status: "OPEN" },

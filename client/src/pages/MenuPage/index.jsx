@@ -6,6 +6,7 @@ import MenuModal from "./MenuModal";
 import ConfirmModal from "../../components/ConfirmModal";
 import CategorySidebar from "./CategorySidebar";
 import MenuGrid from "./MenuGrid";
+import toast from "react-hot-toast";
 
 export default function MenuPage() {
   const [categories, setCategories] = useState([]);
@@ -82,9 +83,17 @@ export default function MenuPage() {
       show: true,
       message: "This will permanently delete the category.",
       onConfirm: async () => {
-        await categoryService.deleteCategory(id);
-        setConfirmModal({ show: false, message: "", onConfirm: null });
-        fetchData();
+        try {
+          await categoryService.deleteCategory(id);
+          toast.success("Category deleted successfully.");
+          fetchData();
+        } catch (error) {
+          toast.error(
+            error.response?.data?.message || "Failed to delete category!",
+          );
+        } finally {
+          setConfirmModal({ show: false, message: "", onConfirm: null });
+        }
       },
     });
   };
@@ -106,8 +115,10 @@ export default function MenuPage() {
       };
       if (editingMenu) {
         await menuService.updateMenu(editingMenu.id, data);
+        toast.success("Menu edited successfully.");
       } else {
         await menuService.createMenu(data);
+        toast.success("Menu created successfully.");
       }
       setMenuForm({
         name: "",
@@ -129,9 +140,17 @@ export default function MenuPage() {
       show: true,
       message: "This will permanently delete the menu item.",
       onConfirm: async () => {
-        await menuService.deleteMenu(id);
-        setConfirmModal({ show: false, message: "", onConfirm: null });
-        fetchData();
+        try {
+          await menuService.deleteMenu(id);
+          toast.success("Menu deleted successfully.");
+          fetchData();
+        } catch (error) {
+          toast.error(
+            error.response?.data?.message || "Failed to delete menu!",
+          );
+        } finally {
+          setConfirmModal({ show: false, message: "", onConfirm: null });
+        }
       },
     });
   };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { getSettings, updateSettings } from "../../services/setting";
+// import { getSettings, updateSettings } from "../../services/setting";\
+import SettingService from "../../services/setting";
 
 const FIELDS = [
   {
@@ -36,7 +37,7 @@ export default function SettingsPage() {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const settings = await getSettings();
+        const settings = await SettingService.getSettings();
         setForm({
           restaurant_name: settings.restaurant_name || "",
           address: settings.address || "",
@@ -67,7 +68,7 @@ export default function SettingsPage() {
     setSaving(true);
     setError(null);
     try {
-      await updateSettings(form);
+      await SettingService.updateSettings(form);
       setSaved(true);
     } catch (err) {
       setError("Failed to save settings.");

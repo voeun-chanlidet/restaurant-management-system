@@ -5,10 +5,15 @@ const useKitchenSocket = ({ onNewOrder, onOrderCancelled, onMarkReady }) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const socket = io("http://localhost:5000", {
-      auth: { token: localStorage.getItem("token") },
-      transports: ["websocket"],
-    });
+    const socket = io(
+      window.location.hostname === "localhost"
+        ? "http://localhost:5000"
+        : `http://${window.location.hostname}:5000`,
+      {
+        auth: { token: localStorage.getItem("token") },
+        transports: ["websocket"],
+      },
+    );
 
     socketRef.current = socket;
 

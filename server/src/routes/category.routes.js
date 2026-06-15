@@ -10,8 +10,11 @@ const restrictTo = require("../middlewares/role.middleware");
 
 const categoryRouter = require("express").Router();
 
-categoryRouter.get("/", protect, getAllCategories);
+// Public
+categoryRouter.get("/", getAllCategories);
 
+// ADMIN Only
+// categoryRouter.get("/", protect, getAllCategories);
 categoryRouter.post("/", protect, restrictTo("ADMIN"), createCategory);
 categoryRouter.patch("/:id", protect, restrictTo("ADMIN"), updateCategory);
 categoryRouter.delete("/:id", protect, restrictTo("ADMIN"), deleteCategory);

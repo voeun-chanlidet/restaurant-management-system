@@ -10,8 +10,8 @@ const getTableById = async (id) => {
   return table;
 };
 
-const createTable = async (table_number, capacity, status) => {
-  const table = await Table.create({ table_number, capacity, status });
+const createTable = async (table_number, capacity, status, shape) => {
+  const table = await Table.create({ table_number, capacity, status, shape });
   return table;
 };
 

@@ -36,7 +36,10 @@ const deleteCategory = async (request, response) => {
     await categoryServices.deleteCategory(id);
     return response.status(200).json({ status: "success", data: null });
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    if (error.message.includes("still has menu")) {
+      return response.status(409).json({ message: error.message });
+    }
+    return response.status(500).json({ message: error.message });
   }
 };
 

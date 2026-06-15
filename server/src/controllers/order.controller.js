@@ -54,18 +54,34 @@ const updateOrderStatus = async (request, response) => {
           .to("staff")
           .to("admin")
           .emit("order:inProgress", order);
+        io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
+          orderId: order.id,
+          status: order.status,
+        });
         break;
       case "READY":
         io.to("staff").to("admin").to("kitchen").emit("order:ready", order);
+        io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
+          orderId: order.id,
+          status: order.status,
+        });
         break;
       case "SERVED": {
         io.to("staff").to("admin").emit("order:served", order);
         const updatedTable = await TableServices.getTableById(order.tableId);
         io.to("staff").to("admin").emit("table:update", updatedTable);
+        io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
+          orderId: order.id,
+          status: order.status,
+        });
         break;
       }
       case "CANCELLED":
         io.to("kitchen").to("staff").to("admin").emit("order:cancelled", order);
+        io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
+          orderId: order.id,
+          status: order.status,
+        });
         break;
     }
     return response.status(200).json({ order });

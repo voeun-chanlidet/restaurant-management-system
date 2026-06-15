@@ -10,6 +10,11 @@ Order.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    orderType: {
+      type: DataTypes.ENUM("DINE_IN", "QR"),
+      defaultValue: "DINE_IN",
+      allowNull: false,
+    },
     tableId: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -41,7 +46,7 @@ Order.init(
     },
     createdBy: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true, //change from false because there's no staff to create order via QR
       references: { model: "users", key: "id" },
     },
   },

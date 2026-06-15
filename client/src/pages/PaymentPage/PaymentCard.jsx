@@ -37,7 +37,7 @@ const PaymentCard = ({ order, onClick }) => {
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-[var(--color-panel-border)] pt-3">
         <span className="text-xs text-[var(--color-dimmed)]">
-          by {order.creator.name}
+          by {order.creator?.name || "Customer via QR"}
         </span>
         <span className="text-sm font-semibold text-[var(--color-brand)]">
           ${parseFloat(order.total).toFixed(2)}
