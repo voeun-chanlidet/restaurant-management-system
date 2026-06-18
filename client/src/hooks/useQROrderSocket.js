@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-export function useQROrderSocket(session, onStatusUpdate) {
+export default function useQROrderSocket(session, onStatusUpdate) {
   const socketRef = useRef(null);
 
   useEffect(() => {

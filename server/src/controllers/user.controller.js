@@ -25,7 +25,7 @@ const createUser = async (request, response) => {
     const { password: _, ...userWithoutPassword } = newUser.toJSON();
     return response.status(201).json({ user: userWithoutPassword });
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    return response.status(500).json({ message: error.message });
   }
 };
 
@@ -33,20 +33,22 @@ const updateUser = async (request, response) => {
   try {
     const id = request.params.id;
     const data = request.body;
-    const updatedUser = await userService.updateUser(id, data);
+    const currentUserId = request.user.id;
+    const updatedUser = await userService.updateUser(id, data, currentUserId);
     return response.status(200).json({ user: updatedUser });
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    return response.status(500).json({ message: error.message });
   }
 };
 
 const deleteUser = async (request, response) => {
   try {
     const id = request.params.id;
-    const deactivatedUser = await userService.deleteUser(id);
+    const currentUserId = request.user.id;
+    const deactivatedUser = await userService.deleteUser(id, currentUserId);
     return response.status(200).json({ user: deactivatedUser });
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    return response.status(500).json({ message: error.message });
   }
 };
 

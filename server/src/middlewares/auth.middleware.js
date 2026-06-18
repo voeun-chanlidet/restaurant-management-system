@@ -29,7 +29,7 @@ const protect = async (request, response, next) => {
     request.user = user;
     next();
   } catch (error) {
-    next(error);
+    return response.status(401).json({ error: "Token expired or invalid" });
   }
 };
 

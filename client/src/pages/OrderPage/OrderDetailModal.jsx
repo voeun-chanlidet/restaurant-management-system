@@ -2,12 +2,11 @@ import { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const STATUS_STYLES = {
-  PENDING: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  IN_PROGRESS: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
-  READY: "bg-green-500/20 text-green-400 border border-green-500/30",
-  SERVED:
-    "bg-[var(--color-faint)] text-[var(--color-dimmed)] border border-[var(--color-faint)]",
-  CANCELLED: "bg-red-500/10 text-red-400 border border-red-500/20",
+  PENDING: "bg-yellow-100 text-yellow-700 border border-yellow-200",
+  IN_PROGRESS: "bg-blue-100 text-blue-700 border border-blue-200",
+  READY: "bg-green-100 text-green-700 border border-green-200",
+  SERVED: "bg-faint text-dimmed border border-faint",
+  CANCELLED: "bg-red-50 text-red-400 border border-red-100",
 };
 
 const STATUS_FLOW = {
@@ -28,93 +27,144 @@ const OrderDetailModal = ({ order, onClose, onStatusUpdate, onCancel }) => {
   const { user } = useContext(AuthContext);
 
   const nextStatus = STATUS_FLOW[order.status];
-  const canAdvance = nextStatus !== null;
-  const canCancel =
-    user.role === "ADMIN" &&
-    order.status !== "SERVED" &&
-    order.status !== "CANCELLED";
+  const isAdmin = user.role === "ADMIN";
+  const isStaff = user.role === "STAFF";
   const isKitchen = user.role === "KITCHEN";
 
+  const canAdvance =
+    nextStatus !== null && !(isKitchen && order.status === "PENDING");
+
+  const canCancel =
+    (isAdmin || isStaff) &&
+    order.status !== "SERVED" &&
+    order.status !== "CANCELLED";
+
+  const sourceLabel = order.creator
+    ? `Staff (${order.creator.name})`
+    : "QR Customer";
+
+  const orderTime = new Date(order.createdAt).toLocaleString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "short",
+  });
+
+  const totalQty = order.items.reduce((sum, i) => sum + i.quantity, 0);
+
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-      <div className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-2xl w-full max-w-md">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[var(--color-panel-border)]">
-          <div>
-            <h2 className="text-lg font-bold text-[var(--color-heading)]">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-panel border border-panel-border rounded-2xl w-full max-w-md shadow-lg">
+        {/* HEADER */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-panel-border">
+          <div className="flex items-center gap-3">
+            <h2 className="text-base font-bold text-heading">
               Order #{order.id}
             </h2>
-            <p className="text-sm text-[var(--color-dimmed)]">
-              Table {order.tableNumber}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
             <span
               className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_STYLES[order.status]}`}
             >
               {order.status.replace("_", " ")}
             </span>
-            <button
-              onClick={onClose}
-              className="text-[var(--color-dimmed)] hover:text-[var(--color-heading)] text-xl"
-            >
-              ✕
-            </button>
           </div>
+          <button
+            onClick={onClose}
+            className="text-dimmed hover:text-heading text-lg"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* Items */}
-        <div className="p-5 space-y-2 max-h-64 overflow-y-auto">
+        {/* META */}
+        <div className="px-5 py-3 border-b border-panel-border grid grid-cols-2 gap-y-2 text-xs">
+          <span className="text-dimmed">Table</span>
+          <span className="text-heading font-medium text-right">
+            Table {order.tableNumber || "—"}
+          </span>
+
+          <span className="text-dimmed">Session</span>
+          <span className="text-heading font-medium text-right">
+            #{order.sessionId || "—"}
+          </span>
+
+          <span className="text-dimmed">Source</span>
+          <span className="text-heading font-medium text-right">
+            {sourceLabel}
+          </span>
+
+          <span className="text-dimmed">Type</span>
+          <span className="text-heading font-medium text-right">
+            {order.orderType}
+          </span>
+
+          <span className="text-dimmed">Time</span>
+          <span className="text-heading font-medium text-right">
+            {orderTime}
+          </span>
+        </div>
+
+        {/* ITEMS */}
+        <div className="px-5 py-3 space-y-3 max-h-56 overflow-y-auto">
           {order.items.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between py-2 border-b border-[var(--color-panel-border)] last:border-0"
+              className="flex items-start justify-between gap-2 border-b border-panel-border pb-2 last:border-0 last:pb-0"
             >
               <div>
-                <p className="text-[var(--color-heading)] text-sm font-medium">
+                <p className="text-heading text-sm font-medium">
                   {item.menuName}
                 </p>
-                <p className="text-[var(--color-dimmed)] text-xs">
-                  ${parseFloat(item.price).toLocaleString()} × {item.quantity}
+                <p className="text-dimmed text-xs">
+                  ${parseFloat(item.price).toFixed(2)} × {item.quantity}
                 </p>
+                {item.note && (
+                  <p className="text-xs text-yellow-600 mt-0.5">
+                    Note: {item.note}
+                  </p>
+                )}
               </div>
-              <span className="text-[var(--color-brand)] font-semibold text-sm">
-                ${parseFloat(item.subtotal).toLocaleString()}
+              <span className="text-brand font-semibold text-sm shrink-0">
+                ${parseFloat(item.subtotal).toFixed(2)}
               </span>
             </div>
           ))}
         </div>
 
-        {/* Total */}
-        <div className="px-5 py-3 border-t border-[var(--color-panel-border)] flex justify-between items-center">
-          <span className="text-[var(--color-dimmed)] text-sm">Total</span>
-          <span className="text-[var(--color-heading)] font-bold text-lg">
-            ${parseFloat(order.total).toLocaleString()}
-          </span>
+        {/* SUMMARY */}
+        <div className="px-5 py-3 border-t border-panel-border space-y-1.5 text-xs">
+          <div className="flex justify-between text-dimmed">
+            <span>Qty</span>
+            <span>{totalQty} items</span>
+          </div>
+          <div className="flex justify-between font-bold text-sm">
+            <span className="text-heading">Total</span>
+            <span className="text-heading">
+              ${parseFloat(order.total).toFixed(2)}
+            </span>
+          </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-5 border-t border-[var(--color-panel-border)] flex gap-3">
-          {/* Cancel button — Admin only */}
-          {canCancel && (
-            <button
-              onClick={() => onCancel(order.id)}
-              className="flex-1 border border-red-500/40 text-red-400 hover:bg-red-500/10 py-2 rounded-lg text-sm font-medium transition-all"
-            >
-              Cancel Order
-            </button>
-          )}
-
-          {/* Advance status button — not shown for Kitchen on PENDING */}
-          {canAdvance && !(isKitchen && order.status === "PENDING") && (
-            <button
-              onClick={() => onStatusUpdate(order.id, nextStatus)}
-              className="flex-1 bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-black py-2 rounded-lg text-sm font-semibold transition-all"
-            >
-              {STATUS_BUTTON_LABEL[order.status]}
-            </button>
-          )}
-        </div>
+        {/* ACTIONS */}
+        {(canCancel || canAdvance) && (
+          <div className="px-5 py-4 border-t border-panel-border flex gap-3">
+            {canCancel && (
+              <button
+                onClick={() => onCancel(order.id)}
+                className="flex-1 border border-red-200 text-red-500 hover:bg-red-50 py-2.5 rounded-xl text-sm font-medium transition-all"
+              >
+                Cancel Order
+              </button>
+            )}
+            {canAdvance && (
+              <button
+                onClick={() => onStatusUpdate(order.id, nextStatus)}
+                className="flex-1 bg-brand hover:bg-brand-hover text-white py-2.5 rounded-xl text-sm font-semibold transition-all"
+              >
+                {STATUS_BUTTON_LABEL[order.status]}
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

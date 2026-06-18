@@ -19,9 +19,10 @@ Payment.init(
       allowNull: false,
       defaultValue: "CASH",
     },
-    amountTendered: {
+    cashReceived: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
+      field: "amount_tendered",
     },
     change: {
       type: DataTypes.DECIMAL(10, 2),

@@ -1,30 +1,27 @@
 const METHOD_STYLES = {
-  CASH: "bg-[var(--color-faint)] text-[var(--color-dimmed)] border border-[var(--color-panel-border)]",
+  CASH: "bg-[var(--color-faint)] text-dimmed border border-panel-border",
   KHQR: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
 };
 
-const PaymentHistory = ({ payments }) => {
+const PaymentHistory = ({ payments, onCardClick }) => {
   if (payments.length === 0) {
-    return (
-      <p className="text-[var(--color-dimmed)] text-sm">
-        No payments recorded yet.
-      </p>
-    );
+    return <p className="text-dimmed text-sm">No payments recorded yet.</p>;
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 cursor-pointer">
       {payments.map((payment) => (
         <div
           key={payment.id}
-          className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-xl p-4"
+          onClick={() => onCardClick(payment)}
+          className="bg-panel border border-panel-border rounded-xl p-4"
         >
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-[var(--color-heading)] font-semibold text-sm">
+              <p className="text-heading font-semibold text-sm">
                 Table {payment.session?.table?.table_number}
               </p>
-              <p className="text-[var(--color-dimmed)] text-xs mt-0.5">
+              <p className="text-dimmed text-xs mt-0.5">
                 {payment.session?.Orders?.length} order(s) · by{" "}
                 {payment.processor?.name}
               </p>
@@ -36,7 +33,7 @@ const PaymentHistory = ({ payments }) => {
               >
                 {payment.method}
               </span>
-              <span className="text-[var(--color-brand)] font-bold text-sm">
+              <span className="text-brand font-bold text-sm">
                 ${parseFloat(payment.totalAmount).toFixed(2)}
               </span>
             </div>
@@ -47,7 +44,7 @@ const PaymentHistory = ({ payments }) => {
               (item, index) => (
                 <div
                   key={index}
-                  className="flex justify-between text-xs text-[var(--color-dimmed)]"
+                  className="flex justify-between text-xs text-dimmed"
                 >
                   <span>
                     {item.menuName} x{item.quantity}
@@ -59,15 +56,15 @@ const PaymentHistory = ({ payments }) => {
           </div>
 
           {payment.method === "CASH" && (
-            <div className="flex gap-4 border-t border-[var(--color-panel-border)] pt-3">
+            <div className="flex gap-4 border-t border-panel-border pt-3">
               <div>
-                <p className="text-[var(--color-dimmed)] text-xs">Tendered</p>
-                <p className="text-[var(--color-heading)] text-sm font-medium">
-                  ${parseFloat(payment.amountTendered).toFixed(2)}
+                <p className="text-dimmed text-xs">Cash Received</p>
+                <p className="text-heading text-sm font-medium">
+                  ${parseFloat(payment.cashReceived).toFixed(2)}
                 </p>
               </div>
               <div>
-                <p className="text-[var(--color-dimmed)] text-xs">Change</p>
+                <p className="text-dimmed text-xs">Change</p>
                 <p className="text-green-400 text-sm font-medium">
                   ${parseFloat(payment.change).toFixed(2)}
                 </p>
@@ -75,7 +72,7 @@ const PaymentHistory = ({ payments }) => {
             </div>
           )}
 
-          <p className="text-[var(--color-dimmed)] text-xs mt-3">
+          <p className="text-dimmed text-xs mt-3">
             {new Date(payment.createdAt).toLocaleString()}
           </p>
         </div>

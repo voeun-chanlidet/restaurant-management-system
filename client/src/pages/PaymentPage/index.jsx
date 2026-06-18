@@ -5,6 +5,7 @@ import PaymentService from "../../services/payment";
 import PaymentList from "./PaymentList";
 import PaymentModal from "./PaymentModal";
 import PaymentHistory from "./PaymentHistory";
+import PaymentDetailModal from "./PaymentDetailModal";
 
 const PaymentPage = () => {
   const { user, loading } = useAuth();
@@ -12,6 +13,8 @@ const PaymentPage = () => {
   const [allPayments, setAllPayments] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [showPaymentDetail, setShowPaymentDetail] = useState(false);
 
   const fetchUnpaidOrders = async () => {
     try {
@@ -60,6 +63,16 @@ const PaymentPage = () => {
     }
   };
 
+  const openPaymentDetail = (payment) => {
+    setSelectedPayment(payment);
+    setShowPaymentDetail(true);
+  };
+
+  const closePaymentDetail = () => {
+    setSelectedPayment(null);
+    setShowPaymentDetail(false);
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-heading mb-6">Payments</h1>
@@ -78,7 +91,10 @@ const PaymentPage = () => {
           <h2 className="text-dimmed text-xs uppercase tracking-wider mb-3">
             Payment History
           </h2>
-          <PaymentHistory payments={allPayments} />
+          <PaymentHistory
+            payments={allPayments}
+            onCardClick={openPaymentDetail}
+          />
         </div>
       )}
 
@@ -88,6 +104,13 @@ const PaymentPage = () => {
           order={selectedOrder}
           onClose={closeModal}
           onSubmit={handlePaymentSubmit}
+        />
+      )}
+      {/* Payment History modal */}
+      {showPaymentDetail && selectedPayment && (
+        <PaymentDetailModal
+          payment={selectedPayment}
+          onClose={closePaymentDetail}
         />
       )}
     </div>

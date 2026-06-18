@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-// import { getSettings, updateSettings } from "../../services/setting";\
 import SettingService from "../../services/setting";
-
+import Field from "./Field";
+import Section from "./Section";
+import toast from "react-hot-toast";
 const FIELDS = [
   {
     key: "restaurant_name",
@@ -20,7 +21,7 @@ const FIELDS = [
   { key: "logo_url", label: "Logo URL", type: "text", required: false },
 ];
 
-export default function SettingsPage() {
+const SettingsPage = () => {
   const [form, setForm] = useState({
     restaurant_name: "",
     address: "",
@@ -31,8 +32,7 @@ export default function SettingsPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState(null);
+  // const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -46,8 +46,11 @@ export default function SettingsPage() {
           currency: settings.currency || "USD",
           logo_url: settings.logo_url || "",
         });
-      } catch (err) {
-        setError("Failed to load settings.");
+      } catch (error) {
+        toast.error(
+          error.response?.data?.error ||
+            "Failed to load settings. Please try again.",
+        );
       } finally {
         setLoading(false);
       }
@@ -57,21 +60,24 @@ export default function SettingsPage() {
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
-    setSaved(false);
+    // setSaved(false);
   };
 
   const handleSubmit = async () => {
     if (!form.restaurant_name.trim()) {
-      setError("Restaurant name is required.");
+      toast.error("Restaurant name is required.");
       return;
     }
     setSaving(true);
-    setError(null);
     try {
       await SettingService.updateSettings(form);
-      setSaved(true);
-    } catch (err) {
-      setError("Failed to save settings.");
+      toast.success("Settings saved successfully.");
+      // setSaved(true);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.error ||
+          "Failed to save settings. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
@@ -161,11 +167,11 @@ export default function SettingsPage() {
       </Section>
 
       {/* Error */}
-      {error && (
+      {/* {error && (
         <p className="text-sm mb-4" style={{ color: "#e57373" }}>
           {error}
         </p>
-      )}
+      )} */}
 
       {/* Save Button */}
       <div className="flex items-center gap-4 mt-6">
@@ -182,51 +188,14 @@ export default function SettingsPage() {
           {saving ? "Saving..." : "Save Changes"}
         </button>
 
-        {saved && (
+        {/* {saved && (
           <p className="text-sm" style={{ color: "var(--color-brand)" }}>
             ✓ Settings saved
           </p>
-        )}
+        )} */}
       </div>
     </div>
   );
-}
+};
 
-function Section({ title, children }) {
-  return (
-    <div
-      className="rounded-xl p-5 mb-6"
-      style={{
-        background: "var(--color-panel)",
-        border: "1px solid var(--color-panel-border)",
-      }}
-    >
-      <h2
-        className="text-xs font-semibold uppercase tracking-widest mb-4"
-        style={{ color: "var(--color-brand)" }}
-      >
-        {title}
-      </h2>
-      <div className="flex flex-col gap-4">{children}</div>
-    </div>
-  );
-}
-
-function Field({ label, required, children }) {
-  return (
-    <div>
-      <label
-        className="block text-xs mb-1.5 font-medium"
-        style={{ color: "var(--color-dimmed)" }}
-      >
-        {label}
-        {required && (
-          <span style={{ color: "var(--color-brand)" }} className="ml-1">
-            *
-          </span>
-        )}
-      </label>
-      {children}
-    </div>
-  );
-}
+export default SettingsPage;

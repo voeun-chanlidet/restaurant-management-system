@@ -24,10 +24,10 @@ export default function ItemNoteModal({ item, onConfirm, onClose }) {
             <img
               src={item.imageUrl}
               alt={item.name}
-              className="w-14 h-14 rounded-xl object-cover flex-shrink-0"
+              className="w-14 h-14 rounded-xl object-cover shrink-0"
             />
           ) : (
-            <div className="w-14 h-14 rounded-xl bg-[#f5f0e8] flex items-center justify-center flex-shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-[#f5f0e8] flex items-center justify-center shrink-0">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -53,6 +53,7 @@ export default function ItemNoteModal({ item, onConfirm, onClose }) {
         <div className="flex items-center justify-between mb-5">
           <span className="text-sm font-medium text-[#6b5c45]">Quantity</span>
           <div className="flex items-center gap-4">
+            {/* - */}
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
               className="w-9 h-9 rounded-full border border-[#ede8df] text-[#2d2416] flex items-center justify-center active:bg-[#f0ebe2] transition-colors"
@@ -70,6 +71,7 @@ export default function ItemNoteModal({ item, onConfirm, onClose }) {
             <span className="text-lg font-bold text-[#2d2416] w-5 text-center">
               {qty}
             </span>
+            {/* + */}
             <button
               onClick={() => setQty((q) => q + 1)}
               className="w-9 h-9 rounded-full border border-[#ede8df] text-[#2d2416] flex items-center justify-center active:bg-[#f0ebe2] transition-colors"
@@ -110,7 +112,7 @@ export default function ItemNoteModal({ item, onConfirm, onClose }) {
 
         {/* Confirm */}
         <button
-          onClick={() => onConfirm(item, note.trim())}
+          onClick={() => onConfirm(item, note.trim(), qty)}
           className="w-full bg-[#2d2416] text-white py-4 rounded-2xl font-semibold text-base flex items-center justify-between px-5 active:scale-[0.98] transition-transform"
         >
           <span>Add to order</span>

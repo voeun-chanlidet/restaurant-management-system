@@ -27,10 +27,10 @@ const createOrder = async (request, response) => {
       request.user.id,
     );
     const io = getIO();
-    io.to("staff").to("admin").emit("order:new", order);
+    io.to(["staff", "admin"]).emit("order:new", order);
 
     const updatedTable = await TableServices.getTableById(order.tableId);
-    io.to("staff").to("admin").emit("table:update", updatedTable);
+    io.to(["staff", "admin"]).emit("table:update", updatedTable);
     return response.status(201).json({ order });
   } catch (error) {
     const status = error.message.includes("not found") ? 404 : 500;
@@ -50,26 +50,23 @@ const updateOrderStatus = async (request, response) => {
     const io = getIO();
     switch (order.status) {
       case "IN_PROGRESS":
-        io.to("kitchen")
-          .to("staff")
-          .to("admin")
-          .emit("order:inProgress", order);
+        io.to(["kitchen", "staff", "admin"]).emit("order:inProgress", order);
         io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
           orderId: order.id,
           status: order.status,
         });
         break;
       case "READY":
-        io.to("staff").to("admin").to("kitchen").emit("order:ready", order);
+        io.to(["kitchen", "staff", "admin"]).emit("order:ready", order);
         io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
           orderId: order.id,
           status: order.status,
         });
         break;
       case "SERVED": {
-        io.to("staff").to("admin").emit("order:served", order);
+        io.to(["staff", "admin"]).emit("order:served", order);
         const updatedTable = await TableServices.getTableById(order.tableId);
-        io.to("staff").to("admin").emit("table:update", updatedTable);
+        io.to(["staff", "admin"]).emit("table:update", updatedTable);
         io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
           orderId: order.id,
           status: order.status,
@@ -77,7 +74,7 @@ const updateOrderStatus = async (request, response) => {
         break;
       }
       case "CANCELLED":
-        io.to("kitchen").to("staff").to("admin").emit("order:cancelled", order);
+        io.to(["kitchen", "staff", "admin"]).emit("order:cancelled", order);
         io.to(`customer:${order.sessionId}`).emit("order:statusUpdated", {
           orderId: order.id,
           status: order.status,

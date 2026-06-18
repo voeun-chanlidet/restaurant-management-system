@@ -19,9 +19,9 @@ export default function UserTable({
 }) {
   if (loading) {
     return (
-      <div className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-xl overflow-hidden">
+      <div className="bg-panel border border-panel-border rounded-xl overflow-hidden">
         <div className="p-8 flex items-center justify-center">
-          <div className="flex items-center gap-3 text-[var(--color-dimmed)]">
+          <div className="flex items-center gap-3 text-dimmed">
             <svg
               className="w-5 h-5 animate-spin"
               viewBox="0 0 24 24"
@@ -40,11 +40,11 @@ export default function UserTable({
 
   if (users.length === 0) {
     return (
-      <div className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-xl overflow-hidden">
+      <div className="bg-panel border border-panel-border rounded-xl overflow-hidden">
         <div className="p-12 flex flex-col items-center justify-center gap-3 text-center">
-          <div className="w-12 h-12 rounded-full bg-[var(--color-panel-border)] flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-panel-border flex items-center justify-center">
             <svg
-              className="w-6 h-6 text-[var(--color-dimmed)]"
+              className="w-6 h-6 text-dimmed"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -56,10 +56,8 @@ export default function UserTable({
               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
           </div>
-          <p className="text-[var(--color-heading)] font-medium">
-            No users yet
-          </p>
-          <p className="text-sm text-[var(--color-dimmed)]">
+          <p className="text-heading font-medium">No users yet</p>
+          <p className="text-sm text-dimmed">
             Add your first team member to get started.
           </p>
         </div>
@@ -68,16 +66,16 @@ export default function UserTable({
   }
 
   return (
-    <div className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-xl overflow-hidden">
+    <div className="bg-panel border border-panel-border rounded-xl overflow-hidden">
       {/* Desktop table */}
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-[var(--color-panel-border)]">
+            <tr className="border-b border-panel-border">
               {["Name", "Email", "Role", "Status", "Actions"].map((col) => (
                 <th
                   key={col}
-                  className={`px-5 py-3.5 text-xs font-medium uppercase tracking-wider text-[var(--color-dimmed)] ${
+                  className={`px-5 py-3.5 text-xs font-medium uppercase tracking-wider text-dimmed ${
                     col === "Actions" ? "text-right" : "text-left"
                   }`}
                 >
@@ -86,27 +84,27 @@ export default function UserTable({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--color-panel-border)]">
+          <tbody className="divide-y divide-panel-border">
             {users.map((user) => {
               const isCurrentUser = user.id === currentUserId;
               return (
                 <tr
                   key={user.id}
-                  className="hover:bg-white/[0.02] transition-colors"
+                  className="hover:bg-white/2 transition-colors"
                 >
                   {/* Name */}
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[var(--color-brand)]/20 border border-[var(--color-brand)]/30 flex items-center justify-center flex-shrink-0">
-                        <span className="text-xs font-semibold text-[var(--color-brand)]">
+                      <div className="w-8 h-8 rounded-full bg-brand/20 border border-brand/30 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-semibold text-brand">
                           {user.name?.charAt(0)?.toUpperCase() || "?"}
                         </span>
                       </div>
                       <div>
-                        <p className="font-medium text-[var(--color-heading)]">
+                        <p className="font-medium text-heading">
                           {user.name}
                           {isCurrentUser && (
-                            <span className="ml-2 text-[10px] font-normal text-[var(--color-dimmed)] bg-white/5 px-1.5 py-0.5 rounded">
+                            <span className="ml-2 text-[10px] font-normal text-dimmed bg-white/5 px-1.5 py-0.5 rounded">
                               you
                             </span>
                           )}
@@ -116,9 +114,7 @@ export default function UserTable({
                   </td>
 
                   {/* Email */}
-                  <td className="px-5 py-4 text-[var(--color-dimmed)]">
-                    {user.email}
-                  </td>
+                  <td className="px-5 py-4 text-dimmed">{user.email}</td>
 
                   {/* Role */}
                   <td className="px-5 py-4">
@@ -135,16 +131,12 @@ export default function UserTable({
                   <td className="px-5 py-4">
                     <span
                       className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-                        user.isActive
-                          ? "text-emerald-400"
-                          : "text-[var(--color-dimmed)]"
+                        user.isActive ? "text-emerald-400" : "text-dimmed"
                       }`}
                     >
                       <span
                         className={`w-1.5 h-1.5 rounded-full ${
-                          user.isActive
-                            ? "bg-emerald-400"
-                            : "bg-[var(--color-dimmed)]"
+                          user.isActive ? "bg-emerald-400" : "bg-dimmed)]"
                         }`}
                       />
                       {user.isActive ? "Active" : "Inactive"}
@@ -156,7 +148,7 @@ export default function UserTable({
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => onEdit(user)}
-                        className="px-3 py-1.5 rounded-md text-xs font-medium text-[var(--color-dimmed)] hover:text-[var(--color-heading)] hover:bg-white/5 transition-colors"
+                        className="px-3 py-1.5 rounded-md text-xs font-medium text-dimmed hover:text-heading hover:bg-white/5 transition-colors"
                       >
                         Edit
                       </button>
@@ -178,34 +170,32 @@ export default function UserTable({
       </div>
 
       {/* Mobile cards */}
-      <div className="sm:hidden divide-y divide-[var(--color-panel-border)]">
+      <div className="sm:hidden divide-y divide-panel-border">
         {users.map((user) => {
           const isCurrentUser = user.id === currentUserId;
           return (
             <div key={user.id} className="px-4 py-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-full bg-[var(--color-brand)]/20 border border-[var(--color-brand)]/30 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-semibold text-[var(--color-brand)]">
+                  <div className="w-9 h-9 rounded-full bg-brand/20 border border-brand/30 flex items-center justify-center shrink-0">
+                    <span className="text-sm font-semibold text-brand">
                       {user.name?.charAt(0)?.toUpperCase() || "?"}
                     </span>
                   </div>
                   <div className="min-w-0">
-                    <p className="font-medium text-[var(--color-heading)] text-sm truncate">
+                    <p className="font-medium text-heading text-sm truncate">
                       {user.name}
                       {isCurrentUser && (
-                        <span className="ml-1.5 text-[10px] text-[var(--color-dimmed)]">
+                        <span className="ml-1.5 text-[10px] text-dimmed">
                           (you)
                         </span>
                       )}
                     </p>
-                    <p className="text-xs text-[var(--color-dimmed)] truncate">
-                      {user.email}
-                    </p>
+                    <p className="text-xs text-dimmed truncate">{user.email}</p>
                   </div>
                 </div>
                 <span
-                  className={`flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                  className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                     ROLE_STYLES[user.role] || "bg-white/5 text-white/50"
                   }`}
                 >
@@ -216,16 +206,12 @@ export default function UserTable({
               <div className="flex items-center justify-between">
                 <span
                   className={`inline-flex items-center gap-1.5 text-xs ${
-                    user.isActive
-                      ? "text-emerald-400"
-                      : "text-[var(--color-dimmed)]"
+                    user.isActive ? "text-emerald-400" : "text-dimmed"
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      user.isActive
-                        ? "bg-emerald-400"
-                        : "bg-[var(--color-dimmed)]"
+                      user.isActive ? "bg-emerald-400" : "bg-dimmed"
                     }`}
                   />
                   {user.isActive ? "Active" : "Inactive"}
@@ -233,7 +219,7 @@ export default function UserTable({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => onEdit(user)}
-                    className="px-3 py-1.5 rounded-md text-xs font-medium text-[var(--color-dimmed)] hover:text-[var(--color-heading)] hover:bg-white/5 transition-colors"
+                    className="px-3 py-1.5 rounded-md text-xs font-medium text-dimmed hover:text-heading hover:bg-white/5 transition-colors"
                   >
                     Edit
                   </button>
@@ -253,8 +239,8 @@ export default function UserTable({
       </div>
 
       {/* Footer count */}
-      <div className="px-5 py-3 border-t border-[var(--color-panel-border)]">
-        <p className="text-xs text-[var(--color-dimmed)]">
+      <div className="px-5 py-3 border-t border-panel-border">
+        <p className="text-xs text-dimmed">
           {users.length} {users.length === 1 ? "user" : "users"} total
         </p>
       </div>

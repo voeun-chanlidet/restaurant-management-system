@@ -105,33 +105,21 @@ export default function MenuPage() {
   };
 
   // Menu handlers
-  const handleSaveMenu = async (e) => {
-    e.preventDefault();
+  const handleSaveMenu = async (formData) => {
     try {
-      const data = {
-        ...menuForm,
-        price: parseFloat(menuForm.price),
-        categoryId: parseInt(menuForm.categoryId),
-      };
       if (editingMenu) {
-        await menuService.updateMenu(editingMenu.id, data);
+        await menuService.updateMenu(editingMenu.id, formData);
         toast.success("Menu edited successfully.");
       } else {
-        await menuService.createMenu(data);
+        await menuService.createMenu(formData);
         toast.success("Menu created successfully.");
       }
-      setMenuForm({
-        name: "",
-        price: "",
-        categoryId: "",
-        imageUrl: "",
-        isAvailable: true,
-      });
+      setMenuForm({ name: "", price: "", categoryId: "", isAvailable: true });
       setEditingMenu(null);
       setShowMenuModal(false);
       fetchData();
     } catch (err) {
-      console.error(err);
+      toast.error(err.response?.data?.message || "Something went wrong.");
     }
   };
 

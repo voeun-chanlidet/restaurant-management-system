@@ -2,11 +2,7 @@ import PaymentCard from "./PaymentCard";
 
 const PaymentList = ({ orders, onCardClick }) => {
   if (orders.length === 0) {
-    return (
-      <p className="text-[var(--color-dimmed)] text-sm">
-        No orders awaiting payment.
-      </p>
-    );
+    return <p className="text-dimmed text-sm">No orders awaiting payment.</p>;
   }
 
   return (

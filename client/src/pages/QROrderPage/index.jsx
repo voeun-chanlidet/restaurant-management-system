@@ -5,7 +5,7 @@ import OrderStatusView from "./OrderStatusView";
 import CartDrawer from "./CartDrawer";
 import api from "../../services/api";
 import { io } from "socket.io-client";
-import { useQROrderSocket } from "../../hooks/useQROrderSocket";
+import useQROrderSocket from "../../hooks/useQROrderSocket";
 
 // Views: "loading" | "error" | "menu" | "status"
 export default function QROrderPage() {
@@ -125,28 +125,6 @@ export default function QROrderPage() {
     localStorage.setItem(ORDERS_KEY, JSON.stringify(placedOrders));
   }, [placedOrders, ORDERS_KEY]);
 
-  // Socket.io — listen for status updates once session is known
-  // useEffect(() => {
-  //   if (!session) return;
-
-  //   const socket = io(import.meta.env.VITE_SOCKET_URL || "", {
-  //     transports: ["websocket"],
-  //   });
-  //   socketRef.current = socket;
-
-  //   socket.on("connect", () => {
-  //     socket.emit("join:customer", { sessionId: session.id });
-  //   });
-
-  //   socket.on("order:statusUpdated", ({ orderId, status }) => {
-  //     setPlacedOrders((prev) =>
-  //       prev.map((o) => (o.id === orderId ? { ...o, status } : o)),
-  //     );
-  //   });
-
-  //   return () => socket.disconnect();
-  // }, [session]);
-
   useQROrderSocket(session, (orderId, status) => {
     setPlacedOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status } : o)),
@@ -155,14 +133,14 @@ export default function QROrderPage() {
 
   // ── Cart helpers ──────────────────────────────────────────────────────────
 
-  function addToCart(item, note = "") {
+  function addToCart(item, note = "", qty = 1) {
     setCart((prev) => {
       const existing = prev.findIndex(
         (c) => c.menuId === item.id && c.note === note,
       );
       if (existing !== -1) {
         return prev.map((c, i) =>
-          i === existing ? { ...c, quantity: c.quantity + 1 } : c,
+          i === existing ? { ...c, quantity: c.quantity + qty } : c,
         );
       }
       return [
@@ -171,7 +149,7 @@ export default function QROrderPage() {
           menuId: item.id,
           name: item.name,
           price: parseFloat(item.price),
-          quantity: 1,
+          quantity: qty,
           note,
           imageUrl: item.imageUrl || null,
         },

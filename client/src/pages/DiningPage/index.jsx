@@ -7,6 +7,7 @@ import tableService from "../../services/table";
 import sessionService from "../../services/table_session";
 import useTableSocket from "./useTableSocket";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"];
 
@@ -56,12 +57,17 @@ const DiningPage = () => {
   };
 
   const handleConfirmSession = async () => {
-    const data = await sessionService.openSession({
-      tableId: selectedTable.id,
-    });
-    navigate(`/dining/${selectedTable.id}`, {
-      state: { session: data.session },
-    });
+    try {
+      const data = await sessionService.openSession({
+        tableId: selectedTable.id,
+      });
+      toast.success("Session opened successfully.");
+      navigate(`/dining/${selectedTable.id}`, {
+        state: { session: data.session },
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to open session.");
+    }
   };
 
   useTableSocket({ onTableUpdate: handleUpdate });

@@ -6,6 +6,7 @@ const getSetting = async () => {
     defaults: {
       restaurant_name: "My Restaurant",
       currency: "USD",
+      exchange_rate: 4100.0,
     },
   });
   return settings;
@@ -13,9 +14,17 @@ const getSetting = async () => {
 
 const updateSetting = async (data) => {
   const settings = await getSetting();
-
   const result = await settings.update(data);
   return result;
 };
 
-module.exports = { getSetting, updateSetting };
+const getPublicSetting = async () => {
+  const settings = await getSetting();
+  return {
+    currency: settings.currency,
+    exchange_rate: settings.exchange_rate,
+    khqr_image_url: settings.khqr_image_url,
+  };
+};
+
+module.exports = { getSetting, updateSetting, getPublicSetting };

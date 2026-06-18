@@ -1,30 +1,45 @@
 const STATUS_STYLES = {
-  PENDING: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  IN_PROGRESS: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
-  READY: "bg-green-500/20 text-green-400 border border-green-500/30",
-  SERVED:
-    "bg-[var(--color-faint)] text-[var(--color-dimmed)] border border-[var(--color-faint)]",
-  CANCELLED: "bg-red-500/10 text-red-400 border border-red-500/20",
+  PENDING: "bg-yellow-100 text-yellow-700 border border-yellow-200",
+  IN_PROGRESS: "bg-blue-100 text-blue-700 border border-blue-200",
+  READY: "bg-green-100 text-green-700 border border-green-200",
+  SERVED: "bg-faint text-dimmed border border-faint",
+  CANCELLED: "bg-red-50 text-red-400 border border-red-100",
 };
 
 const OrderCard = ({ order, onClick }) => {
   const isCancelled = order.status === "CANCELLED";
+  const sourceLabel = order.creator
+    ? `Staff (${order.creator.name})`
+    : "QR Customer";
+  const totalQty = order.items.reduce((sum, i) => sum + i.quantity, 0);
+
+  const orderTime = new Date(order.createdAt).toLocaleString([], {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const elapsed = (() => {
+    const diff = Math.floor((Date.now() - new Date(order.createdAt)) / 1000);
+    const m = Math.floor(diff / 60);
+    const s = diff % 60;
+    return `${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
+  })();
 
   return (
     <div
       onClick={() => onClick(order)}
-      className={`
-        bg-[var(--color-panel)] border border-[var(--color-panel-border)]
-        rounded-xl p-4 cursor-pointer
-        hover:border-[var(--color-brand)] transition-all
-        ${isCancelled ? "opacity-50" : ""}
-      `}
+      className={`bg-panel border border-panel-border rounded-xl p-4 cursor-pointer hover:border-brand hover:shadow-sm transition-all ${isCancelled ? "opacity-50" : ""}`}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[var(--color-heading)] font-semibold">
-          {order.tableNumber}
-        </span>
+      {/* HEADER */}
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <p className="text-heading font-semibold text-sm">
+            Table {order.tableNumber || "—"}
+          </p>
+          <p className="text-xs text-dimmed">Session #{order.sessionId}</p>
+        </div>
         <span
           className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_STYLES[order.status]}`}
         >
@@ -32,32 +47,28 @@ const OrderCard = ({ order, onClick }) => {
         </span>
       </div>
 
-      {/* Items preview */}
-      <div className="mb-3 space-y-1">
-        {order.items.slice(0, 3).map((item) => (
-          <div key={item.id} className="flex justify-between text-sm">
-            <span className="text-[var(--color-dimmed)]">
-              {item.quantity}x {item.menuName}
-            </span>
-            <span className="text-[var(--color-dimmed)]">
-              ${parseFloat(item.subtotal).toLocaleString()}
-            </span>
-          </div>
-        ))}
-        {order.items.length > 3 && (
-          <p className="text-xs text-[var(--color-dimmed)]">
-            +{order.items.length - 3} more items
-          </p>
-        )}
+      {/* META */}
+      <div className="space-y-1.5 mb-3">
+        <div className="flex items-center justify-between text-xs text-dimmed">
+          <span>🕐 Order time</span>
+          <span className="text-heading">{orderTime}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs text-dimmed">
+          <span>⏱ Time elapsed</span>
+          <span className="text-heading">{elapsed}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs text-dimmed">
+          <span>Source</span>
+          <span className="text-heading">{sourceLabel}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs text-dimmed"></div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between pt-3 border-t border-[var(--color-panel-border)]">
-        <span className="text-xs text-[var(--color-dimmed)]">
-          by {order.creator?.name || "QR"}
-        </span>
-        <span className="text-[var(--color-brand)] font-semibold">
-          ${parseFloat(order.total).toLocaleString()}
+      {/* FOOTER */}
+      <div className="flex items-center justify-between pt-3 border-t border-panel-border">
+        <span className="text-xs text-dimmed">Items ({totalQty} qty)</span>
+        <span className="text-brand font-bold text-sm">
+          ${parseFloat(order.total).toFixed(2)}
         </span>
       </div>
     </div>

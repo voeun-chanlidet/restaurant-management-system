@@ -6,10 +6,10 @@ const createQROrder = async (request, response) => {
   try {
     const order = await QrServices.createQROrder(request.body);
     const io = getIO();
-    io.to("staff").to("admin").emit("order:new", order);
+    io.to(["staff", "admin"]).emit("order:new", order);
 
     const updatedTable = await TableServices.getTableById(order.tableId);
-    io.to("staff").to("admin").emit("table:update", updatedTable);
+    io.to(["staff", "admin"]).emit("table:update", updatedTable);
     return response.status(201).json(order);
   } catch (error) {
     const status = error.message.includes("not found") ? 404 : 500;

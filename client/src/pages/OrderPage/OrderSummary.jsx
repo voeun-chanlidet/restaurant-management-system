@@ -1,3 +1,4 @@
+import { useState } from "react";
 const OrderSummary = ({
   table,
   items,
@@ -7,13 +8,22 @@ const OrderSummary = ({
   onCancel,
 }) => {
   const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    onSubmit({
-      tableId: table.id,
-      items: items.map(({ menuId, quantity }) => ({ menuId, quantity })),
-      ...(sessionId && { sessionId }), // only adds if present
-    });
+  const handleSubmit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await onSubmit({
+        tableId: table.id,
+        items: items.map(({ menuId, quantity }) => ({ menuId, quantity })),
+        ...(sessionId && { sessionId }),
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to place order.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -76,9 +86,10 @@ const OrderSummary = ({
         </button>
         <button
           onClick={handleSubmit}
+          disabled={submitting}
           className="flex-2 bg-brand hover:bg-brand-hover text-black font-semibold px-8 py-2 rounded-lg text-sm transition-all"
         >
-          Place Order
+          {submitting ? "Placing..." : "Place Order"}
         </button>
       </div>
     </div>

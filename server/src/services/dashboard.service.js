@@ -1,5 +1,12 @@
 const { Op } = require("sequelize");
-const { Order, Payment, OrderItem, User, Table } = require("../models/index");
+const {
+  Order,
+  Payment,
+  OrderItem,
+  User,
+  Table_Session,
+  Table,
+} = require("../models/index");
 const sequelize = require("../../lib/database");
 
 const getDashboardSummary = async () => {
@@ -11,26 +18,14 @@ const getDashboardSummary = async () => {
 
   const revenueResult = await Payment.findAll({
     attributes: [
-      [
-        sequelize.fn("SUM", sequelize.literal("amount_tendered-change")),
-        "totalRevenue",
-      ],
+      [sequelize.fn("SUM", sequelize.col("total_amount")), "totalRevenue"],
     ],
-    include: [
-      {
-        model: Order,
-        required: true,
-        attributes: [],
-        where: {
-          status: "SERVED",
-          createdAt: {
-            [Op.between]: [todayStart, todayEnd], // <-- this is the "today" filter
-          },
-        },
+    where: {
+      createdAt: {
+        [Op.between]: [todayStart, todayEnd],
       },
-    ],
+    },
     raw: true,
-    nest: true,
   });
 
   const todayRevenue = revenueResult[0]?.totalRevenue || 0;
@@ -61,13 +56,15 @@ const getDashboardSummary = async () => {
   });
 
   const recentPayments = await Payment.findAll({
-    attributes: ["id", "method", "amountTendered", "change", "createdAt"],
+    attributes: ["id", "method", "totalAmount", "createdAt"],
     order: [["createdAt", "DESC"]],
     limit: 5,
     include: [
       {
-        model: Order,
-        attributes: ["tableNumber", "total"],
+        model: Table_Session,
+        as: "session",
+        attributes: ["id"],
+        include: [{ model: Table, attributes: ["table_number"] }],
       },
       { model: User, attributes: ["name"], as: "processor" },
     ],

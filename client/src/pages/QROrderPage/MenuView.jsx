@@ -66,7 +66,7 @@ export default function MenuView({
             <button
               key={cat.id}
               onClick={() => setActiveCat(cat.id)}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                 String(activeCat) === String(cat.id)
                   ? "bg-[#2d2416] text-white"
                   : "bg-[#f0ebe2] text-[#6b5c45] hover:bg-[#e8e0d4]"
@@ -97,10 +97,10 @@ export default function MenuView({
                     <img
                       src={item.imageUrl}
                       alt={item.name}
-                      className="w-24 h-24 object-cover flex-shrink-0"
+                      className="w-24 h-24 object-cover shrink-0"
                     />
                   ) : (
-                    <div className="w-24 h-24 flex-shrink-0 bg-[#f5f0e8] flex items-center justify-center">
+                    <div className="w-24 h-24 shrink-0#f5f0e8] flex items-center justify-center">
                       <svg
                         viewBox="0 0 24 24"
                         fill="none"
@@ -129,7 +129,7 @@ export default function MenuView({
 
                   <button
                     onClick={() => setNoteModal({ item })}
-                    className="relative flex-shrink-0 w-9 h-9 rounded-full bg-[#2d2416] text-white flex items-center justify-center active:scale-90 transition-transform shadow"
+                    className="relative shrink-0 w-9 h-9 rounded-full bg-[#2d2416] text-white flex items-center justify-center active:scale-90 transition-transform shadow"
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -177,8 +177,8 @@ export default function MenuView({
       {noteModal && (
         <ItemNoteModal
           item={noteModal.item}
-          onConfirm={(item, note) => {
-            onAddToCart(item, note);
+          onConfirm={(item, note, qty) => {
+            onAddToCart(item, note, qty);
             setNoteModal(null);
           }}
           onClose={() => setNoteModal(null)}

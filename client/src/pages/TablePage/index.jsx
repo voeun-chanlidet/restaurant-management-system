@@ -6,7 +6,7 @@ import TableModal from "./TableModal";
 import ConfirmModal from "../../components/ConfirmModal";
 import toast from "react-hot-toast";
 
-const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"];
+const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "MAINTENANCE"];
 const TablePage = () => {
   const [tables, setTables] = useState([]);
   const [filter, setFilter] = useState("ALL");
@@ -82,26 +82,32 @@ const TablePage = () => {
     total: tables.length,
     available: tables.filter((t) => t.status === "AVAILABLE").length,
     occupied: tables.filter((t) => t.status === "OCCUPIED").length,
-    reserved: tables.filter((t) => t.status === "RESERVED").length,
   };
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-medium text-heading">Floor map</h1>
-          <p className="text-xs text-dimmed mt-0.5">
+          <h1 className="text-2xl font-medium text-heading">Floor map</h1>
+          <p className="text-sm text-dimmed mt-0.5">
             {counts.total} tables · {counts.available} available ·{" "}
-            {counts.occupied} occupied · {counts.reserved} reserved
+            {counts.occupied} occupied
           </p>
         </div>
         {user.role === "ADMIN" && (
-          <button
-            onClick={openAddModal}
-            className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-            style={{ background: "var(--color-brand)", color: "#0e0e0e" }}
-          >
-            + Add table
-          </button>
+          <>
+            <button
+              onClick={openAddModal}
+              className="hidden sm:flex bg-brand text-white items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors "
+            >
+              + Add table
+            </button>
+            <button
+              onClick={openAddModal}
+              className="sm:hidden bg-brand text-white fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl font-bold transition-colors"
+            >
+              +
+            </button>
+          </>
         )}
       </div>
       <div className="flex gap-2 mb-6 flex-wrap">

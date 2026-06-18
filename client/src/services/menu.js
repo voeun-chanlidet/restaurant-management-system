@@ -5,13 +5,17 @@ const getAllMenus = async () => {
   return response.data;
 };
 
-const createMenu = async (newObject) => {
-  const response = await api.post("/menus", newObject);
+const createMenu = async (formData) => {
+  const response = await api.post("/menus", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return response.data;
 };
 
-const updateMenu = async (id, newObject) => {
-  const response = await api.patch(`/menus/${id}`, newObject);
+const updateMenu = async (id, formData) => {
+  const response = await api.patch(`/menus/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return response.data;
 };
 

@@ -4,13 +4,13 @@ import UserService from "../../services/user";
 import UserTable from "./UserTable";
 import UserModal from "./UserModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
+import toast from "react-hot-toast";
 
-export default function UserPage() {
+const UserPage = () => {
   const { user: currentUser } = useAuth();
 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   // Modal state
   const [showUserModal, setShowUserModal] = useState(false);
@@ -29,12 +29,10 @@ export default function UserPage() {
   async function fetchUsers() {
     try {
       setLoading(true);
-      setError(null);
       const data = await UserService.getUsers();
       setUsers(data.users);
-      console.log(data.users);
     } catch (err) {
-      setError("Failed to load users. Please try again.");
+      toast.error("Failed to load users. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -83,9 +81,11 @@ export default function UserPage() {
         const payload = { ...formData };
         if (!payload.password) delete payload.password;
         await UserService.updateUser(selectedUser.id, payload);
+        toast.success("User updated successfully");
       } else {
         // Create mode
         await UserService.createUser(formData);
+        toast.success("User created successfully");
       }
       handleCloseUserModal();
       await fetchUsers();
@@ -94,6 +94,7 @@ export default function UserPage() {
         err?.response?.data?.message ||
         "Something went wrong. Please try again.";
       setFormError(message);
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -103,13 +104,18 @@ export default function UserPage() {
     if (!userToDelete) return;
     setSubmitting(true);
     try {
-      await UserService.deleteUser(userToDelete.id);
+      if (userToDelete.isActive) {
+        await UserService.deleteUser(userToDelete.id);
+        toast.success("User deactivated successfully");
+      } else {
+        await UserService.updateUser(userToDelete.id, { isActive: true });
+        toast.success("User activated successfully");
+      }
       handleCloseDeleteModal();
       await fetchUsers();
     } catch (err) {
-      // Close modal anyway — show a page-level error if needed
       handleCloseDeleteModal();
-      setError("Failed to deactivate user. Please try again.");
+      toast.error("Failed to update user status. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -128,20 +134,27 @@ export default function UserPage() {
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[var(--color-heading)]">
+          <h1 className="text-2xl font-semibold text-heading">
             User Management
           </h1>
-          <p className="text-sm text-[var(--color-dimmed)] mt-0.5">
+          <p className="text-sm text-dimmed mt-0.5">
             Manage staff accounts and role assignments
           </p>
         </div>
-        <button
-          onClick={handleOpenCreate}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-[#0e0e0e] font-medium text-sm transition-colors"
-        >
-          <span className="text-lg leading-none">+</span>
-          Add User
-        </button>
+        <>
+          <button
+            onClick={handleOpenCreate}
+            className="hidden sm:flex bg-brand text-white items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg transition-colors "
+          >
+            + Add User
+          </button>
+          <button
+            onClick={handleOpenCreate}
+            className="sm:hidden bg-brand text-white fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl font-bold transition-colors"
+          >
+            +
+          </button>
+        </>
       </div>
 
       {/* ── Stats strip ── */}
@@ -154,24 +167,17 @@ export default function UserPage() {
         ].map(({ label, value }) => (
           <div
             key={label}
-            className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-xl px-4 py-3"
+            className="bg-panel border border-panel-border rounded-xl px-4 py-3"
           >
-            <p className="text-xs text-[var(--color-dimmed)] uppercase tracking-wider">
+            <p className="text-xs text-dimmed uppercase tracking-wider">
               {label}
             </p>
-            <p className="text-2xl font-semibold text-[var(--color-heading)] mt-0.5">
+            <p className="text-2xl font-semibold text-heading mt-0.5">
               {value}
             </p>
           </div>
         ))}
       </div>
-
-      {/* ── Error banner ── */}
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg px-4 py-3 text-sm">
-          {error}
-        </div>
-      )}
 
       {/* ── Table ── */}
       <UserTable
@@ -203,4 +209,6 @@ export default function UserPage() {
       )}
     </div>
   );
-}
+};
+
+export default UserPage;

@@ -10,6 +10,11 @@ const login = async (email, password) => {
   const isMatch = await comparePassword(password, user.password);
   if (!isMatch) throw new Error("Invalide password!");
 
+  if (!user.isActive)
+    throw new Error(
+      "Account is deactivated. Please contact your administrator.",
+    );
+
   const token = signToken({ id: user.id, role: user.role });
   return {
     token,

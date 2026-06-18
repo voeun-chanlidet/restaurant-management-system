@@ -44,7 +44,7 @@ async function generateReceiptBuffer(paymentId) {
 
   // Change these two lines
   const session = payment.session; // was payment.TableSession
-  const orders = session.orders;
+  const orders = session.orders.filter((o) => o.status !== "CANCELLED");
   const table = session.table;
   const total = parseFloat(payment.totalAmount);
 
@@ -139,7 +139,7 @@ async function generateReceiptBuffer(paymentId) {
 
   if (payment.method === "CASH") {
     doc.text(
-      `Amount tendered: ${currencySymbol}${parseFloat(payment.amountTendered).toFixed(2)}`,
+      `Cash Received: ${currencySymbol}${parseFloat(payment.cashReceived).toFixed(2)}`,
     );
     doc.text(
       `Change: ${currencySymbol}${parseFloat(payment.change).toFixed(2)}`,

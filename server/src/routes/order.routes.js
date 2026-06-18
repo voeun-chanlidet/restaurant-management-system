@@ -38,6 +38,11 @@ orderRouter.patch(
   restrictTo("ADMIN", "STAFF", "KITCHEN"),
   updateOrderStatus,
 );
-orderRouter.patch("/:id/cancel", protect, restrictTo("ADMIN"), cancelOrder);
+orderRouter.patch(
+  "/:id/cancel",
+  protect,
+  restrictTo("ADMIN", "STAFF"),
+  cancelOrder,
+);
 
 module.exports = { orderRouter };

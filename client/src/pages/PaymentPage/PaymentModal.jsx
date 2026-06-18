@@ -2,22 +2,22 @@ import { useState } from "react";
 
 const PaymentModal = ({ order, onClose, onSubmit }) => {
   const [method, setMethod] = useState("CASH");
-  const [amountTendered, setAmountTendered] = useState("");
+  const [cashReceived, setCashReceived] = useState("");
 
   const total = parseFloat(order.total);
-  const tendered = parseFloat(amountTendered) || 0;
-  const change = method === "CASH" ? tendered - total : null;
+  const received = parseFloat(cashReceived) || 0;
+  const change = method === "CASH" ? received - total : null;
   const isInsufficient =
-    method === "CASH" && tendered < total && amountTendered !== "";
+    method === "CASH" && received < total && cashReceived !== "";
   const canSubmit =
-    method === "KHQR" || (method === "CASH" && tendered >= total);
+    method === "KHQR" || (method === "CASH" && received >= total);
 
   const handleSubmit = () => {
     if (!canSubmit) return;
     onSubmit({
       orderId: order.id,
       method,
-      amountTendered: method === "CASH" ? tendered : null,
+      cashReceived: method === "CASH" ? received : null,
     });
   };
 
@@ -78,7 +78,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
                   key={m}
                   onClick={() => {
                     setMethod(m);
-                    setAmountTendered("");
+                    setCashReceived("");
                   }}
                   className={`flex-1 py-2 rounded-lg text-sm font-medium border transition ${
                     method === m
@@ -96,12 +96,12 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
           {method === "CASH" && (
             <div>
               <p className="text-dimmed text-xs uppercase tracking-wider mb-2">
-                Amount Tendered
+                Cash Received
               </p>
               <input
                 type="number"
-                value={amountTendered}
-                onChange={(e) => setAmountTendered(e.target.value)}
+                value={cashReceived}
+                onChange={(e) => setCashReceived(e.target.value)}
                 placeholder={`Min $${total.toFixed(2)}`}
                 className={`w-full bg-input border rounded-lg px-4 py-2.5 text-heading text-sm outline-none transition ${
                   isInsufficient
@@ -114,7 +114,7 @@ const PaymentModal = ({ order, onClose, onSubmit }) => {
               )}
 
               {/* Change display */}
-              {tendered >= total && amountTendered !== "" && (
+              {received >= total && cashReceived !== "" && (
                 <div className="flex justify-between items-center mt-3 bg-input border border-(--color-panel-border) rounded-lg px-4 py-3">
                   <span className="text-dimmed text-sm">Change</span>
                   <span className="text-green-400 font-bold text-lg">

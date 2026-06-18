@@ -17,7 +17,7 @@ export default function DeleteConfirmModal({
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-sm bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-2xl shadow-2xl">
+      <div className="relative w-full max-w-sm bg-panel border border-panel-border rounded-2xl shadow-2xl">
         <div className="px-6 py-6 space-y-4">
           {/* Icon */}
           <div
@@ -57,10 +57,10 @@ export default function DeleteConfirmModal({
 
           {/* Text */}
           <div className="space-y-1">
-            <h3 className="text-base font-semibold text-[var(--color-heading)]">
+            <h3 className="text-base font-semibold text-heading">
               {actionLabel} {user.name}?
             </h3>
-            <p className="text-sm text-[var(--color-dimmed)] leading-relaxed">
+            <p className="text-sm text-dimmed leading-relaxed">
               {user.isActive
                 ? `This will prevent ${user.name} from logging in. Their data and history will be preserved. You can reactivate them at any time.`
                 : `This will restore ${user.name}'s access. They will be able to log in again immediately.`}
@@ -72,7 +72,7 @@ export default function DeleteConfirmModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 rounded-lg border border-[var(--color-panel-border)] text-sm font-medium text-[var(--color-dimmed)] hover:text-[var(--color-heading)] hover:bg-white/5 transition-colors"
+              className="flex-1 px-4 py-2.5 rounded-lg border border-panel-border text-sm font-medium text-dimmed hover:text-heading hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>

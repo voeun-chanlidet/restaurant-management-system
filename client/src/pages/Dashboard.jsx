@@ -328,7 +328,7 @@ export default function Dashboard() {
                       fontWeight: "500",
                     }}
                   >
-                    Table {p.order.tableNumber}
+                    Table {p.session?.table?.table_number ?? "—"}
                   </span>
                   <span
                     style={{ fontSize: "11px", color: "var(--color-dimmed)" }}
@@ -352,7 +352,7 @@ export default function Dashboard() {
                       fontWeight: "600",
                     }}
                   >
-                    ${parseFloat(p.order.total).toFixed(2)}
+                    ${parseFloat(p.totalAmount).toFixed(2)}
                   </span>
                   <span
                     style={{ fontSize: "11px", color: "var(--color-footer)" }}

@@ -79,16 +79,14 @@ const MenuSelector = ({ table, onConfirm, onCancel }) => {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-bold text-[var(--color-heading)]">
-            Select Items
-          </h2>
-          <p className="text-sm text-[var(--color-dimmed)]">
+          <h2 className="text-lg font-bold text-heading">Select Items</h2>
+          <p className="text-sm text-dimmed">
             Step 2 of 3 — Table {table.table_number}
           </p>
         </div>
         <button
           onClick={onCancel}
-          className="text-sm text-[var(--color-dimmed)] hover:text-[var(--color-heading)]"
+          className="text-sm text-dimmed hover:text-heading"
         >
           ✕ Cancel
         </button>
@@ -101,8 +99,8 @@ const MenuSelector = ({ table, onConfirm, onCancel }) => {
             onClick={() => setSelectedCategory(null)}
             className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
               selectedCategory === null
-                ? "bg-[var(--color-brand)] text-black font-semibold"
-                : "text-[var(--color-dimmed)] hover:text-[var(--color-heading)]"
+                ? "bg-brand text-black font-semibold"
+                : "text-dimmed hover:text-heading"
             }`}
           >
             All
@@ -113,8 +111,8 @@ const MenuSelector = ({ table, onConfirm, onCancel }) => {
               onClick={() => setSelectedCategory(cat.id)}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
                 selectedCategory === cat.id
-                  ? "bg-[var(--color-brand)] text-black font-semibold"
-                  : "text-[var(--color-dimmed)] hover:text-[var(--color-heading)]"
+                  ? "bg-brand text-black font-semibold"
+                  : "text-dimmed hover:text-heading"
               }`}
             >
               {cat.name}
@@ -129,12 +127,12 @@ const MenuSelector = ({ table, onConfirm, onCancel }) => {
             return (
               <div
                 key={menu.id}
-                className="bg-[var(--color-panel)] border border-[var(--color-panel-border)] rounded-xl p-3"
+                className="bg-panel border border-panel-border rounded-xl p-3"
               >
-                <p className="text-[var(--color-heading)] text-sm font-medium mb-1">
+                <p className="text-heading text-sm font-medium mb-1">
                   {menu.name}
                 </p>
-                <p className="text-[var(--color-brand)] text-sm font-semibold mb-3">
+                <p className="text-brand text-sm font-semibold mb-3">
                   ${parseFloat(menu.price).toLocaleString()}
                 </p>
 
@@ -143,16 +141,16 @@ const MenuSelector = ({ table, onConfirm, onCancel }) => {
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() => removeFromCart(menu.id)}
-                      className="w-7 h-7 rounded-full bg-[var(--color-input)] text-[var(--color-heading)] hover:bg-[var(--color-faint)] transition-all"
+                      className="w-7 h-7 rounded-full bg-input text-heading hover:bg-faint transition-all"
                     >
                       −
                     </button>
-                    <span className="text-[var(--color-heading)] font-semibold">
+                    <span className="text-heading font-semibold">
                       {cartItem.quantity}
                     </span>
                     <button
                       onClick={() => addToCart(menu)}
-                      className="w-7 h-7 rounded-full bg-[var(--color-brand)] text-black hover:bg-[var(--color-brand-hover)] transition-all"
+                      className="w-7 h-7 rounded-full bg-brand text-black hover:bg-brand-hover transition-all"
                     >
                       +
                     </button>
@@ -160,7 +158,7 @@ const MenuSelector = ({ table, onConfirm, onCancel }) => {
                 ) : (
                   <button
                     onClick={() => addToCart(menu)}
-                    className="w-full text-xs bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-black font-semibold py-1.5 rounded-lg transition-all"
+                    className="w-full text-xs bg-brand hover:bg-brand-hover text-black font-semibold py-1.5 rounded-lg transition-all"
                   >
                     Add
                   </button>
@@ -173,13 +171,13 @@ const MenuSelector = ({ table, onConfirm, onCancel }) => {
 
       {/* Footer */}
       {totalItems > 0 && (
-        <div className="mt-4 flex items-center justify-between pt-4 border-t border-[var(--color-panel-border)]">
-          <p className="text-[var(--color-dimmed)] text-sm">
+        <div className="mt-4 flex items-center justify-between pt-4 border-t border-panel-border">
+          <p className="text-dimmed text-sm">
             {totalItems} item{totalItems > 1 ? "s" : ""} selected
           </p>
           <button
             onClick={handleConfirm}
-            className="bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] text-black font-semibold px-5 py-2 rounded-lg text-sm"
+            className="bg-brand hover:bg-brand-hover text-black font-semibold px-5 py-2 rounded-lg text-sm"
           >
             Review Order →
           </button>

@@ -1,7 +1,11 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-const useOrderSocket = ({ onNewOrder, onOrderUpdate }) => {
+export default function useSessionSocket({
+  onNewOrder,
+  onOrderUpdate,
+  onOrderCancel,
+}) {
   const socketRef = useRef(null);
   useEffect(() => {
     const socket = io(
@@ -16,7 +20,7 @@ const useOrderSocket = ({ onNewOrder, onOrderUpdate }) => {
 
     socketRef.current = socket;
 
-    socket.on("connected", () => {
+    socket.on("connect", () => {
       console.log("Order connected : ", socket.id);
     });
 
@@ -39,6 +43,4 @@ const useOrderSocket = ({ onNewOrder, onOrderUpdate }) => {
       socket.disconnect();
     };
   }, [onNewOrder, onOrderUpdate]);
-};
-
-export default useOrderSocket;
+}

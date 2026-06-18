@@ -1,23 +1,26 @@
 # RMS Project — Progress Summary
 
 ## Project
+
 Restaurant Management System (POS) — single restaurant, not multi-tenant SaaS.
 
 ## Tech Stack
-| Layer | Choice |
-|---|---|
-| Runtime | Node.js (CommonJS — require/module.exports) |
-| Framework | Express |
-| Database | PostgreSQL on Aiven cloud |
-| ORM | Sequelize (switched from Prisma v7 due to SSL/engine issues) |
-| Auth | JWT + bcrypt |
-| Frontend | React + Vite |
-| Styling | Tailwind v4 with custom theme variables |
-| HTTP Client | Axios |
+
+| Layer       | Choice                                                       |
+| ----------- | ------------------------------------------------------------ |
+| Runtime     | Node.js (CommonJS — require/module.exports)                  |
+| Framework   | Express                                                      |
+| Database    | PostgreSQL on Aiven cloud                                    |
+| ORM         | Sequelize (switched from Prisma v7 due to SSL/engine issues) |
+| Auth        | JWT + bcrypt                                                 |
+| Frontend    | React + Vite                                                 |
+| Styling     | Tailwind v4 with custom theme variables                      |
+| HTTP Client | Axios                                                        |
 
 ---
 
 ## Backend Folder Structure (server/)
+
 ```
 server/
 ├── lib/
@@ -73,6 +76,7 @@ server/
 ```
 
 ## Frontend Folder Structure (client/src/)
+
 ```
 src/
 ├── components/
@@ -131,6 +135,7 @@ src/
 ---
 
 ## Completed Parts
+
 - Part 0 — Auth: register, login, JWT, role middleware
 - Part 1 — User Management: CRUD, admin-only, soft delete
 - Part 2 — Category & Menu: CRUD, associations, image URL
@@ -144,29 +149,37 @@ src/
 ## Models
 
 ### User
+
 `id, email, password, name, role (ADMIN|STAFF|KITCHEN), isActive, timestamps`
 
 ### Category
+
 `id, name, timestamps`
 
 ### Menu
+
 `id, name, price, imageUrl, isAvailable, categoryId FK, timestamps`
 
 ### Table
+
 `id, table_number, capacity, status (AVAILABLE|OCCUPIED|RESERVED|MAINTENANCE), shape (round|rect), timestamps`
 
 ### Order
+
 `id, tableId FK (nullable), tableNumber (snapshot), status (PENDING|IN_PROGRESS|READY|SERVED|CANCELLED), total, createdBy FK, timestamps`
 
 ### OrderItem
+
 `id, orderId FK, menuId FK (nullable), menuName (snapshot), price (snapshot), quantity, subtotal, timestamps`
 
 ### Payment
-`id, orderId FK (unique), method (CASH|KHQR, default CASH), amountTendered (nullable), change (nullable), processedBy FK, timestamps`
+
+`id, orderId FK (unique), method (CASH|KHQR, default CASH), cashReceived (nullable), change (nullable), processedBy FK, timestamps`
 
 ---
 
 ## Associations (models/index.js)
+
 ```js
 Category.hasMany(Menu, { foreignKey: "categoryId" });
 Menu.belongsTo(Category, { foreignKey: "categoryId" });
@@ -193,6 +206,7 @@ Payment.belongsTo(User, { foreignKey: "processedBy", as: "processor" });
 ---
 
 ## API Routes Done
+
 ```
 POST   /api/v1/auth/register
 POST   /api/v1/auth/login
@@ -237,11 +251,13 @@ GET    /api/v1/dashboard/summary
 ## Key Patterns
 
 ### Request flow
+
 ```
 Route → Controller → Service → Sequelize → DB
 ```
 
 ### Re-fetch pattern after create/update
+
 ```js
 const payment = await Payment.create({...});
 const freshPayment = await Payment.findByPk(payment.id, {
@@ -252,6 +268,7 @@ return freshPayment;
 ```
 
 ### Auth in AuthContext
+
 ```js
 localStorage.setItem("token", data.token);
 localStorage.setItem("user", JSON.stringify(data.user));
@@ -259,17 +276,22 @@ localStorage.setItem("user", JSON.stringify(data.user));
 ```
 
 ### useAuth hook
+
 ```js
 import { useAuth } from "../../contexts/AuthContext";
 const { user, token, loading } = useAuth();
 ```
 
 ### Role-based rendering
+
 ```jsx
-{user.role === "ADMIN" && <AdminOnlyComponent />}
+{
+  user.role === "ADMIN" && <AdminOnlyComponent />;
+}
 ```
 
 ### Loading guard in useEffect
+
 ```jsx
 useEffect(() => {
   if (loading) return;
@@ -281,19 +303,21 @@ useEffect(() => {
 ---
 
 ## Delete Strategy
-| Model | Strategy |
-|---|---|
-| User | Soft delete (isActive: false) |
-| Category | Hard delete + guard |
-| Menu | Hard delete + guard |
-| Table | Hard delete + guard |
-| Order | Never delete — CANCELLED status |
-| OrderItem | Never delete |
-| Payment | Never delete |
+
+| Model     | Strategy                        |
+| --------- | ------------------------------- |
+| User      | Soft delete (isActive: false)   |
+| Category  | Hard delete + guard             |
+| Menu      | Hard delete + guard             |
+| Table     | Hard delete + guard             |
+| Order     | Never delete — CANCELLED status |
+| OrderItem | Never delete                    |
+| Payment   | Never delete                    |
 
 ---
 
 ## Tailwind v4 Theme Variables
+
 ```css
 --color-brand: #c8a96e;
 --color-brand-hover: #b8943e;
@@ -314,17 +338,20 @@ useEffect(() => {
 ## Remaining Features (Priority Order — 1 week left)
 
 ### Must Do
+
 1. **Role separation** — Staff vs Admin views (hide admin-only pages/actions from Staff and Kitchen)
 2. **KDS (Kitchen Display System)** — real-time order status updates using Socket.io, dedicated /kitchen route for KITCHEN role
 3. **PDF receipt generation** — generate and download receipt after payment
 
 ### Skip (not enough time)
+
 - Reservations
 - Audit log
 
 ---
 
 ## Working Style
+
 - Lidet writes backend logic himself, asks Claude for logic in English first, then Claude reviews the code
 - Claude writes frontend code directly
 - Move fast, build iteratively, one step at a time

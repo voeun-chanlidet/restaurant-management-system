@@ -1,3 +1,4 @@
+const { getIO } = require("../../lib/socket");
 const {
   Order,
   OrderItem,
@@ -147,6 +148,23 @@ const updateOrderStatus = async (id, status, userRole) => {
   ];
   if (!allowedStatuses.includes(status)) throw new Error("Invalid status!");
 
+  const STATUS_FLOW = {
+    PENDING: ["IN_PROGRESS", "CANCELLED"],
+    IN_PROGRESS: ["READY", "CANCELLED"],
+    READY: ["SERVED", "CANCELLED"],
+    SERVED: [],
+    CANCELLED: [],
+  };
+
+  const allowedNext = STATUS_FLOW[order.status];
+  if (!allowedNext.includes(status)) {
+    throw new Error(`Cannot move order from ${order.status} to ${status}!`);
+  }
+  // KITCHEN can only move IN_PROGRESS → READY
+  if (userRole === "KITCHEN" && order.status !== "IN_PROGRESS") {
+    throw new Error("Kitchen can only mark IN_PROGRESS orders as Ready!");
+  }
+
   // KITCHEN can only move status forward — not cancel
   if (userRole === "KITCHEN" && status === "CANCELLED") {
     throw new Error("Kitchen cannot cancel orders!");
@@ -231,6 +249,8 @@ const cancelOrder = async (id, userRole) => {
       { model: User, as: "creator", attributes: ["id", "name"] },
     ],
   });
+  const io = getIO();
+  io.to(["kitchen", "staff", "admin"]).emit("order:cancelled", canceledOrder);
 
   return canceledOrder;
 };

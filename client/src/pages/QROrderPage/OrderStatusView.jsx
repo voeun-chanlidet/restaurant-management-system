@@ -178,25 +178,22 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
           );
         })}
 
-        {/* Add more items */}
-        {!allServed && (
-          <button
-            onClick={onAddMore}
-            className="w-full border-2 border-dashed border-[#c8a96e]/40 rounded-2xl py-4 text-sm font-semibold text-[#c8a96e] flex items-center justify-center gap-2 active:bg-[#c8a96e]/5 transition-colors"
+        <button
+          onClick={onAddMore}
+          className="w-full border-2 border-dashed border-[#c8a96e]/40 rounded-2xl py-4 text-sm font-semibold text-[#c8a96e] flex items-center justify-center gap-2 active:bg-[#c8a96e]/5 transition-colors"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            className="w-4 h-4"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              className="w-4 h-4"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            Add more items
-          </button>
-        )}
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Add more items
+        </button>
 
         {/* All served */}
         {allServed && (

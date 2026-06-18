@@ -35,6 +35,14 @@ Setting.init(
       type: DataTypes.ENUM("USD", "KHR"),
       defaultValue: "USD",
     },
+    exchange_rate: {
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 4100.0,
+    },
+    khqr_image_url: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     logo_url: {
       type: DataTypes.STRING,
       allowNull: true,

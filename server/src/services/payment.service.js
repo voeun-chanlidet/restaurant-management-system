@@ -7,15 +7,33 @@ const {
   Table,
 } = require("../models/index");
 const { closeSession } = require("./session.service");
+const { Op } = require("sequelize");
 
 const createPayment = async (data, userId) => {
-  let { sessionId, method, amountTendered } = data;
+  let { sessionId, method, cashReceived } = data;
   const session = await Table_Session.findByPk(sessionId);
   if (!session) throw new Error("Session not found!");
 
   if (session.status !== "OPEN") throw new Error("Session must be open!");
 
-  const orders = await Order.findAll({ where: { sessionId } });
+  const orders = await Order.findAll({
+    where: { sessionId, status: { [Op.ne]: "CANCELLED" } },
+  });
+  if (orders.length === 0)
+    throw new Error("Cannot pay a session with no orders!");
+
+  if (orders.length === 0)
+    throw new Error("Cannot pay a session with no orders!");
+
+  const unfinishedOrders = orders.filter(
+    (o) =>
+      o.status === "PENDING" ||
+      o.status === "IN_PROGRESS" ||
+      o.status === "READY",
+  );
+
+  if (unfinishedOrders.length > 0)
+    throw new Error("All orders must be Served before payment!");
 
   const grandTotal = orders.reduce(
     (sum, order) => sum + parseFloat(order.total),
@@ -24,13 +42,13 @@ const createPayment = async (data, userId) => {
 
   let change = null;
   if (method === "CASH") {
-    if (!amountTendered) throw new Error("Payment amount is required!");
-    if (amountTendered < grandTotal) throw new Error("Insufficient amount!");
+    if (!cashReceived) throw new Error("Payment amount is required!");
+    if (cashReceived < grandTotal) throw new Error("Insufficient amount!");
 
-    change = parseFloat(amountTendered) - parseFloat(grandTotal);
+    change = parseFloat(cashReceived) - parseFloat(grandTotal);
   }
   if (method === "KHQR") {
-    amountTendered = null;
+    cashReceived = null;
     change = null;
   }
 
@@ -38,7 +56,7 @@ const createPayment = async (data, userId) => {
     sessionId,
     method,
     totalAmount: grandTotal,
-    amountTendered,
+    cashReceived,
     change,
     processedBy: userId,
   });
@@ -50,7 +68,7 @@ const createPayment = async (data, userId) => {
       "sessionId",
       "method",
       "totalAmount",
-      "amountTendered",
+      "cashReceived",
       "change",
       "createdAt",
     ],
@@ -66,8 +84,9 @@ const createPayment = async (data, userId) => {
           },
           {
             model: Order,
-
-            attributes: ["id", "total"],
+            where: { status: { [Op.ne]: "CANCELLED" } },
+            required: false,
+            attributes: ["id", "total", "status"],
             include: [
               {
                 model: OrderItem,
@@ -94,7 +113,7 @@ const getPaymentBySession = async (data) => {
       "id",
       "sessionId",
       "method",
-      "amountTendered",
+      "cashReceived",
       "change",
       "createdAt",
     ],
@@ -136,8 +155,9 @@ const getAllPayments = async () => {
       "id",
       "sessionId",
       "method",
-      "amountTendered",
+      "cashReceived",
       "change",
+      "totalAmount",
       "createdAt",
     ],
     include: [

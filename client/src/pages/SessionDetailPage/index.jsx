@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import sessionService from "../../services/table_session";
 import OrderService from "../../services/order";
@@ -6,6 +6,8 @@ import TableStats from "./TableStats";
 import OrderCard from "./OrderCard";
 import MenuSelector from "../OrderPage/MenuSelector";
 import OrderSummary from "../OrderPage/OrderSummary";
+import useSessionSocket from "../../hooks/useSessionSocket";
+import toast from "react-hot-toast";
 
 const SessionDetailPage = () => {
   const { state } = useLocation();
@@ -47,13 +49,24 @@ const SessionDetailPage = () => {
     }
   };
 
-  const orderCount = orders.length;
-  const itemCount = orders.reduce(
+  const activeOrders = orders.filter((o) => o.status !== "CANCELLED");
+  const hasUnfinishedOrders = activeOrders.some(
+    (o) =>
+      o.status === "PENDING" ||
+      o.status === "IN_PROGRESS" ||
+      o.status === "READY",
+  );
+
+  const hasNoOrders = activeOrders.length === 0;
+
+  const orderCount = activeOrders.length;
+  const itemCount = activeOrders.reduce(
     (sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0),
     0,
   );
   const runningTotal = orders.reduce(
-    (sum, o) => sum + parseFloat(o.total || 0),
+    (sum, o) =>
+      o.status === "CANCELLED" ? sum : sum + parseFloat(o.total || 0),
     0,
   );
 
@@ -63,6 +76,40 @@ const SessionDetailPage = () => {
         minute: "2-digit",
       })
     : "";
+
+  const handleCloseEmpty = async () => {
+    try {
+      await sessionService.closeSession(session.id);
+      toast.success("Cancelled session successfully");
+      navigate("/dining");
+    } catch (err) {
+      navigate("/dining");
+      toast.error(err.response?.data?.message || "Failed to cancel session.");
+    }
+  };
+
+  // Socket
+  const handleNewOrder = useCallback((order) => {
+    if (order.sessionId === session.id) {
+      setOrders((prev) => [...prev, order]);
+    }
+  }, []);
+
+  const handleOrderUpdate = useCallback((order) => {
+    if (order.sessionId === session.id) {
+      setOrders((prev) => prev.map((o) => (o.id === order.id ? order : o)));
+    }
+  }, []);
+
+  const handleOrderCancel = useCallback((order) => {
+    setOrders((prev) => prev.map((o) => (o.id === order.id ? order : o)));
+  }, []);
+
+  useSessionSocket({
+    onNewOrder: handleNewOrder,
+    onOrderUpdate: handleOrderUpdate,
+    onOrderCancel: handleOrderCancel,
+  });
 
   return (
     <div className="p-6 md:p-8 max-w-5xl w-full min-h-screen mx-auto dynamic-transitions">
@@ -86,6 +133,14 @@ const SessionDetailPage = () => {
         </div>
         {!step && (
           <div className="flex gap-3 items-center">
+            {orders.length === 0 && (
+              <button
+                onClick={handleCloseEmpty}
+                className="text-sm text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-400/50 px-4 py-2 rounded-lg transition-colors"
+              >
+                Cancel Session
+              </button>
+            )}
             <button
               onClick={() => setStep("menu")}
               className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg border transition-all hover:bg-neutral-50 active:scale-95"
@@ -97,12 +152,20 @@ const SessionDetailPage = () => {
               + Add items
             </button>
             <button
+              disabled={hasUnfinishedOrders || hasNoOrders}
+              title={
+                hasNoOrders
+                  ? "No orders in this session"
+                  : hasUnfinishedOrders
+                    ? "All orders must be Ready or Served first"
+                    : ""
+              }
               onClick={() =>
                 navigate("/dining/payment", {
-                  state: { session, orders, runningTotal },
+                  state: { session, orders: activeOrders, runningTotal },
                 })
               }
-              className="flex items-center gap-1.5 text-sm font-semibold px-5 py-2 rounded-lg transition-all shadow-sm hover:opacity-90 active:scale-95"
+              className="flex items-center gap-1.5 text-sm font-semibold px-5 py-2 rounded-lg transition-all shadow-sm hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ background: "var(--color-brand)", color: "#0e0e0e" }}
             >
               Pay
