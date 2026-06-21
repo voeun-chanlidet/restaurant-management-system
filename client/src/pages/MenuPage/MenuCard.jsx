@@ -1,7 +1,10 @@
 import { useAuth } from "../../contexts/AuthContext";
+import { useSettings } from "../../contexts/SettingsContext";
+import { SquarePen } from "lucide-react";
 
 const MenuCard = ({ menu, onEdit, onDelete }) => {
   const { user } = useAuth();
+  const { formatPrice } = useSettings();
 
   return (
     <div className="rounded-xl overflow-hidden border border-panel-border bg-panel shadow-sm">
@@ -24,9 +27,7 @@ const MenuCard = ({ menu, onEdit, onDelete }) => {
           {menu.name}
         </p>
 
-        <p className="text-sm mt-1 text-dimmed">
-          ${parseFloat(menu.price).toFixed(2)}
-        </p>
+        <p className="text-sm mt-1 text-dimmed">{formatPrice(menu.price)}</p>
 
         <div className="flex items-center justify-between mt-4">
           <span
@@ -45,7 +46,7 @@ const MenuCard = ({ menu, onEdit, onDelete }) => {
                 onClick={() => onEdit(menu)}
                 className="text-sm text-dimmed hover:text-heading transition-colors"
               >
-                ✎
+                <SquarePen />
               </button>
 
               <button

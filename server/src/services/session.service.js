@@ -77,9 +77,13 @@ const closeSession = async (data) => {
   if (!session) throw new Error("Session not found!");
   if (session.status === "CLOSED") throw new Error("Session already closed");
 
-  const orders = await Order.findAll({ where: { sessionId } });
+  const orders = await Order.findAll({
+    where: { sessionId, status: ["PENDING", "IN_PROGRESS"] },
+  });
   if (orders.length > 0)
-    throw new Error("Cannot cancel a session that has orders!");
+    throw new Error(
+      "Cannot close a session with pending or in-progress orders!",
+    );
 
   await Table_Session.update(
     { closedAt: new Date(), status: "CLOSED" },

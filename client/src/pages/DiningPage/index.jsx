@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import FloorMap from "../../components/FloorMap";
-
 import ConfirmModal from "../../components/ConfirmModal";
 import tableService from "../../services/table";
 import sessionService from "../../services/table_session";
@@ -9,12 +8,11 @@ import useTableSocket from "./useTableSocket";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "RESERVED", "MAINTENANCE"];
+const FILTERS = ["ALL", "AVAILABLE", "OCCUPIED", "MAINTENANCE"];
 
 const DiningPage = () => {
   const [tables, setTables] = useState([]);
   const [filter, setFilter] = useState("ALL");
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
@@ -79,27 +77,64 @@ const DiningPage = () => {
     total: tables.length,
     available: tables.filter((t) => t.status === "AVAILABLE").length,
     occupied: tables.filter((t) => t.status === "OCCUPIED").length,
-    reserved: tables.filter((t) => t.status === "RESERVED").length,
+    maintenance: tables.filter((t) => t.status === "MAINTENANCE").length,
   };
 
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-medium text-heading">Floor map</h1>
-          <p className="text-xs text-dimmed mt-0.5">
-            {counts.total} tables · {counts.available} available ·{" "}
-            {counts.occupied} occupied · {counts.reserved} reserved
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-xl font-medium text-heading">Floor map</h1>
+        <p className="text-xs text-dimmed mt-0.5">
+          Monitor table availability and dining activity
+        </p>
+      </div>
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <div className="bg-panel border border-panel-border rounded-xl px-4 py-3">
+          <p className="text-[11px] text-dimmed mb-1 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-faint" />
+            Total tables
+          </p>
+          <p className="text-xl font-medium text-heading">{counts.total}</p>
+        </div>
+        <div className="bg-panel border border-panel-border rounded-xl px-4 py-3">
+          <p className="text-[11px] text-dimmed mb-1 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500" />
+            Available
+          </p>
+          <p className="text-xl font-medium text-green-500">
+            {counts.available}
+          </p>
+        </div>
+        <div className="bg-panel border border-panel-border rounded-xl px-4 py-3">
+          <p className="text-[11px] text-dimmed mb-1 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500" />
+            Occupied
+          </p>
+          <p className="text-xl font-medium text-orange-500">
+            {counts.occupied}
+          </p>
+        </div>
+        <div className="bg-panel border border-panel-border rounded-xl px-4 py-3">
+          <p className="text-[11px] text-dimmed mb-1 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-zinc-500" />
+            Maintenance
+          </p>
+          <p className="text-xl font-medium text-zinc-400">
+            {counts.maintenance}
           </p>
         </div>
       </div>
 
+      {/* Filters */}
       <div className="flex gap-2 mb-6 flex-wrap">
         {FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+            className={`text-xs px-3.5 py-1.5 rounded-full border transition-colors ${
               filter === f
                 ? "border-brand text-brand bg-brand/10"
                 : "border-panel-border text-dimmed hover:border-faint"
@@ -115,11 +150,9 @@ const DiningPage = () => {
           Loading tables...
         </p>
       )}
-
       {error && (
         <p className="text-sm text-red-500 py-12 text-center">{error}</p>
       )}
-
       {!loading && !error && (
         <FloorMap tables={filteredTables} onTableClick={handleTableClick} />
       )}
@@ -129,7 +162,7 @@ const DiningPage = () => {
         onClose={() => setShowSessionModal(false)}
         onConfirm={handleConfirmSession}
         message={`Open session for table ${selectedTable?.table_number}?`}
-        confirmLabel={"Open Session"}
+        confirmLabel="Open Session"
       />
     </div>
   );

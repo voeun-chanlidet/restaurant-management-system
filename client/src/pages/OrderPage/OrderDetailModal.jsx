@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { useSettings } from "../../contexts/SettingsContext";
 
 const STATUS_STYLES = {
   PENDING: "bg-yellow-100 text-yellow-700 border border-yellow-200",
@@ -25,6 +26,7 @@ const STATUS_BUTTON_LABEL = {
 
 const OrderDetailModal = ({ order, onClose, onStatusUpdate, onCancel }) => {
   const { user } = useContext(AuthContext);
+  const { formatPrice } = useSettings();
 
   const nextStatus = STATUS_FLOW[order.status];
   const isAdmin = user.role === "ADMIN";
@@ -34,10 +36,7 @@ const OrderDetailModal = ({ order, onClose, onStatusUpdate, onCancel }) => {
   const canAdvance =
     nextStatus !== null && !(isKitchen && order.status === "PENDING");
 
-  const canCancel =
-    (isAdmin || isStaff) &&
-    order.status !== "SERVED" &&
-    order.status !== "CANCELLED";
+  const canCancel = (isAdmin || isStaff) && order.status === "PENDING";
 
   const sourceLabel = order.creator
     ? `Staff (${order.creator.name})`
@@ -115,7 +114,7 @@ const OrderDetailModal = ({ order, onClose, onStatusUpdate, onCancel }) => {
                   {item.menuName}
                 </p>
                 <p className="text-dimmed text-xs">
-                  ${parseFloat(item.price).toFixed(2)} × {item.quantity}
+                  {formatPrice(item.price)} × {item.quantity}
                 </p>
                 {item.note && (
                   <p className="text-xs text-yellow-600 mt-0.5">
@@ -124,7 +123,7 @@ const OrderDetailModal = ({ order, onClose, onStatusUpdate, onCancel }) => {
                 )}
               </div>
               <span className="text-brand font-semibold text-sm shrink-0">
-                ${parseFloat(item.subtotal).toFixed(2)}
+                {formatPrice(item.subtotal)}
               </span>
             </div>
           ))}
@@ -138,9 +137,7 @@ const OrderDetailModal = ({ order, onClose, onStatusUpdate, onCancel }) => {
           </div>
           <div className="flex justify-between font-bold text-sm">
             <span className="text-heading">Total</span>
-            <span className="text-heading">
-              ${parseFloat(order.total).toFixed(2)}
-            </span>
+            <span className="text-heading">{formatPrice(order.total)}</span>
           </div>
         </div>
 

@@ -3,11 +3,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PaymentService from "../../services/payment";
 import api from "../../services/api";
 import ReceiptView from "./ReceiptView";
+import { useSettings } from "../../contexts/SettingsContext";
 
 const METHODS = ["CASH", "KHQR"];
 
 const SessionPaymentPage = () => {
   const { state } = useLocation();
+  const { formatPrice, khqrImageUrl, currency, exchangeRate } = useSettings();
   const navigate = useNavigate();
 
   const session = state?.session;
@@ -26,15 +28,17 @@ const SessionPaymentPage = () => {
     navigate("/dining");
     return null;
   }
+  const displayTotal =
+    currency === "KHR" ? Math.round(runningTotal * exchangeRate) : runningTotal;
 
   const change =
     method === "CASH" && cashReceived
-      ? parseFloat(cashReceived) - runningTotal
+      ? parseFloat(cashReceived) - displayTotal
       : null;
 
   const canSubmit =
     method !== "CASH" ||
-    (cashReceived && parseFloat(cashReceived) >= runningTotal);
+    (cashReceived && parseFloat(cashReceived) >= displayTotal);
 
   const handleConfirm = async () => {
     try {
@@ -43,7 +47,12 @@ const SessionPaymentPage = () => {
       const result = await PaymentService.createPayment({
         sessionId: session.id,
         method,
-        cashReceived: method === "CASH" ? parseFloat(cashReceived) : null,
+        cashReceived:
+          method === "CASH"
+            ? currency === "KHR"
+              ? parseFloat(cashReceived) / exchangeRate // convert back to USD
+              : parseFloat(cashReceived)
+            : null,
       });
       // Store payment result — this triggers the paid view
       setPayment(result.payment);
@@ -190,6 +199,18 @@ const SessionPaymentPage = () => {
       <p className="text-xs text-dimmed uppercase tracking-wider mb-3">
         Payment Method
       </p>
+      {method === "KHQR" && khqrImageUrl && (
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <p className="text-xs text-dimmed uppercase tracking-wider">
+            Scan to pay
+          </p>
+          <img
+            src={khqrImageUrl}
+            alt="KHQR Code"
+            className="w-48 h-48 object-contain rounded-lg border border-panel-border"
+          />
+        </div>
+      )}
       <div className="flex gap-2 mb-6">
         {METHODS.map((m) => (
           <button
@@ -216,7 +237,7 @@ const SessionPaymentPage = () => {
             type="number"
             value={cashReceived}
             onChange={(e) => setCashReceived(e.target.value)}
-            placeholder={`Min $${runningTotal.toFixed(2)}`}
+            placeholder={`Min ${formatPrice(runningTotal)}`}
             className="w-full px-4 py-2 rounded-lg border text-heading text-sm"
             style={{
               borderColor: "var(--color-panel-border)",
@@ -225,7 +246,10 @@ const SessionPaymentPage = () => {
           />
           {change !== null && change >= 0 && (
             <p className="text-sm mt-2" style={{ color: "var(--color-brand)" }}>
-              Change: ${change.toFixed(2)}
+              Change:{" "}
+              {currency === "KHR"
+                ? `៛${Math.round(change).toLocaleString()}`
+                : `$${change.toFixed(2)}`}
             </p>
           )}
           {change !== null && change < 0 && (
@@ -244,7 +268,7 @@ const SessionPaymentPage = () => {
       >
         {loading
           ? "Processing..."
-          : `Confirm Payment · $${runningTotal.toFixed(2)}`}
+          : `Confirm Payment · ${formatPrice(runningTotal)}`}
       </button>
     </div>
   );

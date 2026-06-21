@@ -106,8 +106,8 @@ const cancelOrder = async (request, response) => {
 };
 const getUnpaidServedOrders = async (request, response) => {
   try {
-    const orders = await OrderServices.getUnpaidServedOrders();
-    return response.status(200).json({ orders });
+    const sessions = await OrderServices.getUnpaidServedOrders();
+    return response.status(200).json({ sessions });
   } catch (error) {
     return response.status(500).json({ error: error.message });
   }

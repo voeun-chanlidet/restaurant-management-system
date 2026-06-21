@@ -1,17 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap");
+
 @import "tailwindcss";
 
 @theme {
-  /* Brand */
+  /* Font Mapping - This automatically makes 'font-sans' use Inter & Kantumruy Pro */
+  --font-sans: "Inter", "Kantumruy Pro", sans-serif;
+
+  /* Brand Colors */
   --color-brand: #e63946;
   --color-brand-hover: #c1121f;
 
-  /* Background */
+  /* Backgrounds */
   --color-page: #f8f8f8;
   --color-panel: #ffffff;
   --color-panel-border: #e8e8e8;
   --color-input: #f2f2f2;
 
-  /* Text */
+  /* Text Colors */
   --color-heading: #111111;
   --color-dimmed: #888888;
   --color-faint: #cccccc;
@@ -26,16 +31,43 @@
   --color-success-text: #2e7d32;
   --color-danger-bg: #fdecea;
   --color-danger-text: #c62828;
+
+  /* Custom Borders */
+  --color-border: #e5e7eb;
 }
 
-@media print {
-  /* remove browser header and footer */
-  @page {
-    margin: 0;
+@layer base {
+  html,
+  body {
+    overscroll-behavior: none;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
   }
 
   body {
+    font-family: var(--font-sans);
+    background-color: var(--color-page);
+    color: var(--color-heading);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Print Styles */
+@media print {
+  @page {
     margin: 1.5cm;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: white;
+    margin: 0;
   }
 
   body * {

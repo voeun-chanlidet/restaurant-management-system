@@ -1,12 +1,9 @@
-const STATUS_STYLES = {
-  PENDING: "bg-yellow-100 text-yellow-700 border border-yellow-200",
-  IN_PROGRESS: "bg-blue-100 text-blue-700 border border-blue-200",
-  READY: "bg-green-100 text-green-700 border border-green-200",
-  SERVED: "bg-faint text-dimmed border border-faint",
-  CANCELLED: "bg-red-50 text-red-400 border border-red-100",
-};
+import { useSettings } from "../../contexts/SettingsContext";
+// import STATUS_STYLES from "../utils/statusStyles";
+import STATUS_STYLES from "../../utils/statusStyles";
 
 const OrderCard = ({ order, onClick }) => {
+  const { formatPrice } = useSettings();
   const isCancelled = order.status === "CANCELLED";
   const sourceLabel = order.creator
     ? `Staff (${order.creator.name})`
@@ -68,7 +65,7 @@ const OrderCard = ({ order, onClick }) => {
       <div className="flex items-center justify-between pt-3 border-t border-panel-border">
         <span className="text-xs text-dimmed">Items ({totalQty} qty)</span>
         <span className="text-brand font-bold text-sm">
-          ${parseFloat(order.total).toFixed(2)}
+          {formatPrice(order.total)}
         </span>
       </div>
     </div>

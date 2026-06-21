@@ -1,7 +1,11 @@
 // ─── Receipt View ────────────────────────────────────────────────────────────
 // Shared layout used in both bill (pre-payment) and receipt (post-payment).
 // When `payment` is null → bill view. When payment exists → full receipt.
+
+import { useSettings } from "../../contexts/SettingsContext";
+
 const ReceiptView = ({ session, orders, runningTotal, payment }) => {
+  const { formatPrice } = useSettings();
   const isPaid = !!payment;
 
   return (
@@ -36,7 +40,7 @@ const ReceiptView = ({ session, orders, runningTotal, payment }) => {
               Order #{index + 1}
             </p>
             <span className="text-sm text-dimmed">
-              ${parseFloat(order.total).toFixed(2)}
+              {formatPrice(order.total)}
             </span>
           </div>
           {order.items.map((item) => (
@@ -47,7 +51,7 @@ const ReceiptView = ({ session, orders, runningTotal, payment }) => {
               <span>
                 {item.menuName} x{item.quantity}
               </span>
-              <span>${parseFloat(item.subtotal).toFixed(2)}</span>
+              <span>{formatPrice(item.subtotal)}</span>
             </div>
           ))}
         </div>
@@ -66,7 +70,7 @@ const ReceiptView = ({ session, orders, runningTotal, payment }) => {
           className="text-lg font-bold"
           style={{ color: "var(--color-brand)" }}
         >
-          ${runningTotal.toFixed(2)}
+          {formatPrice(runningTotal)}
         </span>
       </div>
 

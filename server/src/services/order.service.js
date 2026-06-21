@@ -149,9 +149,9 @@ const updateOrderStatus = async (id, status, userRole) => {
   if (!allowedStatuses.includes(status)) throw new Error("Invalid status!");
 
   const STATUS_FLOW = {
-    PENDING: ["IN_PROGRESS", "CANCELLED"],
-    IN_PROGRESS: ["READY", "CANCELLED"],
-    READY: ["SERVED", "CANCELLED"],
+    PENDING: ["IN_PROGRESS"],
+    IN_PROGRESS: ["READY"],
+    READY: ["SERVED"],
     SERVED: [],
     CANCELLED: [],
   };
@@ -256,24 +256,53 @@ const cancelOrder = async (id, userRole) => {
 };
 
 const getUnpaidServedOrders = async () => {
-  return await Order.findAll({
-    where: { status: "SERVED" },
+  const sessions = await Table_Session.findAll({
+    where: { status: "OPEN" },
     include: [
       {
-        model: Table_Session,
-        where: { status: "OPEN" },
-        required: true,
-        attributes: [],
+        model: Table,
+        attributes: ["id", "table_number"],
       },
       {
-        model: OrderItem,
-        as: "items",
-        attributes: ["menuName", "price", "quantity", "subtotal"],
+        model: Order,
+        as: "orders",
+        where: { status: "SERVED" },
+        required: true,
+        include: [
+          {
+            model: OrderItem,
+            as: "items",
+            attributes: ["menuName", "price", "quantity", "subtotal"],
+          },
+          { model: User, as: "creator", attributes: ["id", "name"] },
+        ],
+        attributes: [
+          "id",
+          "tableNumber",
+          "total",
+          "status",
+          "orderType",
+          "createdAt",
+        ],
       },
-      { model: User, as: "creator", attributes: ["id", "name"] },
     ],
-    attributes: ["id", "tableNumber", "total", "createdAt"],
-    order: [["createdAt", "ASC"]],
+    attributes: ["id", "openedAt", "status"],
+    order: [["openedAt", "ASC"]],
+  });
+
+  return sessions.map((session) => {
+    const orders = session.orders;
+    const runningTotal = orders.reduce((sum, o) => sum + Number(o.total), 0);
+    const allItems = orders.flatMap((o) => o.items);
+
+    return {
+      id: session.id,
+      tableNumber: session.table?.table_number,
+      openedAt: session.openedAt,
+      runningTotal,
+      orders,
+      allItems,
+    };
   });
 };
 

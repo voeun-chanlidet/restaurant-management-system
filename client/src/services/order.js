@@ -26,7 +26,7 @@ const cancelOrder = async (id) => {
 };
 const getUnpaidServedOrders = async () => {
   const response = await api.get("/orders/unpaid");
-  return response.data;
+  return response.data.sessions;
 };
 
 export default {

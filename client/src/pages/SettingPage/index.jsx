@@ -3,22 +3,13 @@ import SettingService from "../../services/setting";
 import Field from "./Field";
 import Section from "./Section";
 import toast from "react-hot-toast";
+
 const FIELDS = [
-  {
-    key: "restaurant_name",
-    label: "Restaurant Name",
-    type: "text",
-    required: true,
-  },
-  { key: "address", label: "Address", type: "text", required: false },
-  { key: "phone", label: "Phone", type: "text", required: false },
-  {
-    key: "footer_message",
-    label: "Receipt Footer Message",
-    type: "text",
-    required: false,
-  },
-  { key: "logo_url", label: "Logo URL", type: "text", required: false },
+  { key: "restaurant_name", label: "Restaurant Name", required: true },
+  { key: "address", label: "Address", required: false },
+  { key: "phone", label: "Phone", required: false },
+  { key: "footer_message", label: "Receipt Footer Message", required: false },
+  { key: "logo_url", label: "Logo URL", required: false },
 ];
 
 const SettingsPage = () => {
@@ -28,14 +19,16 @@ const SettingsPage = () => {
     phone: "",
     footer_message: "",
     currency: "USD",
+    exchange_rate: 4100,
     logo_url: "",
   });
+  const [khqrFile, setKhqrFile] = useState(null);
+  const [khqrPreview, setKhqrPreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  // const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchSettings = async () => {
       try {
         const settings = await SettingService.getSettings();
         setForm({
@@ -44,8 +37,12 @@ const SettingsPage = () => {
           phone: settings.phone || "",
           footer_message: settings.footer_message || "",
           currency: settings.currency || "USD",
+          exchange_rate: settings.exchange_rate || 4100,
           logo_url: settings.logo_url || "",
         });
+        if (settings.khqr_image_url) {
+          setKhqrPreview(settings.khqr_image_url);
+        }
       } catch (error) {
         toast.error(
           error.response?.data?.error ||
@@ -55,12 +52,18 @@ const SettingsPage = () => {
         setLoading(false);
       }
     };
-    fetch();
+    fetchSettings();
   }, []);
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
-    // setSaved(false);
+  };
+
+  const handleKhqrFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setKhqrFile(file);
+    setKhqrPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async () => {
@@ -70,9 +73,19 @@ const SettingsPage = () => {
     }
     setSaving(true);
     try {
-      await SettingService.updateSettings(form);
+      const formData = new FormData();
+      formData.append("restaurant_name", form.restaurant_name);
+      formData.append("address", form.address);
+      formData.append("phone", form.phone);
+      formData.append("footer_message", form.footer_message);
+      formData.append("currency", form.currency);
+      formData.append("exchange_rate", form.exchange_rate);
+      formData.append("logo_url", form.logo_url);
+      if (khqrFile) {
+        formData.append("khqrImage", khqrFile);
+      }
+      await SettingService.updateSettings(formData);
       toast.success("Settings saved successfully.");
-      // setSaved(true);
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
@@ -93,6 +106,15 @@ const SettingsPage = () => {
     );
   }
 
+  const inputStyle = {
+    background: "var(--color-input)",
+    border: "1px solid var(--color-panel-border)",
+    color: "var(--color-heading)",
+  };
+
+  const inputClass =
+    "w-full px-3 py-2 rounded-lg text-sm outline-none transition-colors";
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
@@ -108,7 +130,7 @@ const SettingsPage = () => {
         </p>
       </div>
 
-      {/* Restaurant Info Section */}
+      {/* Restaurant Info */}
       <Section title="Restaurant Info">
         {FIELDS.map(({ key, label, required }) => (
           <Field key={key} label={label} required={required}>
@@ -117,24 +139,20 @@ const SettingsPage = () => {
               value={form[key]}
               onChange={(e) => handleChange(key, e.target.value)}
               placeholder={`Enter ${label.toLowerCase()}`}
-              className="w-full px-3 py-2 rounded-lg text-sm outline-none transition-colors"
-              style={{
-                background: "var(--color-input)",
-                border: "1px solid var(--color-panel-border)",
-                color: "var(--color-heading)",
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = "var(--color-brand)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "var(--color-panel-border)";
-              }}
+              className={inputClass}
+              style={inputStyle}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "var(--color-brand)")
+              }
+              onBlur={(e) =>
+                (e.target.style.borderColor = "var(--color-panel-border)")
+              }
             />
           </Field>
         ))}
       </Section>
 
-      {/* Currency Section */}
+      {/* Currency */}
       <Section title="Currency">
         <Field label="Display Currency" required={false}>
           <div className="flex gap-3">
@@ -164,16 +182,62 @@ const SettingsPage = () => {
             ))}
           </div>
         </Field>
+
+        {form.currency === "KHR" && (
+          <Field label="Exchange Rate (1 USD = ? KHR)" required={false}>
+            <input
+              type="number"
+              value={form.exchange_rate}
+              onChange={(e) =>
+                handleChange("exchange_rate", parseFloat(e.target.value))
+              }
+              placeholder="e.g. 4100"
+              className={inputClass}
+              style={inputStyle}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "var(--color-brand)")
+              }
+              onBlur={(e) =>
+                (e.target.style.borderColor = "var(--color-panel-border)")
+              }
+            />
+          </Field>
+        )}
       </Section>
 
-      {/* Error */}
-      {/* {error && (
-        <p className="text-sm mb-4" style={{ color: "#e57373" }}>
-          {error}
-        </p>
-      )} */}
+      {/* KHQR */}
+      <Section title="KHQR Payment">
+        <Field label="KHQR Image" required={false}>
+          <div className="flex flex-col gap-2">
+            {khqrPreview && (
+              <img
+                src={khqrPreview}
+                alt="KHQR Preview"
+                className="w-40 h-40 object-contain rounded-lg border border-panel-border"
+              />
+            )}
+            <label
+              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors"
+              style={{
+                border: "1px dashed var(--color-panel-border)",
+                color: "var(--color-dimmed)",
+              }}
+            >
+              <span>
+                {khqrPreview ? "Change KHQR image" : "Upload KHQR image"}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleKhqrFileChange}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </Field>
+      </Section>
 
-      {/* Save Button */}
+      {/* Save */}
       <div className="flex items-center gap-4 mt-6">
         <button
           onClick={handleSubmit}
@@ -187,12 +251,6 @@ const SettingsPage = () => {
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>
-
-        {/* {saved && (
-          <p className="text-sm" style={{ color: "var(--color-brand)" }}>
-            ✓ Settings saved
-          </p>
-        )} */}
       </div>
     </div>
   );

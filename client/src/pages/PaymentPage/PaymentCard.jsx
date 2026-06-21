@@ -1,32 +1,52 @@
-const PaymentCard = ({ order, onClick }) => {
+import { useNavigate } from "react-router-dom";
+import { useSettings } from "../../contexts/SettingsContext";
+
+const PaymentCard = ({ session }) => {
+  const { formatPrice } = useSettings();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/dining/payment", {
+      state: {
+        session: {
+          id: session.id,
+          openedAt: session.openedAt,
+          table: { table_number: session.tableNumber },
+        },
+        orders: session.orders,
+        runningTotal: session.runningTotal,
+      },
+    });
+  };
+
   return (
     <div
-      onClick={() => onClick(order)}
+      onClick={handleClick}
       className="bg-panel border border-panel-border rounded-xl p-4 cursor-pointer hover:brightness-110 transition"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <span className="text-heading font-semibold text-sm">
-          Table {order.tableNumber}
+          Table {session.tableNumber ?? "—"}
         </span>
-        <span className="text-xs px-2 py-1 rounded-full font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-          SERVED
+        <span className="text-xs px-2 py-1 rounded-full font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+          UNPAID
         </span>
       </div>
 
       {/* Items preview */}
       <div className="mb-3 space-y-1">
-        {order.items.slice(0, 3).map((item, index) => (
+        {session.allItems.slice(0, 3).map((item, index) => (
           <div key={index} className="flex justify-between text-xs text-dimmed">
             <span>
               {item.menuName} x{item.quantity}
             </span>
-            <span>${parseFloat(item.subtotal).toFixed(2)}</span>
+            <span>{formatPrice(item.subtotal)}</span>
           </div>
         ))}
-        {order.items.length > 3 && (
+        {session.allItems.length > 3 && (
           <p className="text-xs text-dimmed">
-            +{order.items.length - 3} more items
+            +{session.allItems.length - 3} more items
           </p>
         )}
       </div>
@@ -34,10 +54,10 @@ const PaymentCard = ({ order, onClick }) => {
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-panel-border pt-3">
         <span className="text-xs text-dimmed">
-          by {order.creator?.name || "Customer via QR"}
+          {session.orders.length} order{session.orders.length !== 1 && "s"}
         </span>
         <span className="text-sm font-semibold text-brand">
-          ${parseFloat(order.total).toFixed(2)}
+          {formatPrice(session.runningTotal)}
         </span>
       </div>
     </div>

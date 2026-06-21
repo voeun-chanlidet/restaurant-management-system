@@ -3,6 +3,7 @@ const {
   Order,
   Payment,
   OrderItem,
+  Menu,
   User,
   Table_Session,
   Table,
@@ -44,16 +45,21 @@ const getDashboardSummary = async () => {
   });
   const allTables = await Table.count();
   const activeTables = await Table.count({ where: { status: "OCCUPIED" } });
-  const topOrders = await OrderItem.findAll({
-    attributes: [
-      "menuName",
-      [sequelize.fn("SUM", sequelize.col("quantity")), "totalQuantity"],
-      [sequelize.fn("SUM", sequelize.col("subtotal")), "totalSubtotal"],
-    ],
-    group: ["menuName"],
-    order: [[sequelize.fn("SUM", sequelize.col("quantity")), "DESC"]],
-    limit: 5,
-  });
+
+  //it's a bit complex so using raw SQL for this one
+  const [topOrders] = await sequelize.query(`
+  SELECT 
+    oi."menu_name",
+    oi.menu_id AS "menuId",
+    SUM(oi.quantity) AS "totalQuantity",
+    SUM(oi.subtotal) AS "totalSubtotal",
+    m."image_url"
+  FROM order_items oi
+  LEFT JOIN menus m ON oi.menu_id = m.id
+  GROUP BY oi."menu_name", oi.menu_id, m."image_url"
+  ORDER BY SUM(oi.quantity) DESC
+  LIMIT 5
+`);
 
   const recentPayments = await Payment.findAll({
     attributes: ["id", "method", "totalAmount", "createdAt"],
@@ -74,7 +80,12 @@ const getDashboardSummary = async () => {
     todayOrders,
     activeTables,
     allTables,
-    topOrders,
+    topOrders: topOrders.map((item) => ({
+      menuName: item.menu_name,
+      totalQuantity: item.totalQuantity,
+      totalSubtotal: item.totalSubtotal,
+      imageUrl: item.image_url ?? null,
+    })),
     recentPayments,
   };
 };
