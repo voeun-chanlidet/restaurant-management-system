@@ -197,11 +197,13 @@ export default function QROrderPage() {
           menuId: c.menuId,
           quantity: c.quantity,
           note: c.note || undefined,
+          imageUrl: c.imageUrl || undefined,
         })),
       };
       console.log(payload);
       const res = await api.post("/qr/orders", payload);
       setPlacedOrders((prev) => [...prev, { ...res.data, items: cart }]);
+      console.log(placedOrders);
       clearCart();
       setCartOpen(false);
       setView("status");

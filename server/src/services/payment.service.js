@@ -10,7 +10,7 @@ const { closeSession } = require("./session.service");
 const { Op } = require("sequelize");
 
 const createPayment = async (data, userId) => {
-  let { sessionId, method, cashReceived } = data;
+  let { sessionId, method, cashReceived, currency, exchangeRate } = data;
   const session = await Table_Session.findByPk(sessionId);
   if (!session) throw new Error("Session not found!");
 
@@ -41,12 +41,35 @@ const createPayment = async (data, userId) => {
   );
 
   let change = null;
+  let cashReceivedKhr = null;
+  let cashReceivedUsd = null;
+  let changeKhr = null;
+  let changeUsd = null;
+
   if (method === "CASH") {
     if (!cashReceived) throw new Error("Payment amount is required!");
-    if (cashReceived < grandTotal) throw new Error("Insufficient amount!");
 
-    change = parseFloat(cashReceived) - parseFloat(grandTotal);
+    if (currency === "KHR") {
+      const grandTotalKhr = Math.round(grandTotal * exchangeRate);
+      if (parseFloat(cashReceived) < grandTotalKhr)
+        throw new Error("Insufficient amount!");
+
+      cashReceivedKhr = Math.round(parseFloat(cashReceived));
+      changeKhr = cashReceivedKhr - grandTotalKhr;
+      cashReceivedUsd = cashReceivedKhr / exchangeRate;
+      changeUsd = changeKhr / exchangeRate;
+      change = changeUsd;
+      cashReceived = cashReceivedUsd;
+    } else {
+      if (parseFloat(cashReceived) < grandTotal)
+        throw new Error("Insufficient amount!");
+
+      cashReceivedUsd = parseFloat(cashReceived);
+      changeUsd = cashReceivedUsd - grandTotal;
+      change = changeUsd;
+    }
   }
+
   if (method === "KHQR") {
     cashReceived = null;
     change = null;
@@ -58,9 +81,13 @@ const createPayment = async (data, userId) => {
     totalAmount: grandTotal,
     cashReceived,
     change,
+    cashReceivedKhr,
+    cashReceivedUsd,
+    changeKhr,
+    changeUsd,
+    displayCurrency: currency || "USD",
     processedBy: userId,
   });
-
   await closeSession({ sessionId });
   const freshPayment = await Payment.findByPk(payment.id, {
     attributes: [
@@ -70,6 +97,11 @@ const createPayment = async (data, userId) => {
       "totalAmount",
       "cashReceived",
       "change",
+      "cashReceivedKhr",
+      "cashReceivedUsd",
+      "changeKhr",
+      "changeUsd",
+      "displayCurrency",
       "createdAt",
     ],
     include: [
@@ -113,8 +145,14 @@ const getPaymentBySession = async (data) => {
       "id",
       "sessionId",
       "method",
+      "totalAmount",
       "cashReceived",
       "change",
+      "cashReceivedKhr",
+      "cashReceivedUsd",
+      "changeKhr",
+      "changeUsd",
+      "displayCurrency",
       "createdAt",
     ],
     include: [
@@ -155,9 +193,14 @@ const getAllPayments = async () => {
       "id",
       "sessionId",
       "method",
+      "totalAmount",
       "cashReceived",
       "change",
-      "totalAmount",
+      "cashReceivedKhr",
+      "cashReceivedUsd",
+      "changeKhr",
+      "changeUsd",
+      "displayCurrency",
       "createdAt",
     ],
     include: [

@@ -1,9 +1,13 @@
+import { useSettings } from "../../contexts/SettingsContext";
+import { QrCode, DollarSign } from "lucide-react";
+
 const METHOD_STYLES = {
-  CASH: "bg-[var(--color-faint)] text-dimmed border border-panel-border",
+  CASH: "bg-faint text-dimmed border border-panel-border",
   KHQR: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
 };
 
 const PaymentHistory = ({ payments, onCardClick }) => {
+  const { formatPrice } = useSettings();
   if (payments.length === 0) {
     return <p className="text-dimmed text-sm">No payments recorded yet.</p>;
   }
@@ -14,67 +18,85 @@ const PaymentHistory = ({ payments, onCardClick }) => {
         <div
           key={payment.id}
           onClick={() => onCardClick(payment)}
-          className="bg-panel border border-panel-border rounded-xl p-4"
+          className="bg-panel border border-panel-border rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between hover:brightness-110 transition gap-4"
         >
-          <div className="flex items-center justify-between mb-3">
+          {/* Left: Icon & Primary Info */}
+          <div className="flex items-center gap-4 md:w-1/4">
+            <div
+              className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
+                payment.method === "KHQR"
+                  ? "bg-blue-500/10 text-blue-400"
+                  : "bg-green-500/10 text-green-400"
+              }`}
+            >
+              {payment.method === "KHQR" ? (
+                <QrCode size={20} />
+              ) : (
+                <DollarSign size={20} />
+              )}
+            </div>
             <div>
               <p className="text-heading font-semibold text-sm">
-                Table {payment.session?.table?.table_number}
+                Table {payment.session?.table?.table_number ?? "—"}
               </p>
               <p className="text-dimmed text-xs mt-0.5">
-                {payment.session?.Orders?.length} order(s) · by{" "}
-                {payment.processor?.name}
+                {payment.session?.orders?.length} order(s) · by{" "}
+                {payment.processor?.name || "Admin"}
+              </p>
+              <p className="text-dimmed text-xs mt-0.5 md:hidden">
+                {new Date(payment.createdAt).toLocaleString()}
               </p>
             </div>
+          </div>
 
-            <div className="flex flex-col items-end gap-1">
+          {/* Middle: Desktop Stats (Hidden on mobile) */}
+          <div className="hidden md:flex items-center justify-between flex-1 px-4">
+            <div className="flex-1">
+              <p className="text-dimmed text-xs mb-1">Payment Method</p>
               <span
                 className={`text-xs px-2 py-1 rounded-full font-medium ${METHOD_STYLES[payment.method]}`}
               >
                 {payment.method}
               </span>
-              <span className="text-brand font-bold text-sm">
-                ${parseFloat(payment.totalAmount).toFixed(2)}
-              </span>
             </div>
-          </div>
 
-          <div className="space-y-1 mb-3">
-            {payment.session?.Orders?.flatMap((order) => order.items).map(
-              (item, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between text-xs text-dimmed"
-                >
-                  <span>
-                    {item.menuName} x{item.quantity}
-                  </span>
-                  <span>${parseFloat(item.subtotal).toFixed(2)}</span>
+            {payment.method === "CASH" ? (
+              <>
+                <div className="flex-1">
+                  <p className="text-dimmed text-xs mb-1">Cash Received</p>
+                  <p className="text-heading text-sm font-medium">
+                    <p className="text-heading text-sm font-medium">
+                      {formatPrice(parseFloat(payment.cashReceived || 0))}
+                    </p>
+                  </p>
                 </div>
-              ),
+                <div className="flex-1">
+                  <p className="text-dimmed text-xs mb-1">Change</p>
+                  <p className="text-green-400 text-sm font-medium">
+                    +{formatPrice(parseFloat(payment.change || 0))}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="flex-2"></div> /* Spacer for non-cash methods */
             )}
           </div>
 
-          {payment.method === "CASH" && (
-            <div className="flex gap-4 border-t border-panel-border pt-3">
-              <div>
-                <p className="text-dimmed text-xs">Cash Received</p>
-                <p className="text-heading text-sm font-medium">
-                  ${parseFloat(payment.cashReceived).toFixed(2)}
-                </p>
-              </div>
-              <div>
-                <p className="text-dimmed text-xs">Change</p>
-                <p className="text-green-400 text-sm font-medium">
-                  ${parseFloat(payment.change).toFixed(2)}
-                </p>
-              </div>
+          {/* Right: Total & Date */}
+          <div className="flex items-center justify-between md:justify-end gap-6 md:w-1/4">
+            <p className="text-dimmed text-xs hidden md:block w-full text-right">
+              {new Date(payment.createdAt).toLocaleString()}
+            </p>
+            <div className="flex flex-col items-end shrink-0">
+              <p className="text-dimmed text-xs mb-1 hidden md:block">
+                Total Paid
+              </p>
+              <p className="text-brand font-bold text-sm">
+                {formatPrice(parseFloat(payment.totalAmount))}
+              </p>
             </div>
-          )}
-
-          <p className="text-dimmed text-xs mt-3">
-            {new Date(payment.createdAt).toLocaleString()}
-          </p>
+            <span className="text-dimmed text-lg hidden md:block">›</span>
+          </div>
         </div>
       ))}
     </div>

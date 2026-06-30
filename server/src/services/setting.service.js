@@ -24,6 +24,11 @@ const getPublicSetting = async () => {
     currency: settings.currency,
     exchange_rate: settings.exchange_rate,
     khqr_image_url: settings.khqr_image_url,
+    logo_url: settings.logo_url,
+    restaurant_name: settings.restaurant_name,
+    address: settings.address,
+    phone: settings.phone,
+    footer_message: settings.footer_message,
   };
 };
 

@@ -1,11 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@400;700&display=swap");
 
 @import "tailwindcss";
 
 @theme {
   /* Font Mapping - This automatically makes 'font-sans' use Inter & Kantumruy Pro */
-  --font-sans: "Inter", "Kantumruy Pro", sans-serif;
-
+  --font-sans: "Inter", "Kantumruy Pro", "Noto Sans Khmer", sans-serif;
   /* Brand Colors */
   --color-brand: #e63946;
   --color-brand-hover: #c1121f;
@@ -40,6 +40,8 @@
   html,
   body {
     overscroll-behavior: none;
+    scroll-behavior: smooth;
+    /* overflow-x: hidden; */
   }
 
   input,
@@ -58,10 +60,19 @@
   }
 }
 
+@layer utilities {
+  /* Add this custom utility class */
+  .scroll-momentum {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Print Styles */
 @media print {
   @page {
-    margin: 1.5cm;
+    /* CHANGED: Changed from 1.5cm to 0. A 1.5cm margin on a narrow 80mm receipt paper roll */
+    /* will squeeze your columns tightly and can cause text to clip into blank pages. */
+    margin: 0;
   }
 
   body {
@@ -80,9 +91,12 @@
   }
 
   .print-receipt {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    width: 80mm;
+    margin: 0 auto !important;
+    padding-top: 20px;
   }
 }
+
+/* * {
+  outline: 1px solid red;
+} */

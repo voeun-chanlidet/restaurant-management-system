@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PaymentService from "../../services/payment";
 import api from "../../services/api";
-import ReceiptView from "./ReceiptView";
 import { useSettings } from "../../contexts/SettingsContext";
-
-const METHODS = ["CASH", "KHQR"];
+import PaymentSuccess from "./PaymentSuccess";
+import CheckoutForm from "./CheckoutForm";
+import PrintableBill from "./PrintableBill";
+import toast from "react-hot-toast";
 
 const SessionPaymentPage = () => {
   const { state } = useLocation();
-  const { formatPrice, khqrImageUrl, currency, exchangeRate } = useSettings();
+  const settings = useSettings();
   const navigate = useNavigate();
 
   const session = state?.session;
@@ -20,25 +21,44 @@ const SessionPaymentPage = () => {
   const [cashReceived, setCashReceived] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // When this is set, we switch to the paid view
+  const [downloading, setDownloading] = useState(false);
   const [payment, setPayment] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+
+  useEffect(() => {
+    if (!session) return;
+
+    const checkExistingPayment = async () => {
+      try {
+        const result = await PaymentService.getPaymentBySession({
+          sessionId: session.id,
+        });
+        if (result.payment) {
+          toast.error("This session has already been paid.");
+          navigate("/dining");
+        }
+      } catch (err) {}
+    };
+
+    checkExistingPayment();
+  }, [session]);
 
   if (!session) {
     navigate("/dining");
     return null;
   }
-  const displayTotal =
-    currency === "KHR" ? Math.round(runningTotal * exchangeRate) : runningTotal;
 
+  const displayTotal =
+    settings.currency === "KHR"
+      ? Math.round(runningTotal * settings.exchangeRate)
+      : runningTotal;
   const change =
     method === "CASH" && cashReceived
       ? parseFloat(cashReceived) - displayTotal
       : null;
-
-  const canSubmit =
-    method !== "CASH" ||
-    (cashReceived && parseFloat(cashReceived) >= displayTotal);
+  const isCashSufficient =
+    cashReceived && parseFloat(cashReceived) >= displayTotal;
+  const canSubmit = method !== "CASH" || isCashSufficient;
 
   const handleConfirm = async () => {
     try {
@@ -47,14 +67,10 @@ const SessionPaymentPage = () => {
       const result = await PaymentService.createPayment({
         sessionId: session.id,
         method,
-        cashReceived:
-          method === "CASH"
-            ? currency === "KHR"
-              ? parseFloat(cashReceived) / exchangeRate // convert back to USD
-              : parseFloat(cashReceived)
-            : null,
+        cashReceived: method === "CASH" ? parseFloat(cashReceived) : null,
+        currency: settings.currency,
+        exchangeRate: settings.exchangeRate,
       });
-      // Store payment result — this triggers the paid view
       setPayment(result.payment);
     } catch (err) {
       setError(err.message);
@@ -65,212 +81,119 @@ const SessionPaymentPage = () => {
 
   const handleDownloadReceipt = async () => {
     try {
+      setDownloading(true);
       const response = await api.get(`/payments/${payment.id}/receipt`, {
-        responseType: "blob", // tells Axios to treat the response as binary data
+        responseType: "blob",
       });
-
-      // Create a temporary URL pointing to the blob
       const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      // Create a hidden link and click it to trigger download
       const link = document.createElement("a");
       link.href = url;
       link.setAttribute("download", `receipt-${payment.id}.pdf`);
       document.body.appendChild(link);
       link.click();
-
-      // Clean up
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Failed to download receipt", err);
+    } finally {
+      setDownloading(false);
     }
   };
-
-  const handlePrintBill = () => window.print();
-
-  // ── Paid state ──────────────────────────────────────────────────────────
-  if (payment) {
-    const paidOrders = (payment.session?.orders || orders).filter(
-      (o) => o.status !== "CANCELLED",
-    );
-    const total = parseFloat(payment.totalAmount);
-
+  if (showPreview) {
     return (
-      <div className="p-6 md:p-8 max-w-2xl mx-auto">
-        {/* Success header */}
-        <div className="mb-8">
-          <div
-            className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full mb-4"
-            style={{
-              background: "var(--color-brand)/15",
-              color: "var(--color-brand)",
-            }}
-          >
-            ✓ Payment confirmed
-          </div>
-          <h1 className="text-2xl font-semibold text-heading mb-1">
-            Table {session?.table?.table_number ?? "—"} · Receipt
-          </h1>
-          <p className="text-xs text-dimmed">
-            #{payment.id} · {new Date(payment.createdAt).toLocaleString()}
-          </p>
-        </div>
-
-        {/* Receipt — same component, now with payment data */}
-        <ReceiptView
-          session={payment.session ?? session}
-          orders={paidOrders}
-          runningTotal={total}
-          payment={payment}
+      <div className="min-h-screen bg-gray-100 py-10 ">
+        <PrintableBill
+          session={session}
+          orders={orders}
+          runningTotal={runningTotal}
+          settings={settings}
+          formatPrice={settings.formatPrice}
+          method={method}
         />
-
-        {/* Actions */}
-        <div className="flex gap-3">
+        <div className="print:hidden max-w-[80mm] mx-auto mt-5 grid grid-cols-2 gap-3 px-1">
+          {/* Back to Checkout Button */}
           <button
-            onClick={handlePrintBill}
-            className="flex-1 py-2.5 rounded-lg text-sm font-medium border transition-colors"
-            style={{
-              borderColor: "var(--color-panel-border)",
-              color: "var(--color-dimmed)",
-            }}
+            onClick={() => setShowPreview(false)}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-white border border-gray-300 text-gray-500 font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm hover:bg-gray-50 hover:text-gray-800 hover:border-gray-400 active:scale-[0.98] transition-all duration-200"
           >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              className="w-3.5 h-3.5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+              />
+            </svg>
+            Back to Checkout
+          </button>
+
+          {/* Print Receipt Button */}
+          <button
+            onClick={() => window.print()}
+            className="flex items-center justify-center gap-2 px-3 py-2.5 bg-red-50 border border-red-200 text-red-600 font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-sm hover:bg-red-100 hover:text-red-700 active:scale-[0.98] transition-all duration-200 whitespace-normal"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              className="w-3.5 h-3.5 shrink-0"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 1.252a1.125 1.125 0 0 1-1.107 1.323H7.218a1.125 1.125 0 0 1-1.107-1.323L6.34 18m11.32 0h-11.32M9 10.5h.008v.008H9V10.5Zm3 0h.008v.008H12V10.5Zm3 0h.008v.008H15V10.5M12 3v3.375c0 .621.504 1.125 1.125 1.125h3.625M18 3v18M6 3v18"
+              />
+            </svg>
             Print Receipt
           </button>
-          <button
-            onClick={handleDownloadReceipt}
-            className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-            style={{
-              background: "var(--color-brand)",
-              color: "#0e0e0e",
-            }}
-          >
-            Download PDF
-          </button>
         </div>
-
-        <button
-          onClick={() => navigate("/dining")}
-          className="w-full mt-3 py-2.5 rounded-lg text-sm text-dimmed hover:text-heading transition-colors"
-        >
-          Back to floor
-        </button>
       </div>
     );
   }
 
+  if (payment) {
+    return (
+      <PaymentSuccess
+        payment={payment}
+        session={session}
+        orders={orders}
+        downloading={downloading}
+        onDownloadReceipt={handleDownloadReceipt}
+        onBackToFloor={() => navigate("/dining")}
+        settings={settings}
+      />
+    );
+  }
+
   return (
-    <div className="p-6 md:p-8 max-w-2xl mx-auto">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-sm font-medium text-dimmed hover:text-heading transition-colors mb-6"
-      >
-        ← Back to session
-      </button>
-
-      <h1 className="text-2xl font-semibold text-heading mb-1">
-        Table {session?.table?.table_number} · Checkout
-      </h1>
-      <p className="text-xs text-dimmed mb-8">
-        {orders.length} order{orders.length !== 1 ? "s" : ""} · Session total
-      </p>
-
-      {/* Bill — same component, no payment data yet */}
-      <ReceiptView
+    <>
+      <CheckoutForm
         session={session}
         orders={orders}
         runningTotal={runningTotal}
-        payment={null}
+        method={method}
+        setMethod={setMethod}
+        cashReceived={cashReceived}
+        setCashReceived={setCashReceived}
+        change={change}
+        isCashSufficient={isCashSufficient}
+        canSubmit={canSubmit}
+        loading={loading}
+        error={error}
+        settings={settings}
+        onConfirm={handleConfirm}
+        onPrintBill={() => setShowPreview(true)}
+        onBack={() => navigate(-1)}
       />
-
-      {/* Print bill button — before payment */}
-      <button
-        onClick={handlePrintBill}
-        className="w-full py-2.5 rounded-lg text-sm font-medium border mb-6 transition-colors"
-        style={{
-          borderColor: "var(--color-panel-border)",
-          color: "var(--color-dimmed)",
-        }}
-      >
-        Print Bill
-      </button>
-
-      {/* Payment method */}
-      <p className="text-xs text-dimmed uppercase tracking-wider mb-3">
-        Payment Method
-      </p>
-      {method === "KHQR" && khqrImageUrl && (
-        <div className="mb-6 flex flex-col items-center gap-2">
-          <p className="text-xs text-dimmed uppercase tracking-wider">
-            Scan to pay
-          </p>
-          <img
-            src={khqrImageUrl}
-            alt="KHQR Code"
-            className="w-48 h-48 object-contain rounded-lg border border-panel-border"
-          />
-        </div>
-      )}
-      <div className="flex gap-2 mb-6">
-        {METHODS.map((m) => (
-          <button
-            key={m}
-            onClick={() => setMethod(m)}
-            className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
-              method === m
-                ? "border-brand text-brand bg-brand/10"
-                : "border-panel-border text-dimmed hover:border-faint"
-            }`}
-          >
-            {m}
-          </button>
-        ))}
-      </div>
-
-      {/* Cash input */}
-      {method === "CASH" && (
-        <div className="mb-6">
-          <p className="text-xs text-dimmed uppercase tracking-wider mb-2">
-            Cash Received
-          </p>
-          <input
-            type="number"
-            value={cashReceived}
-            onChange={(e) => setCashReceived(e.target.value)}
-            placeholder={`Min ${formatPrice(runningTotal)}`}
-            className="w-full px-4 py-2 rounded-lg border text-heading text-sm"
-            style={{
-              borderColor: "var(--color-panel-border)",
-              background: "var(--color-input)",
-            }}
-          />
-          {change !== null && change >= 0 && (
-            <p className="text-sm mt-2" style={{ color: "var(--color-brand)" }}>
-              Change:{" "}
-              {currency === "KHR"
-                ? `៛${Math.round(change).toLocaleString()}`
-                : `$${change.toFixed(2)}`}
-            </p>
-          )}
-          {change !== null && change < 0 && (
-            <p className="text-sm mt-2 text-red-500">Insufficient amount</p>
-          )}
-        </div>
-      )}
-
-      {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
-
-      <button
-        onClick={handleConfirm}
-        disabled={!canSubmit || loading}
-        className="w-full py-3 rounded-lg text-sm font-semibold transition-all disabled:opacity-40"
-        style={{ background: "var(--color-brand)", color: "#0e0e0e" }}
-      >
-        {loading
-          ? "Processing..."
-          : `Confirm Payment · ${formatPrice(runningTotal)}`}
-      </button>
-    </div>
+    </>
   );
 };
 

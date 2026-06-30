@@ -28,6 +28,31 @@ Payment.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
+    cashReceivedKhr: {
+      type: DataTypes.DECIMAL(12, 0),
+      allowNull: true,
+      field: "cash_received_khr",
+    },
+    changeKhr: {
+      type: DataTypes.DECIMAL(12, 0),
+      allowNull: true,
+      field: "change_khr",
+    },
+    cashReceivedUsd: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      field: "cash_received_usd",
+    },
+    changeUsd: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      field: "change_usd",
+    },
+    displayCurrency: {
+      type: DataTypes.STRING(3),
+      allowNull: true,
+      field: "display_currency",
+    },
     totalAmount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,

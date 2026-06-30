@@ -18,6 +18,7 @@ const getAllOrders = async () => {
       "tableNumber",
       "status",
       "total",
+      "orderType",
       "createdAt",
       "updatedAt",
     ],
@@ -25,7 +26,7 @@ const getAllOrders = async () => {
       {
         model: OrderItem,
         as: "items",
-        attributes: ["id", "menuName", "price", "quantity", "subtotal"],
+        attributes: ["id", "menuName", "price", "quantity", "subtotal", "note"],
       },
       { model: User, as: "creator", attributes: ["id", "name"] },
     ],
@@ -41,6 +42,7 @@ const getOrderById = async (id) => {
       "tableNumber",
       "status",
       "total",
+      "orderType",
       "createdAt",
       "updatedAt",
     ],
@@ -48,7 +50,15 @@ const getOrderById = async (id) => {
       {
         model: OrderItem,
         as: "items",
-        attributes: ["id", "menuName", "price", "quantity", "subtotal"],
+        attributes: [
+          "id",
+          "menuName",
+          "price",
+          "quantity",
+          "subtotal",
+          "note",
+          "imageUrl",
+        ],
       },
       { model: User, as: "creator", attributes: ["id", "name"] },
     ],
@@ -90,6 +100,7 @@ const createOrder = async (data, userId) => {
       menuId: menu.id,
       menuName: menu.name, // snapshot
       price: menu.price, // snapshot
+      imageUrl: menu.imageUrl, // snapshot
       quantity: item.quantity,
       note: item.note || null,
       subtotal,
@@ -126,7 +137,15 @@ const createOrder = async (data, userId) => {
       {
         model: OrderItem,
         as: "items",
-        attributes: ["id", "menuName", "price", "quantity", "subtotal", "note"],
+        attributes: [
+          "id",
+          "menuName",
+          "price",
+          "quantity",
+          "subtotal",
+          "note",
+          "imageUrl",
+        ],
       },
       { model: User, as: "creator", attributes: ["id", "name"] },
     ],

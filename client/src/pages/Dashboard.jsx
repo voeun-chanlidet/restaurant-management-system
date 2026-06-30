@@ -3,7 +3,7 @@ import dashboardServices from "../services/dashboard";
 import { useSettings } from "../contexts/SettingsContext";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import STATUS_STYLES from "../utils/statusStyles";
+import { STATUS_STYLES } from "../utils/orderStatus";
 import {
   TrendingUp,
   Receipt,

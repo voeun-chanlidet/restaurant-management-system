@@ -1,20 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  Utensils,
-} from "lucide-react";
+import { LogOut, ChevronLeft, ChevronRight, Utensils } from "lucide-react";
 import SidebarItem from "./SidebarItem";
 import { navGroups } from "./navItems";
 import { useAuth } from "../../contexts/AuthContext";
+import { useSettings } from "../../contexts/SettingsContext";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { logoUrl, restaurantName } = useSettings();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -67,7 +63,7 @@ const Sidebar = () => {
     <div className="shrink-0 px-4 py-4 flex flex-col gap-2 bg-white">
       {/* Profile Card */}
       <div
-        className={`flex items-center gap-3 rounded-xl border border-gray-100 shadow-sm p-2.5 mb-2 bg-white ${
+        className={`flex items-center gap-3 rounded-xl  p-2.5 mb-2 bg-white ${
           collapsed ? "justify-center" : "justify-between"
         }`}
       >
@@ -102,14 +98,6 @@ const Sidebar = () => {
             </div>
           )}
         </div>
-
-        {!collapsed && (
-          <ChevronDown
-            size={16}
-            strokeWidth={2}
-            className="text-gray-400 shrink-0"
-          />
-        )}
       </div>
 
       {/* Logout */}
@@ -149,17 +137,25 @@ const Sidebar = () => {
       {/* ── Desktop sidebar ── */}
       <aside
         className={`hidden lg:flex flex-col h-screen border-r border-gray-100 bg-white shrink-0 transition-all duration-300 ${
-          collapsed ? "w-20" : "w-[260px]"
+          collapsed ? "w-20" : "w-65"
         }`}
       >
         {/* Logo Area */}
         <div className="flex items-center gap-3 h-20 px-6 shrink-0 mt-2">
-          <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white shrink-0 shadow-sm shadow-red-200">
-            <Utensils size={18} strokeWidth={2.5} />
+          <div className="w-10 h-10 rounded-full bg-brand flex items-center justify-center text-white shrink-0 shadow-sm">
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Logo"
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <Utensils size={18} strokeWidth={2.5} />
+            )}
           </div>
           {!collapsed && (
-            <span className="text-[15px] font-extrabold tracking-widest text-red-600 uppercase">
-              Restaurant
+            <span className="text-[15px] font-extrabold tracking-widest text-brand uppercase">
+              {restaurantName || "Restaurant"}
             </span>
           )}
         </div>
@@ -179,7 +175,7 @@ const Sidebar = () => {
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className="block w-4 h-[2px] rounded-full bg-gray-600"
+              className="block w-4 h-0.5 rounded-full bg-gray-600"
             />
           ))}
         </button>
@@ -187,7 +183,15 @@ const Sidebar = () => {
         {/* Logo center */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white shadow-sm">
-            <Utensils size={14} strokeWidth={2.5} />
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Logo"
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <Utensils size={14} strokeWidth={2.5} />
+            )}
           </div>
         </div>
 
@@ -217,7 +221,7 @@ const Sidebar = () => {
 
       {/* ── Mobile: slide-in drawer ── */}
       <aside
-        className={`lg:hidden fixed top-0 left-0 z-50 flex flex-col h-full w-[280px] bg-white border-r border-gray-100 shadow-2xl transition-transform duration-300 ease-out ${
+        className={`lg:hidden fixed top-0 left-0 z-50 flex flex-col h-full w-70 bg-white border-r border-gray-100 shadow-2xl transition-transform duration-300 ease-out ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -225,10 +229,18 @@ const Sidebar = () => {
         <div className="flex items-center justify-between h-20 px-6 shrink-0 mt-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white shrink-0 shadow-sm">
-              <Utensils size={18} strokeWidth={2.5} />
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt="Logo"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <Utensils size={14} strokeWidth={2.5} />
+              )}
             </div>
-            <span className="text-[15px] font-extrabold tracking-widest text-red-600 uppercase">
-              Restaurant
+            <span className="text-[15px] font-extrabold tracking-widest text-brand uppercase">
+              {restaurantName || "Restaurant"}
             </span>
           </div>
           <button

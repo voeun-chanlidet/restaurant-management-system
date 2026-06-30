@@ -16,7 +16,6 @@ import PublicRoute from "./components/PublicRoute";
 import DiningPage from "./pages/DiningPage/index";
 import TablePage from "./pages/TablePage";
 import OrderPage from "./pages/OrderPage/index";
-import Reservation from "./pages/reservation";
 import PaymentPage from "./pages/PaymentPage";
 import KDSPage from "./pages/KDSPage/Kdspage";
 import SessionDetailPage from "./pages/SessionDetailPage";
@@ -114,16 +113,6 @@ function App() {
               <ProtectedRoute allowedRoles={["ADMIN", "STAFF"]}>
                 <Layout>
                   <OrderPage />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/reservations"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Reservation />
                 </Layout>
               </ProtectedRoute>
             }

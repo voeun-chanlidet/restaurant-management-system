@@ -5,6 +5,7 @@ import UserTable from "./UserTable";
 import UserModal from "./UserModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 import toast from "react-hot-toast";
+import { Users, UserCheck, ShieldCheck, UserCog } from "lucide-react";
 
 const UserPage = () => {
   const { user: currentUser } = useAuth();
@@ -158,23 +159,53 @@ const UserPage = () => {
       </div>
 
       {/* ── Stats strip ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: "Total Users", value: totalUsers },
-          { label: "Active", value: activeUsers },
-          { label: "Admins", value: adminCount },
-          { label: "Staff", value: staffCount + kitchenCount },
-        ].map(({ label, value }) => (
+          {
+            label: "Total Users",
+            value: totalUsers,
+            icon: Users,
+            colorClass: "text-red-500 bg-red-50",
+          },
+          {
+            label: "Active",
+            value: activeUsers,
+            icon: UserCheck,
+            colorClass: "text-emerald-500 bg-emerald-50",
+          },
+          {
+            label: "Admins",
+            value: adminCount,
+            icon: ShieldCheck,
+            colorClass: "text-red-500 bg-red-50",
+          },
+          {
+            label: "Staff",
+            value: staffCount + kitchenCount,
+            icon: UserCog,
+            colorClass: "text-blue-500 bg-blue-50",
+          },
+        ].map(({ label, value, icon: Icon, colorClass }) => (
           <div
             key={label}
-            className="bg-panel border border-panel-border rounded-xl px-4 py-3"
+            className="bg-white border border-gray-100 rounded-xl p-4 flex items-center gap-4 shadow-sm"
           >
-            <p className="text-xs text-dimmed uppercase tracking-wider">
-              {label}
-            </p>
-            <p className="text-2xl font-semibold text-heading mt-0.5">
-              {value}
-            </p>
+            {/* Icon Circle */}
+            <div
+              className={`flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-full ${colorClass}`}
+            >
+              <Icon size={20} strokeWidth={2} />
+            </div>
+
+            {/* Text Info */}
+            <div className="flex flex-col">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-0.5">
+                {label}
+              </p>
+              <p className="text-2xl font-bold text-gray-900 leading-none mt-1">
+                {value}
+              </p>
+            </div>
           </div>
         ))}
       </div>

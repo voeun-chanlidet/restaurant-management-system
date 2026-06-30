@@ -11,7 +11,7 @@ initSocket(server);
 
 const start = async () => {
   console.log("DB URL:", process.env.DATABASE_URL);
-  await sequelize.sync();
+  await sequelize.sync({ alter: true });
   server.listen(env.port, () => {
     console.log(`Server running on port ${env.port}`);
   });

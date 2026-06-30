@@ -1,15 +1,26 @@
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useState } from "react";
+import { useSettings } from "../../contexts/SettingsContext";
+import printReceipt from "../../utils/printReceipt";
 
 const PaymentDetailModal = ({ payment, onClose }) => {
   const allItems = payment.session?.orders?.flatMap((o) => o.items) || [];
-
-  const subtotal = allItems.reduce(
-    (sum, item) => sum + Number(item.subtotal),
-    0,
-  );
   const [downloading, setDownloading] = useState(false);
+  const {
+    formatPrice,
+    restaurantName,
+    address,
+    phone,
+    exchangeRate,
+    footerMessage,
+  } = useSettings();
+
+  const isKhr = payment?.displayCurrency === "KHR";
+  const displayCashReceived = isKhr
+    ? payment?.cashReceivedKhr
+    : payment?.cashReceivedUsd;
+  const displayChange = isKhr ? payment?.changeKhr : payment?.changeUsd;
 
   const handleDownloadReceipt = async () => {
     try {
@@ -35,147 +46,154 @@ const PaymentDetailModal = ({ payment, onClose }) => {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 "
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <div
-        className="bg-panel border border-panel-border rounded-2xl w-full max-w-sm overflow-y-auto max-h-[90vh]"
+        className="bg-white border border-gray-100 rounded-2xl w-full max-w-lg overflow-y-auto max-h-[90vh] shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex justify-between items-start p-6 border-b border-panel-border">
+        <div className="flex justify-between items-start p-6 border-b border-gray-100">
           <div>
-            <h2 className="text-2xl font-bold text-heading">
-              Payment #{payment.id}
-            </h2>
-
-            <p className="text-dimmed mt-1">
-              Table {payment.session?.table?.table_number ?? "—"}
-            </p>
-
-            <p className="text-xs text-dimmed mt-0.5">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-bold text-gray-900">Payment</h2>
+              <span className="bg-green-50 text-green-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">
+                PAID
+              </span>
+            </div>
+            <p className="text-gray-500 text-sm mt-1">
+              Table {payment.session?.table?.table_number ?? "—"} ·{" "}
               {new Date(payment.createdAt).toLocaleString()}
             </p>
           </div>
-
           <button
             onClick={onClose}
-            className="text-2xl text-dimmed hover:text-heading transition cursor-pointer"
+            className="text-gray-400 hover:text-gray-900 transition"
           >
             ✕
           </button>
         </div>
 
-        {/* Payment Info */}
-        <div className="px-6 py-5 border-b border-panel-border space-y-3">
+        {/* Metadata Grid */}
+        <div className="grid grid-cols-2 gap-4 p-6 border-b border-gray-100">
+          {[
+            {
+              label: "Processed By",
+              value: payment.processor?.name || "Admin",
+            },
+            { label: "Method", value: payment.method, highlight: true },
+            { label: "Status", value: "Paid", color: "text-green-600" },
+            {
+              label: "Receipt #",
+              value: `RCPT-${String(payment.id).padStart(5, "0") || "—"}`,
+            },
+          ].map((item, i) => (
+            <div key={i}>
+              <p className="text-[11px] text-gray-400 uppercase tracking-wide">
+                {item.label}
+              </p>
+              <p
+                className={`font-semibold text-sm ${item.color || "text-gray-900"}`}
+              >
+                {item.highlight ? (
+                  <span className="bg-green-50 text-green-600 px-2 py-0.5 rounded">
+                    {item.value}
+                  </span>
+                ) : (
+                  item.value
+                )}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Payment Summary Box */}
+        <div className="px-6 py-4 bg-gray-50/50">
+          <h3 className="text-xs font-bold text-gray-900 mb-3">
+            Payment Summary
+          </h3>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-dimmed">Processed By</span>
-            <span className="font-medium text-heading">
-              {payment.processor?.name ?? "—"}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-dimmed">Method</span>
-
-            <span
-              className={`px-2.5 py-1 rounded-full text-xs font-semibold
-              ${
-                payment.method === "CASH"
-                  ? "bg-green-500/15 text-green-500"
-                  : payment.method === "KHQR"
-                    ? "bg-blue-500/15 text-blue-500"
-                    : "bg-purple-500/15 text-purple-500"
-              }`}
-            >
-              {payment.method}
-            </span>
-          </div>
-
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-dimmed">Status</span>
-
-            <span className="text-green-500 font-semibold">Paid</span>
-          </div>
-
-          {payment.method === "CASH" && (
-            <>
-              <div className="flex justify-between">
-                <span className="text-sm text-dimmed">Cash Received</span>
-
-                <span className="text-heading">
-                  ${Number(payment.cashReceived).toFixed(2)}
-                </span>
+            {payment.method === "CASH" && (
+              <div>
+                <p className="text-gray-500 text-sm">Cash Received</p>
+                <p className="text-gray-900 font-bold text-xl">
+                  {formatPrice(Number(displayChange || 0))}
+                </p>
+                <p className="text-green-600 font-bold text-sm">
+                  Change: {formatPrice(Number(displayCashReceived || 0))}
+                </p>
               </div>
-
-              <div className="flex justify-between">
-                <span className="text-sm text-dimmed">Change</span>
-
-                <span className="text-heading">
-                  ${Number(payment.change).toFixed(2)}
-                </span>
-              </div>
-            </>
-          )}
+            )}
+            <div className={payment.method === "CASH" ? "text-right" : ""}>
+              <p className="text-gray-500 text-sm">Total Paid</p>
+              <p className="text-gray-900 font-bold text-3xl">
+                {formatPrice(Number(payment.totalAmount))}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Items */}
-        <div className="px-6 py-5">
+        <div className="px-6 py-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xs uppercase tracking-[0.2em] text-dimmed">
-              Items
+            <h3 className="text-xs font-bold text-gray-900 uppercase">
+              Items ({allItems.length})
             </h3>
-
-            <span className="text-xs text-dimmed">
-              {allItems.length} item{allItems.length !== 1 && "s"}
-            </span>
           </div>
 
-          <div className="space-y-2  pr-1">
-            {allItems.length === 0 ? (
-              <p className="text-sm text-dimmed text-center py-6">
-                No items found.
-              </p>
-            ) : (
-              allItems.map((item, index) => (
-                <div key={index} className="flex justify-between items-start">
+          <div className="space-y-4">
+            {allItems.map((item, index) => (
+              <div key={index} className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  {item.imageUrl && (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.menuName}
+                      className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl object-cover border border-gray-100 bg-gray-50 shrink-0"
+                    />
+                  )}
                   <div>
-                    <p className="font-medium text-heading">{item.menuName}</p>
-
-                    <p className="text-xs text-dimmed">
-                      ${Number(item.price).toFixed(2)} × {item.quantity}
+                    <p className="font-semibold text-gray-900 text-sm">
+                      {item.menuName}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {formatPrice(Number(item.price))} each
                     </p>
                   </div>
-
-                  <span className="font-semibold text-heading">
-                    ${Number(item.subtotal).toFixed(2)}
-                  </span>
                 </div>
-              ))
-            )}
+                <div className="text-right">
+                  <p className="text-xs text-gray-500">x{item.quantity}</p>
+                  <p className="font-bold text-gray-900 text-sm">
+                    {formatPrice(Number(item.subtotal))}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Summary */}
-        <div className="px-6 py-2 mb-2 space-y-2">
-          {/* <div className="flex items-center justify-between text-sm">
-            <span className="text-dimmed">Subtotal</span>
-            <span className="text-heading">${subtotal.toFixed(2)}</span>
-          </div> */}
-
-          <div className="border-t border-panel-border pt-4 flex justify-between items-center">
-            <span className="text-lg font-semibold text-heading">Total</span>
-
-            <span className="text-3xl font-bold text-heading">
-              ${Number(payment.totalAmount).toFixed(2)}
-            </span>
-          </div>
-
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-gray-100 flex gap-3">
           <button
             onClick={handleDownloadReceipt}
             disabled={downloading}
-            className="w-full bg-brand text-white py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-colors mt-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl text-sm font-bold transition flex items-center justify-center gap-2"
           >
             {downloading ? "Downloading..." : "Download Receipt"}
+          </button>
+          <button
+            onClick={() =>
+              printReceipt(payment, formatPrice, {
+                restaurantName,
+                address,
+                phone,
+                footerMessage,
+                exchangeRate,
+              })
+            }
+            className="flex-1 border border-gray-200 hover:bg-gray-50 text-gray-900 py-3 rounded-xl text-sm font-bold transition"
+          >
+            Print Receipt
           </button>
         </div>
       </div>

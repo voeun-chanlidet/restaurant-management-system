@@ -13,6 +13,7 @@ app.use(
       process.env.FRONTEND_URL,
       "http://localhost:5173",
       "http://192.168.0.108:5173",
+      "http://192.168.0.107:5173",
       "http://10.10.20.79:5173",
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

@@ -41,6 +41,10 @@ OrderItem.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    imageUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   },
   {
     sequelize,

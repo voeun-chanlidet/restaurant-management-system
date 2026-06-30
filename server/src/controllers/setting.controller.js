@@ -24,8 +24,15 @@ const updateSetting = async (request, response) => {
     const { id, singleton_guard, createdAt, updatedAt, ...safeData } =
       request.body;
 
-    if (request.file) {
-      safeData.khqr_image_url = await uploadImage(request.file.buffer);
+    if (request.files) {
+      if (request.files["khqrImage"] && request.files["khqrImage"][0]) {
+        const khqrFile = request.files["khqrImage"][0];
+        safeData.khqr_image_url = await uploadImage(khqrFile.buffer);
+      }
+      if (request.files["logoImage"] && request.files["logoImage"][0]) {
+        const logoFile = request.files["logoImage"][0];
+        safeData.logo_url = await uploadImage(logoFile.buffer);
+      }
     }
 
     const updatedSetting = await settingServices.updateSetting(safeData);

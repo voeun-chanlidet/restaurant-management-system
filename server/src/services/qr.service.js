@@ -33,6 +33,7 @@ const createQROrder = async (data) => {
       menuId: menu.id,
       menuName: menu.name, // snapshot
       price: menu.price, // snapshot
+      imageUrl: menu.imageUrl, // snapshot
       quantity: item.quantity,
       note: item.note || null,
       subtotal,
@@ -70,7 +71,15 @@ const createQROrder = async (data) => {
       {
         model: OrderItem,
         as: "items",
-        attributes: ["id", "menuName", "price", "quantity", "subtotal", "note"],
+        attributes: [
+          "id",
+          "menuName",
+          "price",
+          "quantity",
+          "subtotal",
+          "note",
+          "imageUrl",
+        ],
       },
     ],
   });

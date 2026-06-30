@@ -103,7 +103,7 @@ export default function ItemNoteModal({ item, onConfirm, onClose }) {
             placeholder="e.g. No onions, extra spicy, less sauce…"
             rows={2}
             maxLength={120}
-            className="w-full bg-[#faf8f4] border border-[#ede8df] rounded-xl px-4 py-3 text-sm text-[#2d2416] placeholder:text-[#b5a898] resize-none focus:outline-none focus:border-[#c8a96e] transition-colors"
+            className="w-full bg-[#faf8f4] border border-[#ede8df] rounded-xl px-4 py-3 text-base text-[#2d2416] placeholder:text-[#b5a898] resize-none focus:outline-none focus:border-[#c8a96e] transition-colors"
           />
           <p className="text-xs text-[#b5a898] text-right mt-1">
             {note.length}/120

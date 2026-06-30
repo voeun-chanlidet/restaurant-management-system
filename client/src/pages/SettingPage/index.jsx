@@ -9,7 +9,7 @@ const FIELDS = [
   { key: "address", label: "Address", required: false },
   { key: "phone", label: "Phone", required: false },
   { key: "footer_message", label: "Receipt Footer Message", required: false },
-  { key: "logo_url", label: "Logo URL", required: false },
+  // { key: "logo_url", label: "Logo URL", required: false },
 ];
 
 const SettingsPage = () => {
@@ -26,6 +26,8 @@ const SettingsPage = () => {
   const [khqrPreview, setKhqrPreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -42,6 +44,9 @@ const SettingsPage = () => {
         });
         if (settings.khqr_image_url) {
           setKhqrPreview(settings.khqr_image_url);
+        }
+        if (settings.logo_url) {
+          setLogoPreview(settings.logo_url);
         }
       } catch (error) {
         toast.error(
@@ -66,6 +71,13 @@ const SettingsPage = () => {
     setKhqrPreview(URL.createObjectURL(file));
   };
 
+  const handleLogoFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
+
   const handleSubmit = async () => {
     if (!form.restaurant_name.trim()) {
       toast.error("Restaurant name is required.");
@@ -80,9 +92,12 @@ const SettingsPage = () => {
       formData.append("footer_message", form.footer_message);
       formData.append("currency", form.currency);
       formData.append("exchange_rate", form.exchange_rate);
-      formData.append("logo_url", form.logo_url);
+      // formData.append("logo_url", form.logo_url);
       if (khqrFile) {
         formData.append("khqrImage", khqrFile);
+      }
+      if (logoFile) {
+        formData.append("logoImage", logoFile);
       }
       await SettingService.updateSettings(formData);
       toast.success("Settings saved successfully.");
@@ -203,6 +218,37 @@ const SettingsPage = () => {
             />
           </Field>
         )}
+      </Section>
+      {/* Logo Upload */}
+      <Section title="Restaurant Logo">
+        <Field label="Logo Image" required={false}>
+          <div className="flex flex-col gap-2">
+            {logoPreview && (
+              <img
+                src={logoPreview}
+                alt="Logo Preview"
+                className="w-40 h-40 object-contain rounded-lg border border-panel-border"
+              />
+            )}
+            <label
+              className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors"
+              style={{
+                border: "1px dashed var(--color-panel-border)",
+                color: "var(--color-dimmed)",
+              }}
+            >
+              <span>
+                {logoPreview ? "Change Logo image" : "Upload Logo image"}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoFileChange}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </Field>
       </Section>
 
       {/* KHQR */}

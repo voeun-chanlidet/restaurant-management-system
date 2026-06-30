@@ -18,7 +18,10 @@ settingRouter.patch(
   "/",
   protect,
   restricTo("ADMIN"),
-  upload.single("khqrImage"),
+  upload.fields([
+    { name: "khqrImage", maxCount: 1 },
+    { name: "logoImage", maxCount: 1 },
+  ]),
   updateSetting,
 );
 

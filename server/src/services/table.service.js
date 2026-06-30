@@ -1,7 +1,13 @@
 const { Table, Table_Session } = require("../models");
+const sequelize = require("../../lib/database");
 
 const getAllTables = async () => {
-  return await Table.findAll();
+  return await Table.findAll({
+    order: sequelize.literal(`
+  regexp_replace(table_number, '[0-9]+', '') ASC,
+  (regexp_replace(table_number, '[^0-9]+', ''))::int ASC
+`),
+  });
 };
 
 const getTableById = async (id) => {
