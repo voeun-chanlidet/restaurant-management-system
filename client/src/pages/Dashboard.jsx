@@ -164,7 +164,7 @@ export default function Dashboard() {
             {data.todayOrders.map((s, idx) => (
               <span
                 key={idx}
-                className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${STATUS_STYLES[s.status]}`}
+                className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${STATUS_STYLES[s.status] || "bg-gray-100 text-gray-600"}`}
               >
                 {s.statusCount} {s.status.toLowerCase().replace("_", " ")}
               </span>
@@ -269,15 +269,16 @@ export default function Dashboard() {
                   </span>
 
                   {/* Image Thumbnail Placeholder */}
-                  <div className="w-10 h-10 rounded-xl  border border-neutral-200 flex items-center justify-center shrink-0 overflow-hidden">
-                    {/* Replace this ImageIcon with actual <img> tag if you have item.imageUrl */}
-                    {/* <ImageIcon className="w-4 h-4 text-neutral-300" /> */}
-                    {/* {console.log(item.imageUrl)} */}
-                    <img
-                      src={item.imageUrl}
-                      className="w-full h-full"
-                      alt="Item Image"
-                    />
+                  <div className="w-10 h-10 rounded-xl border border-neutral-200 flex items-center justify-center shrink-0 overflow-hidden">
+                    {item.imageUrl ? (
+                      <img
+                        src={item.imageUrl}
+                        className="w-full h-full object-cover"
+                        alt={item.menuName}
+                      />
+                    ) : (
+                      <ImageIcon className="w-4 h-4 text-neutral-300" />
+                    )}
                   </div>
 
                   <span className="text-sm font-semibold text-heading truncate">
@@ -331,7 +332,7 @@ export default function Dashboard() {
                       Table {p.session?.table?.table_number ?? "—"}
                     </span>
                     <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 font-medium">
-                      <span>{p.processor.name}</span>
+                      <span>{p.processor?.name ?? "—"}</span>
                       <span>•</span>
                       <span>{p.method}</span>
                     </div>

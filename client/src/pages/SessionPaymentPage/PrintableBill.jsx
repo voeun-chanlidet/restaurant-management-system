@@ -112,11 +112,11 @@ const PrintableBill = ({
                         <span className="font-semibold text-gray-900 truncate">
                           {itemName}
                         </span>
-                        <span className="text-xs text-gray-400 ml-1.5 font-medium flex-shrink-0">
+                        <span className="text-xs text-gray-400 ml-1.5 font-medium shrink-0">
                           x{itemQuantity}
                         </span>
                       </div>
-                      <span className="font-semibold text-gray-900 tabular-nums flex-shrink-0">
+                      <span className="font-semibold text-gray-900 tabular-nums shrink-0">
                         {formattedItemPrice}
                       </span>
                     </div>
@@ -165,7 +165,7 @@ const PrintableBill = ({
       {/* Post-Checkout: Show Settled Badge */}
       {isPaid && (
         <div className="text-center mt-5 pt-2">
-          <div className="inline-block border-2 border-dashed border-red-500 text-red-500 font-black text-xs uppercase px-4 py-1.5 rounded-lg tracking-widest rotate-[-1deg]">
+          <div className="inline-block border-2 border-dashed border-red-500 text-red-500 font-black text-xs uppercase px-4 py-1.5 rounded-lg tracking-widest -rotate-1">
             ✓ Paid via {method || "CASH"}
           </div>
         </div>

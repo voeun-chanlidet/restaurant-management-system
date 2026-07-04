@@ -14,11 +14,29 @@ const printReceipt = (payment, formatPrice, settings) => {
     : payment.cashReceivedUsd;
   const displayChange = isKhr ? payment.changeKhr : payment.changeUsd;
 
+  // Use the exchange rate stored on the payment itself if available, so
+  // reprinting an old receipt stays consistent even if the restaurant's
+  // live exchange rate setting has since changed. Falls back to the
+  // current settings rate if the payment doesn't store its own.
+  const paymentExchangeRate = payment.exchangeRate || exchangeRate;
+
   const formatRaw = (amount) => {
     if (isKhr) {
       return `${Math.round(Number(amount || 0)).toLocaleString()} រៀល`;
     }
     return `$${parseFloat(amount || 0).toFixed(2)}`;
+  };
+
+  // Formats a raw USD amount using the currency/rate that was in effect
+  // AT THE TIME OF PAYMENT (not the restaurant's current live settings).
+  // Use this for anything derived from the payment record (line items,
+  // total paid) so the whole receipt stays internally consistent.
+  const formatAtPaymentCurrency = (amount) => {
+    const num = parseFloat(amount) || 0;
+    if (isKhr) {
+      return `${Math.round(num * paymentExchangeRate).toLocaleString()} រៀល`;
+    }
+    return `$${num.toFixed(2)}`;
   };
 
   const orders = payment.session?.orders || [];
@@ -158,7 +176,7 @@ const printReceipt = (payment, formatPrice, settings) => {
                   <span class="item-name">${item.menuName || "Item"}</span>
                   <span class="item-qty">x${item.quantity || 1}</span>
                 </div>
-                <span class="item-price">${formatPrice((parseFloat(item.price) || 0) * (item.quantity || 1))}</span>
+                <span class="item-price">${formatAtPaymentCurrency((parseFloat(item.price) || 0) * (item.quantity || 1))}</span>
               </div>
             `,
               )
@@ -175,18 +193,18 @@ const printReceipt = (payment, formatPrice, settings) => {
         <div class="total-row">
           <span class="total-label">Total Paid</span>
           <span class="total-amount">
-            ${isKhr && exchangeRate ? `${(runningTotal * exchangeRate).toLocaleString()} រៀល` : formatPrice(runningTotal)}
+            ${formatAtPaymentCurrency(runningTotal)}
           </span>
         </div>
 
         <!-- Financial Accounting Data -->
         <div class="summary-card">
           ${
-            exchangeRate
+            paymentExchangeRate
               ? `
             <div class="summary-line">
               <span>Exchange Rate:</span>
-              <span class="summary-bold">(1$ = ${exchangeRate} រៀល)</span>
+              <span class="summary-bold">(1$ = ${paymentExchangeRate} រៀល)</span>
             </div>
           `
               : ""
