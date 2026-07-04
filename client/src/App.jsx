@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import PublicRoute from "./components/PublicRoute";
@@ -33,14 +32,6 @@ function App() {
             element={
               <PublicRoute>
                 <LoginPage />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <RegisterPage />
               </PublicRoute>
             }
           />
