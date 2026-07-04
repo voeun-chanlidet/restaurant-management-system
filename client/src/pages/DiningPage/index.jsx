@@ -4,7 +4,7 @@ import FloorMap from "../../components/FloorMap";
 import ConfirmModal from "../../components/ConfirmModal";
 import tableService from "../../services/table";
 import sessionService from "../../services/table_session";
-import useTableSocket from "./useTableSocket";
+import useTableSocket from "../../hooks/useTableSocket";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -20,19 +20,18 @@ const DiningPage = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const navigate = useNavigate();
 
-  const fetchTables = async () => {
-    try {
-      setLoading(true);
-      const data = await tableService.getAllTables();
-      setTables(data.tables);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchTables = async () => {
+      try {
+        setLoading(true);
+        const data = await tableService.getAllTables();
+        setTables(data.tables);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchTables();
   }, []);
 
@@ -44,10 +43,14 @@ const DiningPage = () => {
 
   const handleTableClick = async (table) => {
     if (table.status === "OCCUPIED") {
-      const data = await sessionService.getActiveSessionByTable(table.id);
-      navigate(`/dining/${table.id}`, {
-        state: { session: data.activeSession },
-      });
+      try {
+        const data = await sessionService.getActiveSessionByTable(table.id);
+        navigate(`/dining/${table.id}`, {
+          state: { session: data.activeSession },
+        });
+      } catch (err) {
+        toast.error(err.response?.data?.error || "Failed to load session.");
+      }
     } else {
       setSelectedTable(table);
       setShowSessionModal(true);

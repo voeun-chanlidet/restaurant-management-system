@@ -1,3 +1,5 @@
+import { useSettings } from "../../contexts/SettingsContext";
+
 const STATUS_CONFIG = {
   PENDING: {
     label: "Waiting",
@@ -73,7 +75,9 @@ function getOverallStatus(orders) {
 
 export default function OrderStatusView({ table, placedOrders, onAddMore }) {
   const overallStatus = getOverallStatus(placedOrders);
+  const { formatPrice } = useSettings();
   const cfg = STATUS_CONFIG[overallStatus] || STATUS_CONFIG.PENDING;
+  const hasCancelled = placedOrders.some((o) => o.status === "CANCELLED");
   const allServed =
     placedOrders.length > 0 && placedOrders.every((o) => o.status === "SERVED");
 
@@ -98,7 +102,7 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
         {/* Overall status banner */}
         <div className={`rounded-2xl border ${cfg.border} ${cfg.bg} px-5 py-4`}>
           <div className="flex items-center gap-3">
-            <span className="relative flex h-3 w-3 flex-shrink-0">
+            <span className="relative flex h-3 w-3 shrink-0">
               {cfg.pulse && (
                 <span
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full ${cfg.dot} opacity-60`}
@@ -114,6 +118,14 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
             </div>
           </div>
         </div>
+        {hasCancelled && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+            <p className="text-xs text-red-600 font-medium">
+              One of your orders was cancelled
+            </p>
+          </div>
+        )}
 
         {/* Individual orders */}
         {placedOrders.map((order, idx) => {
@@ -160,8 +172,8 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
                         </p>
                       )}
                     </div>
-                    <p className="text-sm font-medium text-[#2d2416] flex-shrink-0">
-                      ${(item.price * item.quantity).toFixed(2)}
+                    <p className="text-sm font-medium text-[#2d2416] shrink-0">
+                      {formatPrice(item.price * item.quantity)}
                     </p>
                   </div>
                 ))}
@@ -171,7 +183,7 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
               <div className="px-4 py-2.5 bg-[#faf8f4] border-t border-[#f0ebe2] flex justify-between">
                 <span className="text-xs text-[#9a8a70]">Order total</span>
                 <span className="text-sm font-bold text-[#2d2416]">
-                  ${orderTotal.toFixed(2)}
+                  {formatPrice(orderTotal)}
                 </span>
               </div>
             </div>

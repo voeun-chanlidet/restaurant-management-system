@@ -31,7 +31,7 @@ const CheckoutForm = ({
   onPrintBill,
   onBack,
 }) => {
-  const { formatPrice, khqrImageUrl, currency } = settings;
+  const { formatPrice, formatRaw, khqrImageUrl } = settings;
 
   return (
     <div className="p-4 md:p-8 max-w-2xl mx-auto w-full">
@@ -132,10 +132,7 @@ const CheckoutForm = ({
                 className="text-sm font-medium"
                 style={{ color: "var(--color-brand)" }}
               >
-                Change:{" "}
-                {currency === "KHR"
-                  ? `៛${Math.round(change).toLocaleString()}`
-                  : `$${change.toFixed(2)}`}
+                Change: {formatRaw(change)}
               </p>
             )}
             {change !== null && change < 0 && (

@@ -21,6 +21,11 @@ const MenuModal = ({
       setPreview(null);
     }
     setImageFile(null);
+    return () => {
+      if (preview?.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
   }, [editingMenu, show]);
 
   if (!show) return null;
@@ -48,7 +53,6 @@ const MenuModal = ({
       }
       await onSave(formData);
     } catch (err) {
-      console.error(err);
       toast.error(err.response?.data?.message || "Something went wrong.");
     } finally {
       setSaving(false);

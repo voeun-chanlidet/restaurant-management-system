@@ -87,4 +87,12 @@ const createQROrder = async (data) => {
   return freshOrder;
 };
 
-module.exports = { createQROrder };
+const getSessionOrderStatuses = async (sessionId) => {
+  const orders = await Order.findAll({
+    where: { sessionId },
+    attributes: ["id", "status"],
+  });
+  return orders;
+};
+
+module.exports = { createQROrder, getSessionOrderStatuses };

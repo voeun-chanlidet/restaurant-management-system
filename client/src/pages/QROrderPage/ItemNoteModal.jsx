@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { useSettings } from "../../contexts/SettingsContext";
 
 export default function ItemNoteModal({ item, onConfirm, onClose }) {
   const [note, setNote] = useState("");
   const [qty, setQty] = useState(1);
   const inputRef = useRef(null);
+  const { formatPrice } = useSettings();
 
   useEffect(() => {
     const t = setTimeout(() => inputRef.current?.focus(), 150);
@@ -44,7 +46,7 @@ export default function ItemNoteModal({ item, onConfirm, onClose }) {
               {item.name}
             </p>
             <p className="text-[#c8a96e] font-bold text-sm mt-0.5">
-              ${parseFloat(item.price).toFixed(2)}
+              {formatPrice(parseFloat(item.price))}
             </p>
           </div>
         </div>
@@ -117,7 +119,7 @@ export default function ItemNoteModal({ item, onConfirm, onClose }) {
         >
           <span>Add to order</span>
           <span className="text-[#c8a96e] font-bold">
-            ${(parseFloat(item.price) * qty).toFixed(2)}
+            {formatPrice(parseFloat(item.price) * qty)}
           </span>
         </button>
       </div>

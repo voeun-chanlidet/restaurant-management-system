@@ -30,7 +30,7 @@ const MenuSelector = ({
         setMenus(menuData.menus);
         setSelectedCategory(null);
       } catch (error) {
-        console.error(error);
+        toast.error("Failed to load menu.");
       }
     };
     fetchData();

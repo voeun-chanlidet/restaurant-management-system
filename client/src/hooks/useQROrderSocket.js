@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "../config/api";
 
 export default function useQROrderSocket(session, onStatusUpdate) {
   const socketRef = useRef(null);
@@ -7,12 +8,9 @@ export default function useQROrderSocket(session, onStatusUpdate) {
   useEffect(() => {
     if (!session) return;
 
-    const socket = io(
-      import.meta.env.VITE_SOCKET_URL || "http://localhost:5000",
-      {
-        transports: ["websocket"],
-      },
-    );
+    const socket = io(SOCKET_URL, {
+      transports: ["polling", "websocket"],
+    });
 
     socketRef.current = socket;
 
@@ -33,5 +31,5 @@ export default function useQROrderSocket(session, onStatusUpdate) {
     return () => {
       socket.disconnect();
     };
-  }, [session]);
+  }, [session?.id, onStatusUpdate]);
 }

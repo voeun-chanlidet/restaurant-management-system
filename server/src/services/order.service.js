@@ -248,10 +248,10 @@ const cancelOrder = async (id, userRole) => {
   order.status = "CANCELLED";
   await order.save();
 
-  //refetch for better response
   const canceledOrder = await Order.findByPk(order.id, {
     attributes: [
       "id",
+      "sessionId",
       "tableId",
       "tableNumber",
       "status",
@@ -268,8 +268,13 @@ const cancelOrder = async (id, userRole) => {
       { model: User, as: "creator", attributes: ["id", "name"] },
     ],
   });
+
   const io = getIO();
   io.to(["kitchen", "staff", "admin"]).emit("order:cancelled", canceledOrder);
+  io.to(`customer:${canceledOrder.sessionId}`).emit("order:statusUpdated", {
+    orderId: canceledOrder.id,
+    status: canceledOrder.status,
+  });
 
   return canceledOrder;
 };

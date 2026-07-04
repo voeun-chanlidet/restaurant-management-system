@@ -14,6 +14,8 @@ const STATUS_OPTIONS = [
   { value: "CANCELLED", label: "CANCELLED" },
 ];
 
+const ITEMS_PER_PAGE = 12;
+
 const OrderPage = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -23,27 +25,27 @@ const OrderPage = () => {
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [filterType, setFilterType] = useState("ALL");
   const [searchTable, setSearchTable] = useState("");
-  const [sortBy, setSortBy] = useState("Newest");
-
-  // =========================
-  // FETCH
-  // =========================
-  const fetchOrders = async () => {
-    try {
-      const data = await OrderService.getAllOrders();
-      setOrders(data.orders || []);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    // FETCH
+    const fetchOrders = async () => {
+      try {
+        const data = await OrderService.getAllOrders();
+        setOrders(data.orders || []);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Failed to load orders!");
+      }
+    };
     fetchOrders();
   }, []);
 
-  // =========================
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus, filterType, searchTable]);
+
   // SOCKET
-  // =========================
   const handleNewOrder = useCallback((order) => {
     setOrders((prev) => [order, ...prev]);
   }, []);
@@ -62,17 +64,20 @@ const OrderPage = () => {
     onOrderCancel: handleOrderCancel,
   });
 
-  // =========================
   // MODAL HANDLERS
-  // =========================
   const openDetail = async (order) => {
     setSelectedOrder(order);
     setShowDetailModal(true);
     setDetailLoading(true);
-
-    const data = await OrderService.getOrderById(order.id);
-    setSelectedOrder(data.order);
-    setDetailLoading(false);
+    try {
+      const data = await OrderService.getOrderById(order.id);
+      setSelectedOrder(data.order);
+    } catch (error) {
+      toast.error("Failed to load order details.");
+      closeDetail();
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   const closeDetail = () => {
@@ -102,9 +107,7 @@ const OrderPage = () => {
     }
   };
 
-  // =========================
   // FILTERS & COUNTS LOGIC
-  // =========================
   const countsByStatus = useMemo(() => {
     const counts = {
       ALL: orders.length,
@@ -133,6 +136,13 @@ const OrderPage = () => {
       return matchStatus && matchType && matchTable;
     });
   }, [orders, filterStatus, filterType, searchTable]);
+
+  const paginatedOrders = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredOrders.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredOrders, currentPage]);
+
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
 
   const summary = useMemo(() => {
     const active = orders.filter(
@@ -175,7 +185,6 @@ const OrderPage = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
             Orders Overview
-            {/* {console.log(orders)} */}
           </h1>
           <div className="flex items-center gap-2 mt-1">
             <span className="relative flex h-2 w-2">
@@ -347,7 +356,7 @@ const OrderPage = () => {
       {/* ORDER CARDS CONTAINER GRID */}
       <div className="pt-2">
         <OrderList
-          orders={filteredOrders}
+          orders={paginatedOrders}
           onCardClick={openDetail}
           onStatusUpdate={handleStatusUpdate}
         />
@@ -356,26 +365,30 @@ const OrderPage = () => {
       {/* FOOTER PAGINATION BAR */}
       <div className="flex items-center justify-between border-t border-gray-100 pt-4 text-xs font-medium text-gray-500">
         <div>
-          Showing 1 to {Math.min(filteredOrders.length, 12)} of{" "}
+          Showing{" "}
+          {filteredOrders.length === 0
+            ? 0
+            : (currentPage - 1) * ITEMS_PER_PAGE + 1}{" "}
+          to {Math.min(currentPage * ITEMS_PER_PAGE, filteredOrders.length)} of{" "}
           {filteredOrders.length} orders
         </div>
-        <div className="flex items-center gap-1">
-          <button className="px-2 py-1.5 rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-400 disabled:opacity-50">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-2 py-1.5 rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-400 disabled:opacity-50"
+          >
             &lt;
           </button>
-          <button className="px-3 py-1.5 rounded bg-red-500 text-white font-bold">
-            1
-          </button>
-          <button className="px-3 py-1.5 rounded border border-gray-200 bg-white hover:bg-gray-50">
-            2
-          </button>
-          <button className="px-3 py-1.5 rounded border border-gray-200 bg-white hover:bg-gray-50">
-            3
-          </button>
-          <button className="px-3 py-1.5 rounded border border-gray-200 bg-white hover:bg-gray-50">
-            4
-          </button>
-          <button className="px-2 py-1.5 rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-400">
+          <span className="px-3 py-1.5 rounded bg-red-500 text-white font-bold">
+            {currentPage}
+          </span>
+          <span className="text-gray-400">of {totalPages}</span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages || totalPages === 0}
+            className="px-2 py-1.5 rounded border border-gray-200 bg-white hover:bg-gray-50 text-gray-400 disabled:opacity-50"
+          >
             &gt;
           </button>
         </div>

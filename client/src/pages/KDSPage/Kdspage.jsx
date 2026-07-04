@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import orderService from "../../services/order";
 import OrderCard from "./OrderCard";
-import useKitchenSocket from "./useKitchenSocket";
+import useKitchenSocket from "../../hooks/useKitchenSocket";
 import toast from "react-hot-toast";
 
 const KDSPage = () => {
@@ -15,7 +15,7 @@ const KDSPage = () => {
         const active = data.orders.filter((o) => o.status === "IN_PROGRESS");
         setOrders(active);
       } catch (err) {
-        console.error("Failed to load orders:", err);
+        toast.error("Failed to load orders.");
       } finally {
         setLoading(false);
       }

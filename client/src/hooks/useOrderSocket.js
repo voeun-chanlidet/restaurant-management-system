@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "../config/api";
 
 export default function useOrderSocket({
   onNewOrder,
@@ -8,15 +9,10 @@ export default function useOrderSocket({
 }) {
   const socketRef = useRef(null);
   useEffect(() => {
-    const socket = io(
-      window.location.hostname === "localhost"
-        ? "http://localhost:5000"
-        : `http://${window.location.hostname}:5000`,
-      {
-        auth: { token: localStorage.getItem("token") },
-        transports: ["websocket"],
-      },
-    );
+    const socket = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+      transports: ["polling", "websocket"],
+    });
 
     socketRef.current = socket;
 
@@ -42,5 +38,5 @@ export default function useOrderSocket({
     return () => {
       socket.disconnect();
     };
-  }, [onNewOrder, onOrderUpdate]);
+  }, [onNewOrder, onOrderUpdate, onOrderCancel]);
 }

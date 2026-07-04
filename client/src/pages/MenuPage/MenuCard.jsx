@@ -1,27 +1,23 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useSettings } from "../../contexts/SettingsContext";
-import { SquarePen, Trash2, Image as ImageIcon } from "lucide-react"; // Imported ImageIcon for placeholder
+import { SquarePen, Trash2, Image as ImageIcon } from "lucide-react";
 
 const MenuCard = ({ menu, onEdit, onDelete }) => {
   const { user } = useAuth();
   const { formatPrice } = useSettings();
 
   return (
-    // 1. Added "group" to parent to handle inner hover styles, plus a subtle shadow shift
     <div className="group rounded-xl overflow-hidden border border-panel-border bg-panel shadow-sm hover:shadow-md transition-all duration-200">
       <div className="aspect-4/3 overflow-hidden bg-input relative">
         {menu.imageUrl ? (
           <img
             src={menu.imageUrl}
             alt={menu.name}
-            // 2. Added group-hover:scale-105 for smooth zoom.
-            // 3. Added a conditional opacity/grayscale check for unavailable items.
             className={`w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
               !menu.isAvailable ? "opacity-50 grayscale-40" : ""
             }`}
           />
         ) : (
-          // 4. Upgraded the fallback UI with a clean layout and icon
           <div className="h-full flex flex-col items-center justify-center gap-1.5 text-dimmed/60 bg-input/40">
             <ImageIcon size={22} strokeWidth={1.5} />
             <span className="text-xs font-medium">No image</span>

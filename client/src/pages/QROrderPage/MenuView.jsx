@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ItemNoteModal from "./ItemNoteModal";
+import { useSettings } from "../../contexts/SettingsContext";
 
 export default function MenuView({
   table,
@@ -13,6 +14,7 @@ export default function MenuView({
 }) {
   const [activeCat, setActiveCat] = useState("all");
   const [noteModal, setNoteModal] = useState(null);
+  const { formatPrice } = useSettings();
 
   const available = menuItems.filter((m) => m.isAvailable);
   const filtered =
@@ -51,7 +53,7 @@ export default function MenuView({
                 <span className="w-5 h-5 rounded-full bg-[#c8a96e] text-[#2d2416] text-xs font-bold flex items-center justify-center">
                   {cartCount}
                 </span>
-                <span>${cartTotal.toFixed(2)}</span>
+                <span>{formatPrice(cartTotal)}</span>
               </button>
             )}
           </div>
@@ -100,7 +102,7 @@ export default function MenuView({
                       className="w-24 h-24 object-cover shrink-0"
                     />
                   ) : (
-                    <div className="w-24 h-24 shrink-0#f5f0e8] flex items-center justify-center">
+                    <div className="w-24 h-24 shrink-0 bg-[#f5f0e8] flex items-center justify-center">
                       <svg
                         viewBox="0 0 24 24"
                         fill="none"
@@ -123,7 +125,7 @@ export default function MenuView({
                       </p>
                     )}
                     <p className="text-[#c8a96e] font-bold text-sm mt-1.5">
-                      ${parseFloat(item.price).toFixed(2)}
+                      {formatPrice(item.price)}
                     </p>
                   </div>
 
@@ -156,7 +158,7 @@ export default function MenuView({
 
       {/* ── Floating cart bar ── */}
       {cartCount > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-[#faf8f4] via-[#faf8f4]/90 to-transparent pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 z-20 p-4 bg-linear-to-t from-[#faf8f4] via-[#faf8f4]/90 to-transparent pointer-events-none">
           <div className="max-w-xl mx-auto pointer-events-auto">
             <button
               onClick={onOpenCart}
@@ -167,7 +169,7 @@ export default function MenuView({
               </span>
               <span>View order</span>
               <span className="text-[#c8a96e] font-bold">
-                ${cartTotal.toFixed(2)}
+                {formatPrice(cartTotal)}
               </span>
             </button>
           </div>

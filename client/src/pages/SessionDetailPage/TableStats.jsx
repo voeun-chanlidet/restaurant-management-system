@@ -1,5 +1,5 @@
 import { useSettings } from "../../contexts/SettingsContext";
-import { Wallet } from "lucide-react";
+import { Wallet, CheckCircle, Package } from "lucide-react";
 const TableStats = ({ orderCount, itemCount, runningTotal }) => {
   const { formatPrice } = useSettings();
   const stats = [
@@ -7,47 +7,19 @@ const TableStats = ({ orderCount, itemCount, runningTotal }) => {
       label: "ORDERS",
       value: orderCount,
       subtext: "Non-cancelled",
-      icon: (
-        <svg
-          className="w-5 h-5 text-indigo-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ),
+      icon: <CheckCircle className="w-5 h-5 text-indigo-500" strokeWidth={2} />,
       iconBg: "bg-indigo-50",
     },
     {
       label: "ITEMS",
       value: itemCount,
       subtext: "Total quantity",
-      icon: (
-        <svg
-          className="w-5 h-5 text-emerald-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-      ),
+      icon: <Package className="w-5 h-5 text-emerald-500" strokeWidth={2} />,
       iconBg: "bg-emerald-50",
     },
     {
       label: "RUNNING TOTAL",
-      value: `${formatPrice(runningTotal)}`,
+      value: formatPrice(runningTotal),
       subtext: "Excludes cancelled",
       icon: <Wallet className="w-5 h-5 text-amber-500" />,
       iconBg: "bg-amber-50",

@@ -70,7 +70,7 @@ const PrintableBill = ({
         </div>
         <div className="truncate">
           <span className="text-gray-400">Server:</span>{" "}
-          <span className="text-gray-800">${serverName}</span>
+          <span className="text-gray-800">{serverName}</span>
         </div>
         <div className="text-right text-[10px] text-gray-400 self-center">
           {new Date().toLocaleString()}

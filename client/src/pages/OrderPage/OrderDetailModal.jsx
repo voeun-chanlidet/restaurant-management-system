@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useSettings } from "../../contexts/SettingsContext";
 import {
   STATUS_STYLES,
@@ -19,7 +19,7 @@ const OrderDetailModal = ({
   onCancel,
   isLoading,
 }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const { formatPrice } = useSettings();
   const [updating, setUpdating] = useState(false);
 
@@ -208,7 +208,6 @@ const OrderDetailModal = ({
                 </div>
                 <span className="font-bold text-gray-900">
                   {order.orderType === "DINE_IN" ? "Dine In" : "QR"}
-                  {console.log(order)}
                 </span>
               </div>
 
@@ -356,7 +355,6 @@ const OrderDetailModal = ({
             <h3 className="text-[15px] font-bold text-gray-900 mb-4">
               Order Summary
             </h3>
-            {/* <div className="grid grid-cols-1 sm:grid-cols-1  gap-8"> */}
             <div className="space-y-3 text-sm">
               <div className="flex justify-between text-gray-500">
                 <span>Total Items</span>
@@ -373,9 +371,6 @@ const OrderDetailModal = ({
                 </span>
               </div>
             </div>
-
-            {/* <div className="space-y-3 text-sm sm:pl-8 sm:border-l sm:border-gray-100"></div> */}
-            {/* </div> */}
           </div>
 
           <hr className="border-gray-100" />

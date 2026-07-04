@@ -1,6 +1,6 @@
 import {
   Home,
-  BookOpen,
+  SquareMenu,
   Armchair,
   ShoppingBag,
   Table,
@@ -25,7 +25,7 @@ export const navGroups = [
         label: "Menu",
         path: "/menus",
         roles: ["ADMIN", "STAFF"],
-        icon: BookOpen,
+        icon: SquareMenu,
       },
       {
         label: "Dining",
@@ -68,5 +68,4 @@ export const navGroups = [
   },
 ];
 
-// Flat list kept for any component that still needs it
 export const navItems = navGroups.flatMap((g) => g.items);

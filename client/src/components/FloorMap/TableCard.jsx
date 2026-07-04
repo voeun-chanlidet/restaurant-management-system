@@ -105,7 +105,7 @@ const TableCard = ({ table, onEdit, onTableClick }) => {
               ···
             </button>
             {showMenu && (
-              <div className="absolute right-0 top-6 z-20 bg-panel border border-panel-border rounded-lg shadow-lg min-w-[120px] py-1 text-xs">
+              <div className="absolute right-0 top-6 z-20 bg-panel border border-panel-border rounded-lg shadow-lg min-w-30 py-1 text-xs">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -188,7 +188,7 @@ const TableCard = ({ table, onEdit, onTableClick }) => {
               className="w-48 h-48 rounded-xl"
             />
 
-            <p className="text-xs text-[#9a8a70] text-center break-all max-w-[220px]">
+            <p className="text-xs text-[#9a8a70] text-center break-all max-w-55">
               {`${window.location.origin}/order/${table.id}`}
             </p>
 

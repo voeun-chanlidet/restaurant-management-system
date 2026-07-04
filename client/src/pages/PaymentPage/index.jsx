@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import OrderService from "../../services/order";
 import PaymentService from "../../services/payment";
 import PaymentList from "./PaymentList";
 import PaymentHistory from "./PaymentHistory";
 import PaymentDetailModal from "./PaymentDetailModal";
+import toast from "react-hot-toast";
 
 const PaymentPage = () => {
   const { user, loading } = useAuth();
@@ -13,29 +14,29 @@ const PaymentPage = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showPaymentDetail, setShowPaymentDetail] = useState(false);
 
-  const fetchUnpaidOrders = async () => {
+  const fetchUnpaidOrders = useCallback(async () => {
     try {
       const data = await OrderService.getUnpaidServedOrders();
       setUnpaidSessions(data);
     } catch (error) {
-      console.error(error);
+      toast.error("Failed to load unpaid orders.");
     }
-  };
+  }, []);
 
-  const fetchAllPayments = async () => {
+  const fetchAllPayments = useCallback(async () => {
     try {
       const data = await PaymentService.getAllPayments();
       setAllPayments(data.payments);
     } catch (error) {
-      console.error(error);
+      toast.error("Failed to load payment history.");
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (loading) return;
     fetchUnpaidOrders();
     if (user?.role === "ADMIN") fetchAllPayments();
-  }, [loading]);
+  }, [loading, user?.role, fetchUnpaidOrders, fetchAllPayments]);
 
   const openPaymentDetail = (payment) => {
     setSelectedPayment(payment);

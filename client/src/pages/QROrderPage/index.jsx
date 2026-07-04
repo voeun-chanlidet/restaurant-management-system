@@ -1,14 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import MenuView from "./MenuView";
 import OrderStatusView from "./OrderStatusView";
 import CartDrawer from "./CartDrawer";
 import api from "../../services/api";
-import { io } from "socket.io-client";
 import useQROrderSocket from "../../hooks/useQROrderSocket";
+import { useSettings } from "../../contexts/SettingsContext";
 
 // Views: "loading" | "error" | "menu" | "status"
 export default function QROrderPage() {
+  const { formatPrice } = useSettings();
+
   const { tableId } = useParams();
 
   const [table, setTable] = useState(null);
@@ -20,7 +22,6 @@ export default function QROrderPage() {
   const [errorMsg, setErrorMsg] = useState("");
 
   // Cart — persisted to localStorage so refreshing doesn't wipe it
-  const CART_KEY = `qr_cart_${tableId}`;
   const [cart, setCart] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(`qr_cart_${tableId}`)) || [];
@@ -31,8 +32,6 @@ export default function QROrderPage() {
   const [cartOpen, setCartOpen] = useState(false);
 
   // Orders placed this visit (for status view)
-  // const [placedOrders, setPlacedOrders] = useState([]);
-  const ORDERS_KEY = `qr_orders_${tableId}`;
   const [placedOrders, setPlacedOrders] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(`qr_orders_${tableId}`)) || [];
@@ -44,12 +43,10 @@ export default function QROrderPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
 
-  // const socketRef = useRef(null);
-
   // Persist cart
   useEffect(() => {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  }, [cart, CART_KEY]);
+    localStorage.setItem(`qr_cart_${tableId}`, JSON.stringify(cart));
+  }, [cart, tableId]);
 
   // Initial load — table info, open session, menu, categories
   useEffect(() => {
@@ -77,7 +74,6 @@ export default function QROrderPage() {
           : menuData.items || menuData.menus || Object.values(menuData);
         setMenuItems(menuArray);
 
-        // 2. Safely extract the categories array 👈 THIS FIXES YOUR CURRENT ERROR
         const catData = catRes.data;
         const catArray = Array.isArray(catData)
           ? catData
@@ -99,7 +95,22 @@ export default function QROrderPage() {
           setPlacedOrders([]);
           setView("menu");
         } else if (savedOrders.length > 0) {
-          setPlacedOrders(savedOrders);
+          try {
+            const { data } = await api.get(
+              `/qr/orders/session/${activeSession.id}/status`,
+            );
+            const statusMap = new Map(data.orders.map((o) => [o.id, o.status]));
+
+            const refreshedOrders = savedOrders.map((o) => ({
+              ...o,
+              status: statusMap.get(o.id) ?? o.status,
+            }));
+
+            setPlacedOrders(refreshedOrders);
+          } catch (err) {
+            // fall back to cached data if the status check fails
+            setPlacedOrders(savedOrders);
+          }
           setView("status");
         } else {
           setView("menu");
@@ -122,14 +133,16 @@ export default function QROrderPage() {
   }, [tableId]);
 
   useEffect(() => {
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(placedOrders));
-  }, [placedOrders, ORDERS_KEY]);
+    localStorage.setItem(`qr_orders_${tableId}`, JSON.stringify(placedOrders));
+  }, [placedOrders, tableId]);
 
-  useQROrderSocket(session, (orderId, status) => {
+  const handleStatusUpdate = useCallback((orderId, status) => {
     setPlacedOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status } : o)),
     );
-  });
+  }, []);
+
+  useQROrderSocket(session, handleStatusUpdate);
 
   // ── Cart helpers ──────────────────────────────────────────────────────────
 
@@ -177,7 +190,7 @@ export default function QROrderPage() {
 
   function clearCart() {
     setCart([]);
-    localStorage.removeItem(CART_KEY);
+    localStorage.removeItem(`qr_cart_${tableId}`);
   }
 
   const cartTotal = cart.reduce((s, c) => s + c.price * c.quantity, 0);
@@ -200,10 +213,10 @@ export default function QROrderPage() {
           imageUrl: c.imageUrl || undefined,
         })),
       };
-      console.log(payload);
+
       const res = await api.post("/qr/orders", payload);
       setPlacedOrders((prev) => [...prev, { ...res.data, items: cart }]);
-      console.log(placedOrders);
+
       clearCart();
       setCartOpen(false);
       setView("status");

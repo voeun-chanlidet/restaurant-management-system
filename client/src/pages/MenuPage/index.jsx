@@ -29,6 +29,7 @@ export default function MenuPage() {
     imageUrl: "",
     isAvailable: true,
   });
+
   // Confirm Modal State
   const [confirmModal, setConfirmModal] = useState({
     show: false,
@@ -50,8 +51,10 @@ export default function MenuPage() {
       if (catData.categories.length > 0) {
         setSelectedCategory(catData.categories[0].id);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to load menus & categories!",
+      );
     } finally {
       setLoading(false);
     }
@@ -73,8 +76,8 @@ export default function MenuPage() {
       setEditingCategory(null);
       setShowCategoryModal(false);
       fetchData();
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to save category!");
     }
   };
 
@@ -119,7 +122,7 @@ export default function MenuPage() {
       setShowMenuModal(false);
       fetchData();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Something went wrong.");
+      toast.error(err.response?.data?.message || "Failed to save menu!");
     }
   };
 

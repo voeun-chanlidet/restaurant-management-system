@@ -19,7 +19,6 @@ const OrderCard = ({ order, index, onClick }) => {
             </p>
             <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
               by {order.creator?.name || "Admin"}
-              {/* Optional: Add origin icon like 'via QR' if present in data */}
             </p>
           </div>
 
@@ -29,7 +28,7 @@ const OrderCard = ({ order, index, onClick }) => {
                 STATUS_STYLES[order.status] || "bg-gray-100 text-gray-600"
               }`}
             >
-              {order.status ? order.status.replace("_", " ") : "UNKNOWN"}
+              {order.status ? order.status.replace(/_/g, " ") : "UNKNOWN"}
             </span>
           </div>
         </div>
@@ -42,7 +41,6 @@ const OrderCard = ({ order, index, onClick }) => {
                 <span className="text-gray-900 font-semibold">
                   {item.menuName}
                 </span>
-                {/* Note display mapped from image logic */}
                 {item.note && (
                   <span className="text-xs text-gray-400 mt-0.5">
                     Note: {item.note}

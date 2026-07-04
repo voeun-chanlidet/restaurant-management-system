@@ -29,7 +29,6 @@ const SidebarItem = ({ item, collapsed, onNavigate }) => {
             />
           )}
 
-          {/* Label — only rendered when expanded to prevent overflow */}
           {!collapsed && (
             <span className="truncate tracking-wide">{item.label}</span>
           )}

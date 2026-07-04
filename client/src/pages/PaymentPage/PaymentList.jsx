@@ -2,7 +2,6 @@ import PaymentCard from "./PaymentCard";
 
 const PaymentList = ({ sessions }) => {
   if (sessions.length === 0) {
-    console.log(sessions);
     return <p className="text-dimmed text-sm">No orders awaiting payment.</p>;
   }
 

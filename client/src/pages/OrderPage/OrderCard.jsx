@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSettings } from "../../contexts/SettingsContext";
-import {
-  STATUS_STYLES,
-  STATUS_DOT_COLORS,
-  STATUS_FLOW,
-  STATUS_BUTTON_LABEL,
-  getNextStatus,
-  canAdvanceOrder,
-  canCancelOrder,
-} from "../../utils/orderStatus";
+import { getNextStatus, canAdvanceOrder } from "../../utils/orderStatus";
 import { useAuth } from "../../contexts/AuthContext";
 
 const STATUS_CONFIG = {
@@ -172,7 +164,7 @@ const OrderCard = ({ order, onClick, onStatusUpdate }) => {
   return (
     <div
       onClick={() => onClick(order)}
-      className={`bg-white border-y border-r border-gray-200 border-l-[4px] rounded-xl p-4 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer ${config.border}`}
+      className={`bg-white border-y border-r border-gray-200 border-l-4 rounded-xl p-4 flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer ${config.border}`}
     >
       {/* HEADER */}
       <div className="flex items-start justify-between mb-4">
@@ -275,8 +267,10 @@ const OrderCard = ({ order, onClick, onStatusUpdate }) => {
       {/* ACTIONS */}
       <div className="flex items-center gap-2">
         <button
+          disabled={!canAdvance}
           onClick={(e) => {
-            (e.stopPropagation(), onStatusUpdate(order.id, nextStatus));
+            e.stopPropagation();
+            onStatusUpdate(order.id, nextStatus);
           }}
           className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 border rounded-lg text-xs font-semibold transition-colors ${config.actionBg} cursor-pointer`}
         >

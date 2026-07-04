@@ -16,4 +16,15 @@ const createQROrder = async (request, response) => {
     return response.status(status).json({ error: error.message });
   }
 };
-module.exports = { createQROrder };
+
+const getSessionOrderStatuses = async (request, response) => {
+  try {
+    const orders = await QrServices.getSessionOrderStatuses(
+      request.params.sessionId,
+    );
+    return response.status(200).json({ orders });
+  } catch (error) {
+    return response.status(500).json({ error: error.message });
+  }
+};
+module.exports = { createQROrder, getSessionOrderStatuses };

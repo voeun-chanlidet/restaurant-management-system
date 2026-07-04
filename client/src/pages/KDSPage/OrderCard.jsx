@@ -16,7 +16,6 @@ const getUrgency = (createdAt) => {
   return "fresh";
 };
 
-// Adapted colors to match the clean aesthetic of the new design
 const urgencyStyles = {
   fresh: {
     border: "border-gray-200",
@@ -69,7 +68,7 @@ const OrderCard = ({ order, onMarkReady }) => {
     <div
       className={`flex flex-col bg-white border ${styles.border} rounded-xl overflow-hidden shadow-sm`}
     >
-      {/* ================= HEADER (Matches Image Style) ================= */}
+      {/* HEADER */}
       <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* Mock Document Icon from Image */}
@@ -100,7 +99,7 @@ const OrderCard = ({ order, onMarkReady }) => {
         </div>
       </div>
 
-      {/* ================= INFO BAR ================= */}
+      {/* INFO BAR */}
       <div className="px-4 py-2 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center text-sm">
         <div className="text-gray-500">
           Table{" "}
@@ -113,7 +112,7 @@ const OrderCard = ({ order, onMarkReady }) => {
         </div>
       </div>
 
-      {/* ================= ITEMS ================= */}
+      {/* ITEMS */}
       <div className="flex-1 px-4 py-4 space-y-4">
         {order.items.map((item) => (
           <div key={item.id} className="flex flex-col">
@@ -121,7 +120,6 @@ const OrderCard = ({ order, onMarkReady }) => {
             <div className="flex items-start justify-between gap-4">
               <span className="text-gray-900 font-semibold text-base leading-tight">
                 {item.menuName}
-                {console.log(item)}
               </span>
 
               {/* Quantity Pill (Matches Image) */}
@@ -165,7 +163,7 @@ const OrderCard = ({ order, onMarkReady }) => {
         ))}
       </div>
 
-      {/* ================= FOOTER ================= */}
+      {/* FOOTER */}
       <div className="p-3 border-t border-gray-100">
         <button
           onClick={handleMarkReady}

@@ -1,3 +1,5 @@
+import { useSettings } from "../../contexts/SettingsContext";
+
 export default function CartDrawer({
   open,
   cart,
@@ -9,6 +11,7 @@ export default function CartDrawer({
   onRemove,
   onPlaceOrder,
 }) {
+  const { formatPrice } = useSettings();
   if (!open) return null;
 
   return (
@@ -17,7 +20,7 @@ export default function CartDrawer({
 
       <div className="relative w-full max-w-md bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh] animate-slide-up">
         {/* Header */}
-        <div className="px-5 pt-4 pb-4 border-b border-[#f0ebe2] flex-shrink-0">
+        <div className="px-5 pt-4 pb-4 border-b border-[#f0ebe2] shrink-0">
           <div className="w-10 h-1 bg-[#ddd] rounded-full mx-auto mb-4" />
           <div className="flex items-center justify-between">
             <h2
@@ -99,9 +102,9 @@ export default function CartDrawer({
               </div>
 
               {/* Price + remove */}
-              <div className="flex flex-col items-end gap-1 flex-shrink-0">
+              <div className="flex flex-col items-end gap-1 shrink-0">
                 <p className="text-sm font-bold text-[#2d2416]">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  {formatPrice(item.price * item.quantity)}
                 </p>
                 <button
                   onClick={() => onRemove(item.menuId, item.note)}
@@ -115,11 +118,11 @@ export default function CartDrawer({
         </div>
 
         {/* Footer */}
-        <div className="px-5 pt-4 pb-8 border-t border-[#f0ebe2] space-y-4 flex-shrink-0">
+        <div className="px-5 pt-4 pb-8 border-t border-[#f0ebe2] space-y-4 shrink-0">
           <div className="flex items-center justify-between">
             <span className="text-sm text-[#6b5c45]">Total</span>
             <span className="text-xl font-bold text-[#2d2416]">
-              ${cartTotal.toFixed(2)}
+              {formatPrice(cartTotal)}
             </span>
           </div>
 

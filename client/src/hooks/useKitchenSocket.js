@@ -1,19 +1,15 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "../config/api";
 
 const useKitchenSocket = ({ onNewOrder, onOrderCancelled, onMarkReady }) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const socket = io(
-      window.location.hostname === "localhost"
-        ? "http://localhost:5000"
-        : `http://${window.location.hostname}:5000`,
-      {
-        auth: { token: localStorage.getItem("token") },
-        transports: ["websocket"],
-      },
-    );
+    const socket = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+      transports: ["polling", "websocket"],
+    });
 
     socketRef.current = socket;
 
@@ -36,7 +32,7 @@ const useKitchenSocket = ({ onNewOrder, onOrderCancelled, onMarkReady }) => {
     return () => {
       socket.disconnect();
     };
-  }, []);
+  }, [onNewOrder, onOrderCancelled, onMarkReady]);
 };
 
 export default useKitchenSocket;

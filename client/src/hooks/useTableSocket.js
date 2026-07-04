@@ -1,20 +1,16 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
+import { SOCKET_URL } from "../config/api";
 
 const useTableSocket = ({ onTableUpdate }) => {
-  const sokcetRef = useRef(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    const socket = io(
-      window.location.hostname === "localhost"
-        ? "http://localhost:5000"
-        : `http://${window.location.hostname}:5000`,
-      {
-        auth: { token: localStorage.getItem("token") },
-        transports: ["websocket"],
-      },
-    );
-    sokcetRef.current = socket;
+    const socket = io(SOCKET_URL, {
+      auth: { token: localStorage.getItem("token") },
+      transports: ["polling", "websocket"],
+    });
+    socketRef.current = socket;
 
     socket.on("connect", () => {
       console.log("Table connected: ", socket.id);

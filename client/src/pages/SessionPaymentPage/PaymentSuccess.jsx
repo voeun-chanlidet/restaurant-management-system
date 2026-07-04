@@ -69,7 +69,8 @@ const PaymentSuccess = ({
         </button>
         <button
           onClick={onDownloadReceipt}
-          className="flex-1 py-3 rounded-xl text-sm font-semibold transition-colors shadow-sm"
+          disabled={downloading}
+          className="flex-1 py-3 rounded-xl text-sm font-semibold transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed bg-brand"
           style={{ background: "var(--color-brand)", color: "#ffffff" }}
         >
           {downloading ? "Downloading..." : "Download PDF"}

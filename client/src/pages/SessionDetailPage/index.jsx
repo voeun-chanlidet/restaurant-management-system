@@ -4,8 +4,8 @@ import sessionService from "../../services/table_session";
 import OrderService from "../../services/order";
 import TableStats from "./TableStats";
 import OrderCard from "./OrderCard";
-import MenuSelector from "../OrderPage/MenuSelector";
-import OrderSummary from "../OrderPage/OrderSummary";
+import MenuSelector from "../SessionDetailPage/MenuSelector";
+import OrderSummary from "./OrderSummary";
 import useSessionSocket from "../../hooks/useSessionSocket";
 import toast from "react-hot-toast";
 import OrderDetailModal from "../OrderPage/OrderDetailModal";
@@ -95,17 +95,23 @@ const SessionDetailPage = () => {
   };
 
   // Socket
-  const handleNewOrder = useCallback((order) => {
-    if (order.sessionId === session.id) {
-      setOrders((prev) => [...prev, order]);
-    }
-  }, []);
+  const handleNewOrder = useCallback(
+    (order) => {
+      if (order.sessionId === session.id) {
+        setOrders((prev) => [...prev, order]);
+      }
+    },
+    [session?.id],
+  );
 
-  const handleOrderUpdate = useCallback((order) => {
-    if (order.sessionId === session.id) {
-      setOrders((prev) => prev.map((o) => (o.id === order.id ? order : o)));
-    }
-  }, []);
+  const handleOrderUpdate = useCallback(
+    (order) => {
+      if (order.sessionId === session.id) {
+        setOrders((prev) => prev.map((o) => (o.id === order.id ? order : o)));
+      }
+    },
+    [session?.id],
+  );
 
   const handleOrderCancel = useCallback((order) => {
     setOrders((prev) => prev.map((o) => (o.id === order.id ? order : o)));

@@ -47,7 +47,7 @@ const CategorySidebar = ({
               <span className="text-sm font-medium">{cat.name}</span>
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-xs font-semibold min-w-[20px] text-right ${isActive ? "text-white/80" : "text-dimmed"}`}
+                  className={`text-xs font-semibold min-w-5 text-right ${isActive ? "text-white/80" : "text-dimmed"}`}
                 >
                   {count}
                 </span>

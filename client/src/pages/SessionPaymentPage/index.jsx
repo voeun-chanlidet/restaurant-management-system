@@ -37,16 +37,21 @@ const SessionPaymentPage = () => {
           toast.error("This session has already been paid.");
           navigate("/dining");
         }
-      } catch (err) {}
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          console.error("Failed to check existing payment", err);
+        }
+      }
     };
 
     checkExistingPayment();
   }, [session]);
 
-  if (!session) {
-    navigate("/dining");
-    return null;
-  }
+  useEffect(() => {
+    if (!session) navigate("/dining");
+  }, [session, navigate]);
+
+  if (!session) return null;
 
   const displayTotal =
     settings.currency === "KHR"

@@ -43,6 +43,13 @@ export const SettingsProvider = ({ children }) => {
     }
     return `$${parseFloat(amount).toFixed(2)}`;
   };
+  const formatRaw = (amount) => {
+    const num = parseFloat(amount);
+    if (currency === "KHR") {
+      return `${Math.round(num).toLocaleString()} រៀល`; // no × exchangeRate
+    }
+    return `$${num.toFixed(2)}`;
+  };
 
   return (
     <SettingsContext.Provider
@@ -52,6 +59,7 @@ export const SettingsProvider = ({ children }) => {
         khqrImageUrl,
         logoUrl,
         formatPrice,
+        formatRaw,
         restaurantName,
         address,
         phone,
@@ -63,4 +71,9 @@ export const SettingsProvider = ({ children }) => {
   );
 };
 
-export const useSettings = () => useContext(SettingsContext);
+export const useSettings = () => {
+  const ctx = useContext(SettingsContext);
+  if (!ctx)
+    throw new Error("useSettings must be used within a SettingsProvider");
+  return ctx;
+};
