@@ -37,7 +37,7 @@ const TableModal = ({ isOpen, onClose, onSave, onDelete, editingTable }) => {
   };
 
   const inputClass =
-    "w-full bg-input border border-panel-border rounded-lg px-3 py-2 text-sm text-heading focus:outline-none focus:border-brand";
+    "w-full bg-input border border-panel-border rounded-lg px-3 py-2 text-base text-heading focus:outline-none focus:border-brand";
 
   return (
     <div

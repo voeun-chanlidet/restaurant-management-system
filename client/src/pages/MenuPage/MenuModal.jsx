@@ -31,7 +31,7 @@ const MenuModal = ({
   if (!show) return null;
 
   const inputClass =
-    "w-full px-3 py-2 rounded-lg text-sm outline-none bg-input text-heading border border-panel-border";
+    "w-full px-3 py-2 rounded-lg text-base outline-none bg-input text-heading border border-panel-border";
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];

@@ -121,14 +121,8 @@ const SettingsPage = () => {
     );
   }
 
-  const inputStyle = {
-    background: "var(--color-input)",
-    border: "1px solid var(--color-panel-border)",
-    color: "var(--color-heading)",
-  };
-
   const inputClass =
-    "w-full px-3 py-2 rounded-lg text-sm outline-none transition-colors";
+    "w-full px-3 py-2 rounded-lg text-base outline-none transition-colors bg-input text-heading border-panel-border text";
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -155,7 +149,6 @@ const SettingsPage = () => {
               onChange={(e) => handleChange(key, e.target.value)}
               placeholder={`Enter ${label.toLowerCase()}`}
               className={inputClass}
-              style={inputStyle}
               onFocus={(e) =>
                 (e.target.style.borderColor = "var(--color-brand)")
               }
@@ -208,7 +201,6 @@ const SettingsPage = () => {
               }
               placeholder="e.g. 4100"
               className={inputClass}
-              style={inputStyle}
               onFocus={(e) =>
                 (e.target.style.borderColor = "var(--color-brand)")
               }

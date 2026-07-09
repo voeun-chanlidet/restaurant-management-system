@@ -15,7 +15,7 @@ const CategorySidebar = ({
     menus.filter((m) => m.categoryId === categoryId).length;
 
   return (
-    <div className="w-full md:w-56 shrink-0 md:border-r border-panel-border bg-panel flex flex-col">
+    <div className="w-full md:w-56 shrink-0 md:border-r border-panel-border bg-panel flex flex-col mt-4 md:mt-0">
       {/* Header */}
       <div className="px-4 py-3 border-b border-panel-border flex items-center justify-between shrink-0">
         <span className="text-xs font-semibold uppercase tracking-widest text-dimmed">

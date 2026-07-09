@@ -121,8 +121,7 @@ const CheckoutForm = ({
               value={cashReceived}
               onChange={(e) => setCashReceived(e.target.value)}
               placeholder={`Min ${formatPrice(runningTotal)}`}
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-gray-900 text-sm font-medium focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all shadow-sm"
-              style={{ background: "var(--color-input, #ffffff)" }}
+              className="w-full pl-11 pr-4 py-3 rounded-xl border bg-input border-gray-200 text-gray-900 text-base font-medium focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all shadow-sm"
             />
           </div>
 

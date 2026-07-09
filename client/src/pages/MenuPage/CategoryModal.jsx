@@ -19,7 +19,7 @@ const CategoryModal = ({
           placeholder="Category name"
           value={categoryName}
           onChange={(e) => setCategoryName(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg text-sm outline-none mb-4 bg-input text-heading border border-panel-border"
+          className="w-full px-3 py-2 rounded-lg text-base outline-none mb-4 bg-input text-heading border border-panel-border"
         />
         <div className="flex gap-2 justify-end">
           <button

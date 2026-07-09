@@ -200,7 +200,7 @@ const MenuSelector = ({
                           onChange={(e) =>
                             updateItemNote(menu.id, e.target.value)
                           }
-                          className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:border-gray-300"
+                          className="w-full text-base border border-gray-200 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:border-gray-300"
                         />
                       </div>
                     ) : (

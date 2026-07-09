@@ -98,7 +98,7 @@ const UserModal = ({ user, onSubmit, onClose, submitting, error }) => {
               onChange={handleChange}
               placeholder="e.g. Sophea Chan"
               required
-              className="w-full bg-input border border-panel-border rounded-lg px-3.5 py-2.5 text-sm text-heading placeholder:text-dimmed focus:outline-none focus:border-brand transition-colors"
+              className="w-full bg-input border border-panel-border rounded-lg px-3.5 py-2.5 text-base text-heading placeholder:text-dimmed focus:outline-none focus:border-brand transition-colors"
             />
           </div>
 
@@ -114,7 +114,7 @@ const UserModal = ({ user, onSubmit, onClose, submitting, error }) => {
               onChange={handleChange}
               placeholder="e.g. sophea@rms.com"
               required
-              className="w-full bg-input border border-panel-border rounded-lg px-3.5 py-2.5 text-sm text-heading placeholder:text-dimmed focus:outline-none focus:border-brand transition-colors"
+              className="w-full bg-input border border-panel-border rounded-lg px-3.5 py-2.5 text-base text-heading placeholder:text-dimmed focus:outline-none focus:border-brand transition-colors"
             />
           </div>
 
@@ -141,7 +141,7 @@ const UserModal = ({ user, onSubmit, onClose, submitting, error }) => {
                 }
                 required={!isEditMode}
                 minLength={form.password ? 8 : undefined}
-                className="w-full bg-input border border-panel-border rounded-lg px-3.5 py-2.5 pr-10 text-sm text-heading placeholder:text-dimmed focus:outline-none focus:border-brand transition-colors"
+                className="w-full bg-input border border-panel-border rounded-lg px-3.5 py-2.5 pr-10 text-base text-heading placeholder:text-dimmed focus:outline-none focus:border-brand transition-colors"
               />
               <button
                 type="button"

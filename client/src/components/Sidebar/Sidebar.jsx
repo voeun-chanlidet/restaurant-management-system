@@ -88,12 +88,9 @@ const Sidebar = () => {
             <div className="min-w-0 flex flex-col">
               <p className="text-xs font-bold text-gray-800 truncate">
                 {user?.name || "Admin"}{" "}
-                <span className="font-medium text-gray-500">
-                  • {user?.role || "ADMIN"}
-                </span>
               </p>
               <p className="text-[11px] text-gray-500 truncate mt-0.5">
-                Administrator
+                {user?.role || "ADMIN"}
               </p>
             </div>
           )}
