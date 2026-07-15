@@ -24,9 +24,13 @@ const SessionPaymentPage = () => {
   const [downloading, setDownloading] = useState(false);
   const [payment, setPayment] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [checkingPayment, setCheckingPayment] = useState(true);
 
   useEffect(() => {
-    if (!session) return;
+    if (!session) {
+      setCheckingPayment(false);
+      return;
+    }
 
     const checkExistingPayment = async () => {
       try {
@@ -36,11 +40,14 @@ const SessionPaymentPage = () => {
         if (result.payment) {
           toast.error("This session has already been paid.");
           navigate("/dining");
+          return;
         }
       } catch (err) {
         if (err.response?.status !== 404) {
           console.error("Failed to check existing payment", err);
         }
+      } finally {
+        setCheckingPayment(false);
       }
     };
 
@@ -52,6 +59,7 @@ const SessionPaymentPage = () => {
   }, [session, navigate]);
 
   if (!session) return null;
+  if (checkingPayment) return null;
 
   const displayTotal =
     settings.currency === "KHR"

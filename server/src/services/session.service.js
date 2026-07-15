@@ -94,6 +94,11 @@ const closeSession = async (data) => {
     { status: "AVAILABLE" },
     { where: { id: session.tableId } },
   );
+  const io = getIO();
+  io.to(["staff", "admin"]).emit("table:update", {
+    id: session.tableId,
+    status: "AVAILABLE",
+  });
   const updatedSession = await Table_Session.findOne({
     where: { id: sessionId },
   });

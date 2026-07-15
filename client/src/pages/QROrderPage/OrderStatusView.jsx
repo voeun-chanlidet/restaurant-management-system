@@ -40,19 +40,19 @@ const STATUS_CONFIG = {
   SERVED: {
     label: "Served",
     description: "Enjoy your meal!",
-    color: "text-[#9a8a70]",
-    bg: "bg-[#faf8f4]",
-    border: "border-[#ede8df]",
-    dot: "bg-[#c8a96e]",
+    color: "text-dimmed",
+    bg: "bg-input",
+    border: "border-panel-border",
+    dot: "bg-faint",
     pulse: false,
   },
   CANCELLED: {
     label: "Cancelled",
     description: "This order was cancelled. Please speak to a staff member.",
-    color: "text-red-500",
-    bg: "bg-red-50",
-    border: "border-red-200",
-    dot: "bg-red-400",
+    color: "text-danger-text",
+    bg: "bg-danger-bg",
+    border: "border-danger-bg", // clean custom matching bg
+    dot: "bg-danger-text",
     pulse: false,
   },
 };
@@ -82,15 +82,15 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
     placedOrders.length > 0 && placedOrders.every((o) => o.status === "SERVED");
 
   return (
-    <div className="min-h-screen bg-[#faf8f4] flex flex-col">
+    <div className="min-h-screen bg-page flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-[#ede8df] px-4 py-4">
+      <div className="bg-panel border-b border-panel-border px-4 py-4">
         <div className="max-w-xl mx-auto">
-          <p className="text-xs text-[#c8a96e] font-semibold uppercase tracking-widest">
+          <p className="text-xs text-brand font-semibold uppercase tracking-widest">
             {table ? `Table ${table.table_number}` : ""}
           </p>
           <h1
-            className="text-xl font-bold text-[#2d2416] mt-0.5"
+            className="text-xl font-bold text-heading mt-0.5"
             style={{ fontFamily: "'Georgia', serif" }}
           >
             Order status
@@ -114,14 +114,16 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
             </span>
             <div>
               <p className={`font-bold text-base ${cfg.color}`}>{cfg.label}</p>
-              <p className="text-xs text-[#9a8a70] mt-0.5">{cfg.description}</p>
+              <p className="text-xs text-dimmed mt-0.5">{cfg.description}</p>
             </div>
           </div>
         </div>
+
+        {/* Cancellation warning banner */}
         {hasCancelled && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
-            <p className="text-xs text-red-600 font-medium">
+          <div className="rounded-xl border border-danger-bg bg-danger-bg px-4 py-2.5 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-danger-text shrink-0" />
+            <p className="text-xs text-danger-text font-medium">
               One of your orders was cancelled
             </p>
           </div>
@@ -137,11 +139,11 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
           return (
             <div
               key={order.id}
-              className="bg-white rounded-2xl border border-[#ede8df] overflow-hidden"
+              className="bg-panel rounded-2xl border border-panel-border overflow-hidden"
             >
               {/* Order header */}
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#f5f0e8]">
-                <p className="text-sm font-semibold text-[#2d2416]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-panel-border">
+                <p className="text-sm font-semibold text-heading">
                   Order {idx + 1}
                 </p>
                 <span
@@ -162,17 +164,17 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
                     className="flex items-start justify-between gap-2"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-[#2d2416]">
+                      <p className="text-sm text-heading">
                         <span className="font-medium">{item.quantity}×</span>{" "}
                         {item.name}
                       </p>
                       {item.note && (
-                        <p className="text-xs text-[#9a8a70] italic mt-0.5">
+                        <p className="text-xs text-dimmed italic mt-0.5">
                           "{item.note}"
                         </p>
                       )}
                     </div>
-                    <p className="text-sm font-medium text-[#2d2416] shrink-0">
+                    <p className="text-sm font-medium text-heading shrink-0">
                       {formatPrice(item.price * item.quantity)}
                     </p>
                   </div>
@@ -180,9 +182,9 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
               </div>
 
               {/* Order total */}
-              <div className="px-4 py-2.5 bg-[#faf8f4] border-t border-[#f0ebe2] flex justify-between">
-                <span className="text-xs text-[#9a8a70]">Order total</span>
-                <span className="text-sm font-bold text-[#2d2416]">
+              <div className="px-4 py-2.5 bg-input border-t border-panel-border flex justify-between">
+                <span className="text-xs text-dimmed">Order total</span>
+                <span className="text-sm font-bold text-heading">
                   {formatPrice(orderTotal)}
                 </span>
               </div>
@@ -190,9 +192,10 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
           );
         })}
 
+        {/* Add more button */}
         <button
           onClick={onAddMore}
-          className="w-full border-2 border-dashed border-[#c8a96e]/40 rounded-2xl py-4 text-sm font-semibold text-[#c8a96e] flex items-center justify-center gap-2 active:bg-[#c8a96e]/5 transition-colors"
+          className="w-full border-2 border-dashed border-brand/40 rounded-2xl py-4 text-sm font-semibold text-brand flex items-center justify-center gap-2 active:bg-brand/5 transition-all"
         >
           <svg
             viewBox="0 0 24 24"
@@ -211,14 +214,14 @@ export default function OrderStatusView({ table, placedOrders, onAddMore }) {
         {allServed && (
           <div className="text-center py-6 space-y-2">
             <p className="text-3xl">🍽</p>
-            <p className="font-semibold text-[#2d2416]">Enjoy your meal!</p>
-            <p className="text-sm text-[#9a8a70]">
+            <p className="font-semibold text-heading">Enjoy your meal!</p>
+            <p className="text-sm text-dimmed">
               Ask a staff member if you need anything else.
             </p>
           </div>
         )}
 
-        <p className="text-xs text-center text-[#b5a898] pb-4">
+        <p className="text-xs text-center text-dimmed pb-4">
           This page updates automatically — no need to refresh.
         </p>
       </div>

@@ -117,7 +117,7 @@ const PaymentDetailModal = ({ payment, onClose }) => {
               <div>
                 <p className="text-gray-500 text-sm">Cash Received</p>
                 <p className="text-gray-900 font-bold text-xl">
-                  {formatPrice(Number(displayCashReceived || 0))}
+                  {payment?.cashReceivedKhr || 0}
                 </p>
                 <p className="text-green-600 font-bold text-sm">
                   Change: {formatPrice(Number(displayChange || 0))}

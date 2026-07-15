@@ -18,20 +18,20 @@ export default function CartDrawer({
     <div className="fixed inset-0 z-40 flex items-end justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="relative w-full max-w-md bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh] animate-slide-up">
+      <div className="relative w-full max-w-md bg-panel rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh] animate-slide-up">
         {/* Header */}
-        <div className="px-5 pt-4 pb-4 border-b border-[#f0ebe2] shrink-0">
-          <div className="w-10 h-1 bg-[#ddd] rounded-full mx-auto mb-4" />
+        <div className="px-5 pt-4 pb-4 border-b border-panel-border shrink-0">
+          <div className="w-10 h-1 bg-faint rounded-full mx-auto mb-4" />
           <div className="flex items-center justify-between">
             <h2
-              className="text-lg font-bold text-[#2d2416]"
+              className="text-lg font-bold text-heading"
               style={{ fontFamily: "'Georgia', serif" }}
             >
               Your order
             </h2>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full bg-[#f5f0e8] flex items-center justify-center text-[#6b5c45] active:bg-[#ede8df] transition-colors"
+              className="w-8 h-8 rounded-full bg-input flex items-center justify-center text-dimmed active:bg-panel-border transition-colors"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -57,7 +57,7 @@ export default function CartDrawer({
               <div className="flex items-center gap-2 mt-0.5">
                 <button
                   onClick={() => onUpdateQty(item.menuId, item.note, -1)}
-                  className="w-7 h-7 rounded-full border border-[#ede8df] flex items-center justify-center text-[#6b5c45] active:bg-[#f0ebe2] transition-colors"
+                  className="w-7 h-7 rounded-full border border-panel-border flex items-center justify-center text-dimmed active:bg-input transition-colors"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -69,12 +69,12 @@ export default function CartDrawer({
                     <line x1="5" y1="12" x2="19" y2="12" />
                   </svg>
                 </button>
-                <span className="text-sm font-bold text-[#2d2416] w-4 text-center">
+                <span className="text-sm font-bold text-heading w-4 text-center">
                   {item.quantity}
                 </span>
                 <button
                   onClick={() => onUpdateQty(item.menuId, item.note, 1)}
-                  className="w-7 h-7 rounded-full border border-[#ede8df] flex items-center justify-center text-[#6b5c45] active:bg-[#f0ebe2] transition-colors"
+                  className="w-7 h-7 rounded-full border border-panel-border flex items-center justify-center text-dimmed active:bg-input transition-colors"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -91,11 +91,11 @@ export default function CartDrawer({
 
               {/* Name + note */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-[#2d2416]">
+                <p className="text-sm font-semibold text-heading">
                   {item.name}
                 </p>
                 {item.note && (
-                  <p className="text-xs text-[#9a8a70] mt-0.5 italic">
+                  <p className="text-xs text-dimmed mt-0.5 italic">
                     "{item.note}"
                   </p>
                 )}
@@ -103,12 +103,12 @@ export default function CartDrawer({
 
               {/* Price + remove */}
               <div className="flex flex-col items-end gap-1 shrink-0">
-                <p className="text-sm font-bold text-[#2d2416]">
+                <p className="text-sm font-bold text-heading">
                   {formatPrice(item.price * item.quantity)}
                 </p>
                 <button
                   onClick={() => onRemove(item.menuId, item.note)}
-                  className="text-xs text-red-400 hover:text-red-500 transition-colors"
+                  className="text-xs text-danger-text hover:opacity-80 transition-colors"
                 >
                   Remove
                 </button>
@@ -118,16 +118,16 @@ export default function CartDrawer({
         </div>
 
         {/* Footer */}
-        <div className="px-5 pt-4 pb-8 border-t border-[#f0ebe2] space-y-4 shrink-0">
+        <div className="px-5 pt-4 pb-8 border-t border-panel-border space-y-4 shrink-0">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-[#6b5c45]">Total</span>
-            <span className="text-xl font-bold text-[#2d2416]">
+            <span className="text-sm text-dimmed">Total</span>
+            <span className="text-xl font-bold text-heading">
               {formatPrice(cartTotal)}
             </span>
           </div>
 
           {submitError && (
-            <p className="text-sm text-red-500 bg-red-50 rounded-xl px-4 py-3 text-center">
+            <p className="text-sm text-danger-text bg-danger-bg rounded-xl px-4 py-3 text-center">
               {submitError}
             </p>
           )}
@@ -135,12 +135,12 @@ export default function CartDrawer({
           <button
             onClick={onPlaceOrder}
             disabled={submitting || cart.length === 0}
-            className="w-full bg-[#2d2416] text-white py-4 rounded-2xl font-semibold text-base active:scale-[0.98] transition-transform disabled:opacity-50"
+            className="w-full bg-brand hover:bg-brand-hover text-white py-4 rounded-2xl font-semibold text-base active:scale-[0.98] transition-all disabled:opacity-50"
           >
             {submitting ? "Placing order…" : "Place order"}
           </button>
 
-          <p className="text-xs text-center text-[#9a8a70]">
+          <p className="text-xs text-center text-dimmed">
             A staff member will confirm your order shortly
           </p>
         </div>

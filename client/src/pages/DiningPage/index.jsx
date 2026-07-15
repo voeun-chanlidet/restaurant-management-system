@@ -45,6 +45,12 @@ const DiningPage = () => {
     if (table.status === "OCCUPIED") {
       try {
         const data = await sessionService.getActiveSessionByTable(table.id);
+        if (!data.activeSession) {
+          toast.error("Table status was out of sync — refreshed.");
+          const fresh = await tableService.getAllTables();
+          setTables(fresh.tables);
+          return;
+        }
         navigate(`/dining/${table.id}`, {
           state: { session: data.activeSession },
         });

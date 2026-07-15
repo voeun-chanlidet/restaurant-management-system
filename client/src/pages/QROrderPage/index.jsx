@@ -234,10 +234,10 @@ export default function QROrderPage() {
 
   if (view === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf8f4]">
+      <div className="min-h-screen flex items-center justify-center bg-page">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-2 border-[#c8a96e]/30 border-t-[#c8a96e] rounded-full animate-spin" />
-          <p className="text-sm text-[#9a8a70]">Loading menu…</p>
+          <div className="w-10 h-10 border-2 border-brand/30 border-t-brand rounded-full animate-spin" />
+          <p className="text-sm text-dimmed">Loading menu…</p>
         </div>
       </div>
     );
@@ -245,32 +245,30 @@ export default function QROrderPage() {
 
   if (view === "error") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#faf8f4] p-6">
+      <div className="min-h-screen flex items-center justify-center bg-page p-6">
         <div className="text-center max-w-xs space-y-4">
-          <div className="w-16 h-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto rounded-full bg-danger-bg flex items-center justify-center">
             <svg
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#c8a96e"
+              stroke="currentColor"
               strokeWidth="1.5"
-              className="w-8 h-8"
+              className="w-8 h-8 text-danger-text"
             >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
           </div>
-          <p className="font-semibold text-[#2d2416] text-lg">
-            Table not ready
-          </p>
-          <p className="text-sm text-[#9a8a70] leading-relaxed">{errorMsg}</p>
+          <p className="font-semibold text-heading text-lg">Table not ready</p>
+          <p className="text-sm text-dimmed leading-relaxed">{errorMsg}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f4]">
+    <div className="min-h-screen bg-page">
       {view === "menu" && (
         <>
           <MenuView
@@ -282,6 +280,8 @@ export default function QROrderPage() {
             cartTotal={cartTotal}
             onAddToCart={addToCart}
             onOpenCart={() => setCartOpen(true)}
+            hasPlacedOrders={placedOrders && placedOrders.length > 0}
+            onGoToStatus={() => setView("status")}
           />
           <CartDrawer
             open={cartOpen}
