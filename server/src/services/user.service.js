@@ -1,5 +1,5 @@
 const { hashPassword } = require("../utils/hash");
-const User = require("../models/user.model");
+const { User } = require("../models/user.model");
 
 const getAllUsers = async () => {
   const users = await User.findAll({ attributes: { exclude: ["password"] } });

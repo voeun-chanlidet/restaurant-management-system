@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import Sidebar from "./Sidebar/Sidebar";
+import { env } from "../config/env";
 
 export default function Layout({ children }) {
   const { user } = useAuth();
@@ -10,7 +11,7 @@ export default function Layout({ children }) {
   useEffect(() => {
     if (!user) return;
 
-    const socket = io(import.meta.env.VITE_SOCKET_URL, {
+    const socket = io(env.socketUrl, {
       transports: ["polling", "websocket"],
       auth: { token: localStorage.getItem("token") },
     });

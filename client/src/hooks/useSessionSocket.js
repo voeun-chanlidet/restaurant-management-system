@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import { SOCKET_URL } from "../config/api";
+import { env } from "../config/env";
 
 export default function useSessionSocket({
   onNewOrder,
@@ -9,7 +9,7 @@ export default function useSessionSocket({
 }) {
   const socketRef = useRef(null);
   useEffect(() => {
-    const socket = io(SOCKET_URL, {
+    const socket = io(env.socketUrl, {
       auth: { token: localStorage.getItem("token") },
       transports: ["polling", "websocket"],
     });

@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import { SOCKET_URL } from "../config/api";
+import { env } from "../config/env";
 
 const useKitchenSocket = ({ onNewOrder, onOrderCancelled, onMarkReady }) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const socket = io(SOCKET_URL, {
+    const socket = io(env.socketUrl, {
       auth: { token: localStorage.getItem("token") },
       transports: ["polling", "websocket"],
     });

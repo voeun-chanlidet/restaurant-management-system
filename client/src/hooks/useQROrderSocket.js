@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-import { SOCKET_URL } from "../config/api";
+import { env } from "../config/env";
 
 export default function useQROrderSocket(session, onStatusUpdate) {
   const socketRef = useRef(null);
@@ -8,7 +8,7 @@ export default function useQROrderSocket(session, onStatusUpdate) {
   useEffect(() => {
     if (!session) return;
 
-    const socket = io(SOCKET_URL, {
+    const socket = io(env.socketUrl, {
       transports: ["polling", "websocket"],
     });
 

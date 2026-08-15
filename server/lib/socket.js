@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
+const { env } = require("../src/config/env");
 
 let io;
 
@@ -13,7 +14,7 @@ const initSocket = (server) => {
     const token = socket.handshake.auth.token;
     if (token) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, env.jwtSecret);
         socket.join(decoded.role.toLowerCase());
         console.log(`Client ${socket.id} joined room: ${decoded.role}`);
       } catch (error) {
