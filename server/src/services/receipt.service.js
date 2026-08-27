@@ -1,3 +1,4 @@
+const { roundKhrCash } = require("../utils/currency");
 const PDFDocument = require("pdfkit");
 const path = require("path");
 const {
@@ -63,14 +64,18 @@ async function generateReceiptBuffer(paymentId) {
   const boldFont = path.join(__dirname, "../fonts/NotoSans-Bold.ttf");
 
   const settings = await getSetting();
-  const exchangeRate = parseFloat(settings.exchange_rate) || 4100;
+  const isKhr = payment.paymentCurrency === "KHR";
 
-  // Align currency rules with Front-end display variables
-  const isKhr = payment.displayCurrency === "KHR";
-  const displayCashReceived = isKhr
-    ? payment.cashReceivedKhr || 0
-    : payment.cashReceivedUsd || 0;
-  const displayChange = isKhr ? payment.changeKhr || 0 : payment.changeUsd || 0;
+  // Use the exchange rate from payment time so old receipts stay accurate.
+  // Uses live rate only if no rate was saved.
+  const exchangeRate = isKhr
+    ? parseFloat(payment.exchangeRate) ||
+      parseFloat(settings.exchange_rate) ||
+      4100
+    : parseFloat(settings.exchange_rate) || 4100;
+
+  const displayCashReceived = payment.cashReceived || 0;
+  const displayChange = payment.changeAmount || 0;
 
   const formatRaw = (amount) => {
     if (isKhr) {
@@ -235,7 +240,7 @@ async function generateReceiptBuffer(paymentId) {
     .font(amountBoldFont)
     .text(
       isKhr
-        ? `${Math.round(runningTotal * exchangeRate).toLocaleString()} រៀល`
+        ? `${roundKhrCash(runningTotal * exchangeRate).toLocaleString()} រៀល`
         : `$${runningTotal.toFixed(2)}`,
       225,
       totalY,

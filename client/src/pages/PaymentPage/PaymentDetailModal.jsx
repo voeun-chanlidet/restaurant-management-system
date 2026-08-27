@@ -9,6 +9,7 @@ const PaymentDetailModal = ({ payment, onClose }) => {
   const [downloading, setDownloading] = useState(false);
   const {
     formatPrice,
+    formatByCurrency,
     restaurantName,
     address,
     phone,
@@ -16,11 +17,19 @@ const PaymentDetailModal = ({ payment, onClose }) => {
     footerMessage,
   } = useSettings();
 
-  const isKhr = payment?.displayCurrency === "KHR";
-  const displayCashReceived = isKhr
-    ? payment?.cashReceivedKhr
-    : payment?.cashReceivedUsd;
-  const displayChange = isKhr ? payment?.changeKhr : payment?.changeUsd;
+  const displayCashReceived = payment?.cashReceived;
+  const displayChange = payment?.changeAmount;
+  const isKhr = payment?.paymentCurrency === "KHR";
+  const paymentExchangeRate = Number(payment?.exchangeRate || exchangeRate);
+  const formatHistoricalPrice = (amount) => {
+    const num = Number(amount || 0);
+
+    if (isKhr) {
+      return `${Math.round(num * paymentExchangeRate).toLocaleString()} រៀល`;
+    }
+
+    return `$${num.toFixed(2)}`;
+  };
 
   const handleDownloadReceipt = async () => {
     try {
@@ -117,17 +126,21 @@ const PaymentDetailModal = ({ payment, onClose }) => {
               <div>
                 <p className="text-gray-500 text-sm">Cash Received</p>
                 <p className="text-gray-900 font-bold text-xl">
-                  {payment?.cashReceivedKhr || 0}
+                  {formatByCurrency(
+                    displayCashReceived,
+                    payment.paymentCurrency,
+                  )}
                 </p>
                 <p className="text-green-600 font-bold text-sm">
-                  Change: {formatPrice(Number(displayChange || 0))}
+                  Change:{" "}
+                  {formatByCurrency(displayChange, payment.changeCurrency)}
                 </p>
               </div>
             )}
             <div className={payment.method === "CASH" ? "text-right" : ""}>
               <p className="text-gray-500 text-sm">Total Paid</p>
               <p className="text-gray-900 font-bold text-3xl">
-                {formatPrice(Number(payment.totalAmount))}
+                {formatByCurrency(payment.totalAmount, payment.totalCurrency)}
               </p>
             </div>
           </div>
@@ -157,14 +170,16 @@ const PaymentDetailModal = ({ payment, onClose }) => {
                       {item.menuName}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {formatPrice(Number(item.price))} each
+                      {/* {formatPrice(Number(item.price))} each */}
+                      {formatHistoricalPrice(Number(item.price))} each
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-gray-500">x{item.quantity}</p>
                   <p className="font-bold text-gray-900 text-sm">
-                    {formatPrice(Number(item.subtotal))}
+                    {/* {formatPrice(Number(item.subtotal))} */}
+                    {formatHistoricalPrice(Number(item.subtotal))}
                   </p>
                 </div>
               </div>

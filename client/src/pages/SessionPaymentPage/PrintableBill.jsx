@@ -1,9 +1,10 @@
-import React from "react";
+import { roundKhrCash } from "../../utils/currency";
 
 const PrintableBill = ({
   orders,
   settings,
   formatPrice,
+  currency,
   method,
   session,
   isPaid = false,
@@ -27,10 +28,8 @@ const PrintableBill = ({
     ? parseFloat(session.totalAmount)
     : orderBlocks.reduce((acc, order) => acc + parseFloat(order.total || 0), 0);
 
-  const displayTotalKHR =
-    rawTotal > 0
-      ? `${(rawTotal * exchangeRate).toLocaleString()} រៀល`
-      : "0 រៀល";
+  const displayTotal =
+    currency === "KHR" ? roundKhrCash(rawTotal * exchangeRate) : rawTotal;
 
   return (
     <div className="print-receipt w-[80mm] mx-auto p-6 bg-[#faf9f6] text-black font-sans text-sm shadow-xl rounded-xl border border-gray-200 print:shadow-none print:border-none print:p-0 print:bg-white transition-all">
@@ -142,16 +141,22 @@ const PrintableBill = ({
             {isPaid ? "Total Paid" : "Total Due"}
           </span>
           <span className="text-2xl text-gray-900 tabular-nums">
-            {displayTotalKHR}
+            {currency === "KHR"
+              ? `${displayTotal.toLocaleString()} រៀល`
+              : `$${displayTotal.toFixed(2)}`}
           </span>
         </div>
 
         <div className="bg-gray-50 rounded-lg p-2 mt-2.5 space-y-1 text-[11px] text-gray-500 font-medium print:bg-transparent print:p-0">
           <div className="flex justify-between">
-            <span>Exchange Rate:</span>
-            <span className="text-gray-700 font-semibold">
-              (1$ = {exchangeRate} រៀល)
-            </span>
+            {currency === "KHR" && (
+              <div className="flex justify-between">
+                <span>Exchange Rate:</span>
+                <span className="text-gray-700 font-semibold">
+                  (1$ = {exchangeRate} រៀល)
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex justify-between">
             <span>Payment Method:</span>

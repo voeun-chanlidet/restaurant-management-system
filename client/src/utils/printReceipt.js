@@ -1,3 +1,4 @@
+import { roundKhrCash } from "./currency";
 const printReceipt = (payment, formatPrice, settings) => {
   const {
     restaurantName,
@@ -8,11 +9,9 @@ const printReceipt = (payment, formatPrice, settings) => {
     logoUrl,
   } = settings || {};
 
-  const isKhr = payment.displayCurrency === "KHR";
-  const displayCashReceived = isKhr
-    ? payment.cashReceivedKhr
-    : payment.cashReceivedUsd;
-  const displayChange = isKhr ? payment.changeKhr : payment.changeUsd;
+  const isKhr = payment.paymentCurrency === "KHR";
+  const displayCashReceived = payment.cashReceived;
+  const displayChange = payment.changeAmount;
 
   // Use the exchange rate stored on the payment itself if available, so
   // reprinting an old receipt stays consistent even if the restaurant's
@@ -35,6 +34,14 @@ const printReceipt = (payment, formatPrice, settings) => {
     const num = parseFloat(amount) || 0;
     if (isKhr) {
       return `${Math.round(num * paymentExchangeRate).toLocaleString()} រៀល`;
+    }
+    return `$${num.toFixed(2)}`;
+  };
+
+  const formatCashPayable = (amount) => {
+    const num = parseFloat(amount) || 0;
+    if (isKhr) {
+      return `${roundKhrCash(num * paymentExchangeRate).toLocaleString()} รៀล`;
     }
     return `$${num.toFixed(2)}`;
   };
@@ -193,7 +200,7 @@ const printReceipt = (payment, formatPrice, settings) => {
         <div class="total-row">
           <span class="total-label">Total Paid</span>
           <span class="total-amount">
-            ${formatAtPaymentCurrency(runningTotal)}
+            ${formatCashPayable(runningTotal)}
           </span>
         </div>
 

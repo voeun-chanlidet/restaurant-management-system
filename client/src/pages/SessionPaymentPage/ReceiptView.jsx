@@ -1,20 +1,46 @@
 import { useSettings } from "../../contexts/SettingsContext";
+import { roundKhrCash } from "../../utils/currency";
 
 const ReceiptView = ({ session, orders, runningTotal, payment }) => {
-  const { formatPrice } = useSettings();
+  // const { formatPrice } = useSettings();
+  const { formatPrice, currency, exchangeRate } = useSettings();
   const isPaid = !!payment;
-
-  const isKhr = payment?.displayCurrency === "KHR";
-  const displayCashReceived = isKhr
-    ? payment?.cashReceivedKhr
-    : payment?.cashReceivedUsd;
-  const displayChange = isKhr ? payment?.changeKhr : payment?.changeUsd;
+  const isKhr = payment?.paymentCurrency === "KHR";
+  const displayCashReceived = payment?.cashReceived;
+  const displayChange = payment?.changeAmount;
 
   const formatRaw = (amount) => {
     if (isKhr) {
       return `${Math.round(Number(amount || 0)).toLocaleString()} រៀល`;
     }
     return `$${parseFloat(amount || 0).toFixed(2)}`;
+  };
+
+  const formatHistoricalTotal = (amount) => {
+    const num = Number(amount || 0);
+
+    if (isKhr) {
+      return `${roundKhrCash(num * paymentExchangeRate).toLocaleString()} រៀល`;
+    }
+
+    return `$${num.toFixed(2)}`;
+  };
+
+  const displayTotal =
+    currency === "KHR"
+      ? roundKhrCash(runningTotal * exchangeRate)
+      : runningTotal;
+
+  const paymentExchangeRate = Number(payment?.exchangeRate || exchangeRate);
+
+  const formatHistoricalPrice = (amount) => {
+    const num = Number(amount || 0);
+
+    if (isKhr) {
+      return `${Math.round(num * paymentExchangeRate).toLocaleString()} រៀល`;
+    }
+
+    return `$${num.toFixed(2)}`;
   };
 
   return (
@@ -45,7 +71,9 @@ const ReceiptView = ({ session, orders, runningTotal, payment }) => {
                 Order #{index + 1}
               </p>
               <span className="text-sm font-medium text-gray-600">
-                {formatPrice(order.total)}
+                {isPaid
+                  ? formatHistoricalPrice(order.total)
+                  : formatPrice(order.total)}
               </span>
             </div>
 
@@ -60,7 +88,12 @@ const ReceiptView = ({ session, orders, runningTotal, payment }) => {
                     <span className="text-gray-400 mx-1">×</span>{" "}
                     {item.quantity}
                   </span>
-                  <span>{formatPrice(item.price * item.quantity)}</span>
+
+                  <span>
+                    {isPaid
+                      ? formatHistoricalPrice(item.price * item.quantity)
+                      : formatPrice(item.price * item.quantity)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -71,11 +104,12 @@ const ReceiptView = ({ session, orders, runningTotal, payment }) => {
       {/* Total */}
       <div className="flex justify-between items-center px-5 py-4 border-t border-gray-100 bg-gray-50/50">
         <span className="text-base font-bold text-gray-900">Total</span>
-        <span
-          className="text-lg font-bold"
-          style={{ color: "var(--color-brand)" }}
-        >
-          {formatPrice(runningTotal)}
+        <span className="text-lg font-bold text-brand">
+          {isPaid
+            ? formatHistoricalTotal(runningTotal)
+            : currency === "KHR"
+              ? `${displayTotal.toLocaleString()} រៀល`
+              : formatPrice(runningTotal)}
         </span>
       </div>
 

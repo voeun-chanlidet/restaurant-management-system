@@ -51,6 +51,14 @@ export const SettingsProvider = ({ children }) => {
     return `$${num.toFixed(2)}`;
   };
 
+  const formatByCurrency = (amount, currencyCode) => {
+    const num = parseFloat(amount);
+    if (currencyCode === "KHR") {
+      return `${Math.round(num).toLocaleString()} រៀល`;
+    }
+    return `$${num.toFixed(2)}`;
+  };
+
   return (
     <SettingsContext.Provider
       value={{
@@ -60,6 +68,7 @@ export const SettingsProvider = ({ children }) => {
         logoUrl,
         formatPrice,
         formatRaw,
+        formatByCurrency,
         restaurantName,
         address,
         phone,

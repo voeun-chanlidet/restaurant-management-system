@@ -7,7 +7,7 @@ const METHOD_STYLES = {
 };
 
 const PaymentHistory = ({ payments, onCardClick }) => {
-  const { formatPrice } = useSettings();
+  const { formatPrice, formatByCurrency } = useSettings();
 
   if (payments.length === 0) {
     return <p className="text-dimmed text-sm">No payments recorded yet.</p>;
@@ -16,14 +16,8 @@ const PaymentHistory = ({ payments, onCardClick }) => {
   return (
     <div className="space-y-3 cursor-pointer">
       {payments.map((payment) => {
-        const cashReceived =
-          payment.displayCurrency === "KHR"
-            ? payment.cashReceivedKhr
-            : payment.cashReceivedUsd;
-        const change =
-          payment.displayCurrency === "KHR"
-            ? payment.changeKhr
-            : payment.changeUsd;
+        const cashReceived = payment.cashReceived;
+        const change = payment.changeAmount;
 
         return (
           <div
@@ -76,14 +70,14 @@ const PaymentHistory = ({ payments, onCardClick }) => {
                   <div className="flex-1">
                     <p className="text-dimmed text-xs mb-1">Cash Received</p>
                     <p className="text-heading text-sm font-medium">
-                      {formatPrice(parseFloat(cashReceived || 0))}
-                      {console.log(payment)}
+                      {formatByCurrency(cashReceived, payment.paymentCurrency)}
                     </p>
                   </div>
                   <div className="flex-1">
                     <p className="text-dimmed text-xs mb-1">Change</p>
                     <p className="text-green-400 text-sm font-medium">
-                      +{formatPrice(parseFloat(change || 0))}
+                      {/* +{formatPrice(parseFloat(change || 0))}+ */}+{" "}
+                      {formatByCurrency(change, payment.changeCurrency)}
                     </p>
                   </div>
                 </>
@@ -102,7 +96,7 @@ const PaymentHistory = ({ payments, onCardClick }) => {
                   Total Paid
                 </p>
                 <p className="text-brand font-bold text-sm">
-                  {formatPrice(parseFloat(payment.totalAmount))}
+                  {formatByCurrency(payment.totalAmount, payment.totalCurrency)}
                 </p>
               </div>
               <span className="text-dimmed text-lg hidden md:block">›</span>
