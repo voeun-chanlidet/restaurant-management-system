@@ -21,6 +21,7 @@ const getAllOrders = async () => {
       "orderType",
       "createdAt",
       "updatedAt",
+      "servedAt",
     ],
     include: [
       {
@@ -195,8 +196,11 @@ const updateOrderStatus = async (id, status, userRole) => {
   // }
 
   order.status = status;
+  if (status === "SERVED") {
+    order.servedAt = new Date();
+  }
   await order.save();
-  console.log("order.tableId:", order.tableId);
+
   if (status === "SERVED" && order.tableId) {
     const activeOrders = await Order.count({
       where: {
@@ -220,6 +224,7 @@ const updateOrderStatus = async (id, status, userRole) => {
       "tableNumber",
       "status",
       "total",
+      "servedAt",
       "createdAt",
       "updatedAt",
     ],

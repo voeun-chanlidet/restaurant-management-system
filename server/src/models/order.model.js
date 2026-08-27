@@ -44,6 +44,10 @@ Order.init(
       type: DataTypes.DECIMAL(10, 2),
       defaultValue: 0,
     },
+    servedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
     createdBy: {
       type: DataTypes.INTEGER,
       allowNull: true, //change from false because there's no staff to create order via QR

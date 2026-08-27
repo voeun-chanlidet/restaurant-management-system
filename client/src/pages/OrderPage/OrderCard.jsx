@@ -108,11 +108,10 @@ const STATUS_CONFIG = {
     ),
   },
 };
-
-const calcElapsed = (createdAt) => {
+const calcElapsed = (createdAt, endAt = Date.now()) => {
   const diff = Math.max(
     0,
-    Math.floor((Date.now() - new Date(createdAt)) / 1000),
+    Math.floor((new Date(endAt) - new Date(createdAt)) / 1000),
   );
   const h = Math.floor(diff / 3600);
   const m = Math.floor((diff % 3600) / 60);
@@ -132,19 +131,37 @@ const OrderCard = ({ order, onClick, onStatusUpdate }) => {
   const nextStatus = getNextStatus(order.status);
   const canAdvance = canAdvanceOrder(user.role, order.status);
 
-  const [elapsed, setElapsed] = useState(() => calcElapsed(order.createdAt));
+  // const [elapsed, setElapsed] = useState(() => calcElapsed(order.createdAt));
+  const [elapsed, setElapsed] = useState(() =>
+    STOPPED_STATUSES.includes(order.status)
+      ? calcElapsed(order.createdAt, order.servedAt || order.updatedAt)
+      : calcElapsed(order.createdAt),
+  );
 
+  // useEffect(() => {
+  //   setElapsed(calcElapsed(order.createdAt));
+
+  //   if (STOPPED_STATUSES.includes(order.status)) return;
+
+  //   const interval = setInterval(() => {
+  //     setElapsed(calcElapsed(order.createdAt));
+  //   }, 1000);
+
+  //   return () => clearInterval(interval);
+  // }, [order.createdAt, order.status]);
   useEffect(() => {
+    if (STOPPED_STATUSES.includes(order.status)) {
+      setElapsed(
+        calcElapsed(order.createdAt, order.servedAt || order.updatedAt),
+      );
+      return;
+    }
     setElapsed(calcElapsed(order.createdAt));
-
-    if (STOPPED_STATUSES.includes(order.status)) return;
-
     const interval = setInterval(() => {
       setElapsed(calcElapsed(order.createdAt));
     }, 1000);
-
     return () => clearInterval(interval);
-  }, [order.createdAt, order.status]);
+  }, [order.createdAt, order.status, order.servedAt, order.updatedAt]);
 
   const sourceLabel = order.creator
     ? `Staff (${order.creator.name})`
