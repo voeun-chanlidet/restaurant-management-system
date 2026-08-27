@@ -3,7 +3,7 @@ const { generateReceiptBuffer } = require("../services/receipt.service");
 
 const getPaymentBySession = async (request, response) => {
   try {
-    const data = { orderId: request.params.orderId };
+    const data = { sessionId: request.params.sessionId };
     const payment = await paymentServices.getPaymentBySession(data);
     return response.status(200).json({ payment });
   } catch (error) {

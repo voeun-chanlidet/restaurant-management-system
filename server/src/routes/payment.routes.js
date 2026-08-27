@@ -11,7 +11,7 @@ const paymentRouter = require("express").Router();
 
 paymentRouter.get("/", protect, restrictTo("ADMIN", "STAFF"), getAllPayments);
 paymentRouter.get(
-  "/order/:orderId",
+  "/session/:sessionId",
   protect,
   restrictTo("ADMIN", "STAFF"),
   getPaymentBySession,

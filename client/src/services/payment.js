@@ -1,7 +1,7 @@
 import api from "./api";
 
 const getPaymentByOrder = async (id) => {
-  const response = await api.get(`/payment/order/${id}`);
+  const response = await api.get(`/payments/session/${id}`);
   return response.data;
 };
 const getAllPayments = async () => {
