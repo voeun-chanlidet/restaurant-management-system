@@ -73,7 +73,7 @@ const MenuModal = ({
             onChange={(e) => setMenuForm({ ...menuForm, name: e.target.value })}
             className={inputClass}
           />
-          <input
+          {/* <input
             type="number"
             placeholder="Price"
             value={menuForm.price}
@@ -81,7 +81,21 @@ const MenuModal = ({
               setMenuForm({ ...menuForm, price: e.target.value })
             }
             className={inputClass}
-          />
+          /> */}
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-dimmed text-base pointer-events-none">
+              $
+            </span>
+            <input
+              type="number"
+              placeholder="Price"
+              value={menuForm.price}
+              onChange={(e) =>
+                setMenuForm({ ...menuForm, price: e.target.value })
+              }
+              className={`${inputClass} pl-7`}
+            />
+          </div>
           <select
             value={menuForm.categoryId}
             onChange={(e) =>
