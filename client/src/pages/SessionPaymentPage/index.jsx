@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PaymentService from "../../services/payment";
 import api from "../../services/api";
 import { useSettings } from "../../contexts/SettingsContext";
+import { roundKhrCash } from "../../utils/currency";
 import PaymentSuccess from "./PaymentSuccess";
 import CheckoutForm from "./CheckoutForm";
 import PrintableBill from "./PrintableBill";
@@ -25,18 +26,20 @@ const SessionPaymentPage = () => {
   const [payment, setPayment] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [checkingPayment, setCheckingPayment] = useState(true);
+  const [currency, setCurrency] = useState(settings.currency || "USD");
+
+  useEffect(() => {
+    setCurrency(settings.currency || "USD");
+  }, [settings.currency]);
 
   useEffect(() => {
     if (!session) {
       setCheckingPayment(false);
       return;
     }
-
     const checkExistingPayment = async () => {
       try {
-        const result = await PaymentService.getPaymentBySession({
-          sessionId: session.id,
-        });
+        const result = await PaymentService.getPaymentByOrder(session.id);
         if (result.payment) {
           toast.error("This session has already been paid.");
           navigate("/dining");
@@ -62,8 +65,8 @@ const SessionPaymentPage = () => {
   if (checkingPayment) return null;
 
   const displayTotal =
-    settings.currency === "KHR"
-      ? Math.round(runningTotal * settings.exchangeRate)
+    currency === "KHR"
+      ? roundKhrCash(runningTotal * settings.exchangeRate)
       : runningTotal;
   const change =
     method === "CASH" && cashReceived
@@ -81,7 +84,7 @@ const SessionPaymentPage = () => {
         sessionId: session.id,
         method,
         cashReceived: method === "CASH" ? parseFloat(cashReceived) : null,
-        currency: settings.currency,
+        currency,
         exchangeRate: settings.exchangeRate,
       });
       setPayment(result.payment);
@@ -122,6 +125,7 @@ const SessionPaymentPage = () => {
           settings={settings}
           formatPrice={settings.formatPrice}
           method={method}
+          currency={currency}
         />
         <div className="print:hidden max-w-[80mm] mx-auto mt-5 grid grid-cols-2 gap-3 px-1">
           {/* Back to Checkout Button */}
@@ -196,6 +200,9 @@ const SessionPaymentPage = () => {
         setMethod={setMethod}
         cashReceived={cashReceived}
         setCashReceived={setCashReceived}
+        displayTotal={displayTotal}
+        currency={currency}
+        setCurrency={setCurrency}
         change={change}
         isCashSufficient={isCashSufficient}
         canSubmit={canSubmit}

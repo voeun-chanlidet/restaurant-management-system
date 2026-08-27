@@ -13,10 +13,16 @@ const METHODS = [
   { id: "KHQR", label: "KHQR", icon: QrCode },
 ];
 
+const CURRENCIES = [
+  { id: "USD", label: "USD", symbol: "$" },
+  { id: "KHR", label: "KHR", symbol: "៛" },
+];
+
 const CheckoutForm = ({
   session,
   orders,
   runningTotal,
+  displayTotal,
   method,
   setMethod,
   cashReceived,
@@ -30,8 +36,10 @@ const CheckoutForm = ({
   onConfirm,
   onPrintBill,
   onBack,
+  currency,
+  setCurrency,
 }) => {
-  const { formatPrice, formatRaw, khqrImageUrl } = settings;
+  const { formatPrice, formatByCurrency, khqrImageUrl } = settings;
 
   return (
     <div className="p-4 md:p-8 max-w-2xl mx-auto w-full">
@@ -108,6 +116,32 @@ const CheckoutForm = ({
       )}
 
       {method === "CASH" && (
+        <div className="mb-4">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            Currency
+          </p>
+          <div className="flex gap-3">
+            {CURRENCIES.map((c) => {
+              const isActive = currency === c.id;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setCurrency(c.id)}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all duration-200 ${
+                    isActive
+                      ? "border-brand text-brand bg-[#fce8e8] shadow-sm"
+                      : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 bg-white"
+                  }`}
+                >
+                  {c.symbol} {c.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {method === "CASH" && (
         <div className="mb-6">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
             Cash Received
@@ -120,7 +154,7 @@ const CheckoutForm = ({
               type="number"
               value={cashReceived}
               onChange={(e) => setCashReceived(e.target.value)}
-              placeholder={`Min ${formatPrice(runningTotal)}`}
+              placeholder={`Min ${formatByCurrency(displayTotal, currency)}`}
               className="w-full pl-11 pr-4 py-3 rounded-xl border bg-input border-gray-200 text-gray-900 text-base font-medium focus:ring-2 focus:ring-brand focus:border-transparent outline-none transition-all shadow-sm"
             />
           </div>
@@ -131,7 +165,7 @@ const CheckoutForm = ({
                 className="text-sm font-medium"
                 style={{ color: "var(--color-brand)" }}
               >
-                Change: {formatRaw(change)}
+                Change: {formatByCurrency(change, currency)}
               </p>
             )}
             {change !== null && change < 0 && (
@@ -158,7 +192,11 @@ const CheckoutForm = ({
         <CheckCircle className="w-4 h-4" />
         {loading
           ? "Processing..."
-          : `Confirm Payment • ${formatPrice(runningTotal)}`}
+          : `Confirm Payment • ${
+              method === "CASH"
+                ? formatByCurrency(displayTotal, currency)
+                : formatPrice(runningTotal)
+            }`}
       </button>
 
       {method === "CASH" && isCashSufficient && (
