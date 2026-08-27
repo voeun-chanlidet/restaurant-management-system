@@ -22,8 +22,7 @@ const createUser = async (request, response) => {
   try {
     const { name, email, password, role } = request.body;
     const newUser = await userService.createUser(name, email, password, role);
-    const { password: _, ...userWithoutPassword } = newUser.toJSON();
-    return response.status(201).json({ user: userWithoutPassword });
+    return response.status(201).json({ user: newUser });
   } catch (error) {
     return response.status(500).json({ message: error.message });
   }
