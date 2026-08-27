@@ -7,6 +7,7 @@ const {
   Table,
 } = require("../models/index");
 const { closeSession } = require("./session.service");
+const { roundKhrCash } = require("../utils/currency");
 const { Op } = require("sequelize");
 
 const createPayment = async (data, userId) => {
@@ -19,9 +20,6 @@ const createPayment = async (data, userId) => {
   const orders = await Order.findAll({
     where: { sessionId, status: { [Op.ne]: "CANCELLED" } },
   });
-  if (orders.length === 0)
-    throw new Error("Cannot pay a session with no orders!");
-
   if (orders.length === 0)
     throw new Error("Cannot pay a session with no orders!");
 
@@ -40,52 +38,47 @@ const createPayment = async (data, userId) => {
     0,
   );
 
-  let change = null;
-  let cashReceivedKhr = null;
-  let cashReceivedUsd = null;
-  let changeKhr = null;
-  let changeUsd = null;
+  let cashReceivedFinal = null;
+  let changeAmount = null;
+  let paymentCurrency = null;
+  let changeCurrency = null;
+  let storedExchangeRate = null;
 
   if (method === "CASH") {
     if (!cashReceived) throw new Error("Payment amount is required!");
 
-    if (currency === "KHR") {
-      const grandTotalKhr = Math.round(grandTotal * exchangeRate);
+    paymentCurrency = currency || "USD";
+    changeCurrency = paymentCurrency;
+
+    // for KHR currency
+    if (paymentCurrency === "KHR") {
+      const grandTotalKhr = roundKhrCash(grandTotal * exchangeRate);
       if (parseFloat(cashReceived) < grandTotalKhr)
         throw new Error("Insufficient amount!");
 
-      cashReceivedKhr = Math.round(parseFloat(cashReceived));
-      changeKhr = cashReceivedKhr - grandTotalKhr;
-      cashReceivedUsd = cashReceivedKhr / exchangeRate;
-      changeUsd = changeKhr / exchangeRate;
-      change = changeUsd;
-      cashReceived = cashReceivedUsd;
+      cashReceivedFinal = Math.round(parseFloat(cashReceived));
+      changeAmount = cashReceivedFinal - grandTotalKhr;
+      storedExchangeRate = exchangeRate;
     } else {
+      // for USD currency
       if (parseFloat(cashReceived) < grandTotal)
         throw new Error("Insufficient amount!");
 
-      cashReceivedUsd = parseFloat(cashReceived);
-      changeUsd = cashReceivedUsd - grandTotal;
-      change = changeUsd;
+      cashReceivedFinal = parseFloat(cashReceived);
+      changeAmount = cashReceivedFinal - grandTotal;
     }
-  }
-
-  if (method === "KHQR") {
-    cashReceived = null;
-    change = null;
   }
 
   const payment = await Payment.create({
     sessionId,
     method,
     totalAmount: grandTotal,
-    cashReceived,
-    change,
-    cashReceivedKhr,
-    cashReceivedUsd,
-    changeKhr,
-    changeUsd,
-    displayCurrency: currency || "USD",
+    totalCurrency: "USD",
+    cashReceived: cashReceivedFinal,
+    changeAmount,
+    paymentCurrency,
+    changeCurrency,
+    exchangeRate: storedExchangeRate,
     processedBy: userId,
   });
   await closeSession({ sessionId });
@@ -96,12 +89,11 @@ const createPayment = async (data, userId) => {
       "method",
       "totalAmount",
       "cashReceived",
-      "change",
-      "cashReceivedKhr",
-      "cashReceivedUsd",
-      "changeKhr",
-      "changeUsd",
-      "displayCurrency",
+      "changeAmount",
+      "totalCurrency",
+      "paymentCurrency",
+      "changeCurrency",
+      "exchangeRate",
       "createdAt",
     ],
     include: [
@@ -147,12 +139,11 @@ const getPaymentBySession = async (data) => {
       "method",
       "totalAmount",
       "cashReceived",
-      "change",
-      "cashReceivedKhr",
-      "cashReceivedUsd",
-      "changeKhr",
-      "changeUsd",
-      "displayCurrency",
+      "changeAmount",
+      "totalCurrency",
+      "paymentCurrency",
+      "changeCurrency",
+      "exchangeRate",
       "createdAt",
     ],
     include: [
@@ -195,12 +186,11 @@ const getAllPayments = async () => {
       "method",
       "totalAmount",
       "cashReceived",
-      "change",
-      "cashReceivedKhr",
-      "cashReceivedUsd",
-      "changeKhr",
-      "changeUsd",
-      "displayCurrency",
+      "changeAmount",
+      "totalCurrency",
+      "paymentCurrency",
+      "changeCurrency",
+      "exchangeRate",
       "createdAt",
     ],
     include: [

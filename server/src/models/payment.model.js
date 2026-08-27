@@ -20,38 +20,29 @@ Payment.init(
       defaultValue: "CASH",
     },
     cashReceived: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      field: "amount_tendered",
-    },
-    change: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.DECIMAL(14, 2),
       allowNull: true,
     },
-    cashReceivedKhr: {
-      type: DataTypes.DECIMAL(12, 0),
+    changeAmount: {
+      type: DataTypes.DECIMAL(14, 2),
       allowNull: true,
-      field: "cash_received_khr",
     },
-    changeKhr: {
-      type: DataTypes.DECIMAL(12, 0),
-      allowNull: true,
-      field: "change_khr",
+    totalCurrency: {
+      type: DataTypes.STRING(3),
+      allowNull: false,
+      defaultValue: "USD",
     },
-    cashReceivedUsd: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      field: "cash_received_usd",
-    },
-    changeUsd: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-      field: "change_usd",
-    },
-    displayCurrency: {
+    paymentCurrency: {
       type: DataTypes.STRING(3),
       allowNull: true,
-      field: "display_currency",
+    },
+    changeCurrency: {
+      type: DataTypes.STRING(3),
+      allowNull: true,
+    },
+    exchangeRate: {
+      type: DataTypes.DECIMAL(10, 4),
+      allowNull: true,
     },
     totalAmount: {
       type: DataTypes.DECIMAL(10, 2),
