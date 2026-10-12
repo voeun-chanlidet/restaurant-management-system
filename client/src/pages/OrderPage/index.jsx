@@ -27,16 +27,16 @@ const OrderPage = () => {
   const [searchTable, setSearchTable] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  const fetchOrders = async () => {
+    try {
+      const data = await OrderService.getAllOrders();
+      setOrders(data.orders || []);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to load orders!");
+    }
+  };
   useEffect(() => {
     // FETCH
-    const fetchOrders = async () => {
-      try {
-        const data = await OrderService.getAllOrders();
-        setOrders(data.orders || []);
-      } catch (error) {
-        toast.error(error.response?.data?.message || "Failed to load orders!");
-      }
-    };
     fetchOrders();
   }, []);
 

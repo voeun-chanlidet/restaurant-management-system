@@ -201,20 +201,6 @@ const updateOrderStatus = async (id, status, userRole) => {
   }
   await order.save();
 
-  if (status === "SERVED" && order.tableId) {
-    const activeOrders = await Order.count({
-      where: {
-        tableId: order.tableId,
-        status: ["PENDING", "IN_PROGRESS", "READY"],
-      },
-    });
-    if (activeOrders === 0) {
-      await Table.update(
-        { status: "AVAILABLE" },
-        { where: { id: order.tableId } },
-      );
-    }
-  }
   //refetch for better response
   const updatedOrder = await Order.findByPk(order.id, {
     attributes: [
